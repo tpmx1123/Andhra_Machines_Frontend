@@ -1,16 +1,31 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ArrowUp } from 'lucide-react';
 
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { pathname } = useLocation();
 
-  const toggleVisibility = () => {
-    if (window.pageYOffset > 300) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  };
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  // Show/hide scroll to top button based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -19,23 +34,18 @@ const ScrollToTop = () => {
     });
   };
 
-  useEffect(() => {
-    window.addEventListener('scroll', toggleVisibility);
-    return () => window.removeEventListener('scroll', toggleVisibility);
-  }, []);
-
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <>
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="bg-[#1a365d] hover:bg-[#c54513] text-white p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110"
+          className="fixed bottom-6 right-6 bg-[#c54513] text-white p-3 rounded-full shadow-lg hover:bg-[#a43a10] transition-colors z-50"
           aria-label="Scroll to top"
         >
-          <ArrowUp size={24} />
+          <ArrowUp size={20} />
         </button>
       )}
-    </div>
+    </>
   );
 };
 

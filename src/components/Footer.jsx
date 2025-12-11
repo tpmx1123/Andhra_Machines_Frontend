@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Mail as MailIcon, Phone, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -22,13 +23,25 @@ export default function Footer() {
 
           <div className="flex flex-col">
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Home</a></li>
-              <li><a href="brands" className="text-gray-400 hover:text-white transition-colors">Brands</a></li>
-              <li><a href="types" className="text-gray-400 hover:text-white transition-colors">Types</a></li>
-              <li><a href="blog" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-              <li><a href="about" className="text-gray-400 hover:text-white transition-colors">About</a></li>
-              <li><a href="contact" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+            <ul className="space-y-2 pl-0">
+              <li>
+                <Link to="/" className="text-gray-400 hover:text-white transition-colors block" onClick={() => window.scrollTo(0, 0)}>Home</Link>
+              </li>
+              <li>
+                <Link to="/products" className="text-gray-400 hover:text-white transition-colors block">Products</Link>
+              </li>
+              <li>
+                <Link to="/brands" className="text-gray-400 hover:text-white transition-colors block">Brands</Link>
+              </li>
+              <li>
+                <Link to="/blog" className="text-gray-400 hover:text-white transition-colors block">Blog</Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-gray-400 hover:text-white transition-colors block">About Us</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors block">Contact</Link>
+              </li>
             </ul>
           </div>
 
