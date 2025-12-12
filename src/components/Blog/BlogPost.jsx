@@ -13,14 +13,14 @@ const BlogPost = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     const currentPost = blogPosts.find(post => post.id === slug);
-    
+
     if (!currentPost) {
       navigate('/blog');
       return;
     }
 
     setPost(currentPost);
-    
+
     const related = blogPosts
       .filter(p => p.id !== slug && p.category === currentPost.category)
       .slice(0, 2);
@@ -88,7 +88,7 @@ const BlogPost = () => {
                 <ClockIcon className="h-4 w-4 mr-1" />
                 <span>{post.readTime}</span>
               </div>
-              <button 
+              <button
                 onClick={handleShare}
                 className="flex items-center hover:text-white transition-colors"
                 aria-label="Share this post"
@@ -109,7 +109,7 @@ const BlogPost = () => {
             {/* Introduction Card */}
             <div className="bg-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] p-8 border border-gray-50 transition-all hover:shadow-lg">
               <div className="prose max-w-none">
-                <div 
+                <div
                   className="prose-p:leading-relaxed prose-p:text-gray-700 prose-p:text-lg prose-p:mb-6
                            prose-headings:font-bold prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:font-extrabold
                            prose-h2:mt-8 prose-h2:mb-6 prose-h2:leading-tight prose-h2:bg-gradient-to-r 
@@ -148,18 +148,18 @@ const BlogPost = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="group rounded-2xl overflow-hidden h-52 bg-gray-50 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="relative w-full h-full overflow-hidden">
-                  <img 
-                    src={post.image} 
-                    alt="" 
+                  <img
+                    src={post.image}
+                    alt=""
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
               </div>
               <div className="group rounded-2xl overflow-hidden h-52 bg-gray-50 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-                <img 
-                  src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png" 
-                  alt="" 
+                <img
+                  src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png"
+                  alt=""
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -173,7 +173,7 @@ const BlogPost = () => {
               <h3 className="text-lg font-bold text-gray-900 mb-4">Popular Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {['Sewing', 'Maintenance', 'Tutorials', 'Beginners', 'Advanced', 'Accessories'].map((tag) => (
-                  <span 
+                  <span
                     key={tag}
                     className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
                   >
@@ -194,9 +194,9 @@ const BlogPost = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">Stay Updated</h3>
                 <p className="text-sm text-gray-500 mb-4">Get the latest articles and tips delivered to your inbox</p>
                 <div className="space-y-3">
-                  <input 
-                    type="email" 
-                    placeholder="Your email address" 
+                  <input
+                    type="email"
+                    placeholder="Your email address"
                     className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   <button className="w-full bg-[#c54513] hover:bg-[#a4370f] text-white font-medium py-2 px-4 rounded-lg transition-colors">
@@ -240,8 +240,8 @@ const BlogPost = () => {
           <div className="mt-16">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-gray-900">You May Also Like</h2>
-              <Link 
-                to="/blog" 
+              <Link
+                to="/blog"
                 className="inline-flex items-center text-sm font-medium text-[#c54513] hover:text-[#a4370f] transition-colors"
               >
                 View all articles
@@ -296,8 +296,8 @@ const BlogPost = () => {
       {/* Back to Blog */}
       <div className="bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <Link 
-            to="/blog" 
+          <Link
+            to="/blog"
             className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-[#c54513] transition-colors group"
           >
             <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />

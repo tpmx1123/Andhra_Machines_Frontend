@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, ShoppingCart, Heart, Share2, ChevronRight } from 'lucide-react';
+import { useCart } from '../../contexts/CartContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
+import { shareProduct } from '../../utils/share';
 
 const BrandDetail = () => {
   const { brandId } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -309,13 +314,29 @@ const BrandDetail = () => {
                     <div className="flex items-center justify-between mt-4">
                       <span className="text-lg font-bold text-gray-900">${product.price.toFixed(2)}</span>
                       <div className="flex space-x-2">
-                        <button className="p-2 text-gray-400 hover:text-gray-500">
-                          <Heart className="h-5 w-5" />
+                        <button
+                          onClick={() => toggleFavorite(product)}
+                          className={`p-2 transition-colors rounded-full hover:bg-gray-100 ${
+                            isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                          }`}
+                          title={isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
                         </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-500">
+                        <button
+                          onClick={() => shareProduct(product, 'native')}
+                          className="p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100"
+                          title="Share product"
+                        >
                           <Share2 className="h-5 w-5" />
                         </button>
-                        <button className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513]">
+                        <button
+                          onClick={() => {
+                            addToCart(product, 1);
+                            alert(`${product.name} added to cart!`);
+                          }}
+                          className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
+                        >
                           <ShoppingCart className="h-4 w-4 mr-1" />
                           Add to Cart
                         </button>

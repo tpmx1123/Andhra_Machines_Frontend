@@ -1,23 +1,38 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
 export default function Header() {
+  const { getCartCount } = useCart();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showProductsDropdown, setShowProductsDropdown] = useState(false);
   const [showBrandsDropdown, setShowBrandsDropdown] = useState(false);
-  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const [mobileBrandsOpen, setMobileBrandsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
-  const productsRef = useRef(null);
+  const navigate = useNavigate();
   const brandsRef = useRef(null);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setShowMobileMenu(false); // Close mobile menu if open
+    }
+    return false; // Prevent default form submission
+  };
+
+  const handleClearSearch = (e) => {
+    e.preventDefault();
+    setSearchQuery('');
+    if (location.pathname === '/search') {
+      navigate('/');
+    }
+  };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (productsRef.current && !productsRef.current.contains(event.target)) {
-        setShowProductsDropdown(false);
-      }
       if (brandsRef.current && !brandsRef.current.contains(event.target)) {
         setShowBrandsDropdown(false);
       }
@@ -31,7 +46,6 @@ export default function Header() {
   // Close mobile menu when clicking on a link
   const closeMobileMenu = () => {
     setShowMobileMenu(false);
-    setMobileProductsOpen(false);
     setMobileBrandsOpen(false);
   };
 
@@ -55,14 +69,6 @@ export default function Header() {
     { name: 'Shiela', path: '/brands/shiela' },
   ];
   
-  const productCategories = [
-    { name: 'Industrial Machines', path: '/products/industrial' },
-    { name: 'Domestic Machines', path: '/products/domestic' },
-    { name: 'Heavy Duty Machines', path: '/products/heavy-duty' },
-    { name: 'Embroidery Machines', path: '/products/embroidery' },
-    { name: 'Overlock Machines', path: '/products/overlock' },
-    { name: 'Accessories', path: '/products/accessories' },
-  ];
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -72,64 +78,28 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="max-w-7xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 sm:space-x-8">
-            <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
-              <img 
-                src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765255577/logo_sewing_td6tcf.png" 
-                alt="Murthy Sewing Machines" 
-                className="h-10 sm:h-14 w-auto"
-              />
-              <span className="hidden sm:block text-lg sm:text-xl font-bold text-[#c54513]">
-                Murthy Sewing Machines
-              </span>
-            </Link>
+      <nav className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+        <div className="flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            <img 
+              src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765255577/logo_sewing_td6tcf.png" 
+              alt="Murthy Sewing Machines" 
+              className="h-8 sm:h-10 lg:h-14 w-auto"
+            />
+            <span className="hidden sm:block text-base sm:text-lg lg:text-xl font-bold text-[#c54513]">
+              Murthy Sewing Machines
+            </span>
+          </Link>
+          
+          <div className="hidden lg:flex items-center space-x-6">
 
-            <div className="hidden lg:flex items-center space-x-6">
-              {navItems.map((item) => {
-                if (item.name === 'Products') {
-                  return (
-                    <div key={item.path} className="relative" ref={productsRef}>
-                      <button
-                        onClick={() => {
-                          setShowProductsDropdown(!showProductsDropdown);
-                          setShowBrandsDropdown(false);
-                        }}
-                        className={`flex items-center px-3 py-2 text-sm font-medium ${
-                          isActive(item.path) || location.pathname.startsWith('/products')
-                            ? 'text-[#c54513] border-b-2 border-[#c54513]'
-                            : 'text-gray-700 hover:text-[#c54513]'
-                        } transition-colors`}
-                      >
-                        {item.name}
-                        <ChevronDown className="ml-1 h-4 w-4" />
-                      </button>
-                      {showProductsDropdown && (
-                        <div className="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                          <div className="py-1">
-                            {productCategories.map((category) => (
-                              <Link
-                                key={category.path}
-                                to={category.path}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#c54513]"
-                                onClick={() => setShowProductsDropdown(false)}
-                              >
-                                {category.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                } else if (item.name === 'Brands') {
+            {navItems.map((item) => {
+                if (item.name === 'Brands') {
                   return (
                     <div key={item.path} className="relative" ref={brandsRef}>
                       <button
                         onClick={() => {
                           setShowBrandsDropdown(!showBrandsDropdown);
-                          setShowProductsDropdown(false);
                         }}
                         className={`flex items-center px-3 py-2 text-sm font-medium ${
                           isActive(item.path) || location.pathname.startsWith('/brands')
@@ -173,16 +143,93 @@ export default function Header() {
                   </Link>
                 );
               })}
+          </div>
+
+          {/* Desktop Search Bar */}
+          <div className="hidden lg:flex items-center space-x-2">
+            <div className="relative">
+              <form onSubmit={handleSearch} className="flex items-center relative" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  className="w-40 sm:w-48 pl-3 pr-8 py-1.5 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-[#c54513] focus:border-[#c54513]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="absolute right-10 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                <button 
+                  type="submit"
+                  className="bg-[#c54513] text-white p-1.5 rounded-r-md hover:bg-[#a43a10] transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </form>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <button className="text-gray-700 hover:text-[#c54513] transition-colors p-1 sm:p-0">
-              <User className="w-5 h-5 sm:w-5 sm:h-5" />
-            </button>
-            <button className="text-gray-700 hover:text-[#c54513] transition-colors p-1 sm:p-0">
-              <ShoppingCart className="w-5 h-5 sm:w-5 sm:h-5" />
-            </button>
+          {/* Mobile Search Bar - Always Visible */}
+          <div className="lg:hidden flex-1 min-w-0 mx-2">
+            <form onSubmit={handleSearch} className="flex items-center relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full pl-3 pr-20 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#c54513] focus:border-[#c54513]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="absolute right-10 text-gray-400 hover:text-gray-600 focus:outline-none"
+                >
+                  <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </button>
+              )}
+              <button 
+                type="submit"
+                className="absolute right-1 bg-[#c54513] text-white p-1.5 rounded hover:bg-[#a43a10] transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div className="flex items-center space-x-4 sm:space-x-6">
+            <Link 
+              to="/profile" 
+              className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/profile' ? 'text-[#c54513]' : ''}`}
+              title="My Account"
+            >
+              <User className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="sr-only">My Account</span>
+            </Link>
+            <Link 
+              to="/cart" 
+              className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/cart' ? 'text-[#c54513]' : ''}`}
+              title="Shopping Cart"
+            >
+              <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="sr-only">Shopping Cart</span>
+              {/* Cart item count badge */}
+              {getCartCount() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#c54513] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {getCartCount() > 99 ? '99+' : getCartCount()}
+                </span>
+              )}
+            </Link>
             <button
               className="lg:hidden text-gray-700 hover:text-[#c54513] transition-colors p-1 sm:p-0"
               onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -211,31 +258,17 @@ export default function Header() {
               
               <div className="border-t border-gray-100 my-1"></div>
               
-              <div className="px-3 py-2">
-                <button
-                  onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
-                  className="w-full flex items-center justify-between py-2 px-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-[#c54513]"
-                >
-                  <span>Products</span>
-                  <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${mobileProductsOpen ? 'transform rotate-180' : ''}`} />
-                </button>
-                <div className={`${mobileProductsOpen ? 'block' : 'hidden'} pl-4 mt-1 space-y-1`}>
-                  {productCategories.map((category) => (
-                    <Link
-                      key={category.path}
-                      to={category.path}
-                      className={`block py-2 px-2 rounded-md text-sm ${
-                        isActive(category.path)
-                          ? 'bg-gray-100 text-[#c54513]'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-[#c54513]'
-                      }`}
-                      onClick={closeMobileMenu}
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              <Link
+                to="/products"
+                className={`block px-3 py-3 rounded-md text-base font-medium ${
+                  isActive('/products') || location.pathname.startsWith('/products')
+                    ? 'bg-gray-100 text-[#c54513]'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
+                }`}
+                onClick={closeMobileMenu}
+              >
+                Products
+              </Link>
               
               <div className="border-t border-gray-100 my-1"></div>
               

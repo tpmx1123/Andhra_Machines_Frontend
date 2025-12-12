@@ -1,6 +1,11 @@
 import { ShoppingCart, Heart, Star } from 'lucide-react';
+import { useCart } from '../../contexts/CartContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
+import { Link } from 'react-router-dom';
 
 export default function ProductsSection() {
+  const { addToCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const products = [
     {
       id: 1,
@@ -60,8 +65,18 @@ export default function ProductsSection() {
                     {product.discount}% OFF
                   </span>
                 )}
-                <button className="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full transition-colors">
-                  <Heart size={20} className="text-gray-600" />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleFavorite(product);
+                  }}
+                  className={`absolute top-4 left-4 bg-white/80 hover:bg-white p-2 rounded-full transition-colors ${
+                    isFavorite(product.id) ? 'text-red-500' : 'text-gray-600'
+                  }`}
+                  title={isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Heart size={20} className={isFavorite(product.id) ? 'fill-current' : ''} />
                 </button>
               </div>
               <div className="p-6">
@@ -89,7 +104,16 @@ export default function ProductsSection() {
                       </span>
                     )}
                   </div>
-                  <button className="bg-[#c54513] text-white p-2 rounded-full hover:bg-[#a5380e] transition-colors">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      addToCart(product, 1);
+                      alert(`${product.name} added to cart!`);
+                    }}
+                    className="bg-[#c54513] text-white p-2 rounded-full hover:bg-[#a5380e] transition-colors"
+                    title="Add to cart"
+                  >
                     <ShoppingCart size={20} />
                   </button>
                 </div>
@@ -99,9 +123,12 @@ export default function ProductsSection() {
         </div>
 
         <div className="text-center mt-12">
-          <button className="bg-[#c54513] text-white font-semibold px-8 py-3 rounded-full hover:bg-[#a5380e] transition-colors">
+          <Link
+            to="/products"
+            className="inline-block bg-[#c54513] text-white font-semibold px-8 py-3 rounded-full hover:bg-[#a5380e] transition-colors"
+          >
             View All Products
-          </button>
+          </Link>
         </div>
       </div>
     </section>
