@@ -80,15 +80,21 @@ export default function Header() {
 
       <nav className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between gap-2">
-          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-10">
             <img
               src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765255577/logo_sewing_td6tcf.png"
-              alt="Murthy Sewing Machines"
-              className="h-12 sm:h-14 lg:h-16 w-auto"
+              alt="Andhra Machines Agencies"
+              className="h-14 sm:h-16 lg:h-18 w-auto object-contain"
+              style={{ display: 'block' }}
             />
-            <span className="hidden sm:block text-base sm:text-lg lg:text-xl font-bold text-[#c54513]">
-              Murthy Sewing Machines
-            </span>
+            <div className="hidden sm:block">
+              <span className="block text-base sm:text-lg lg:text-xl font-bold text-[#c54513]">
+                Andhra Machines Agencies
+              </span>
+              <span className="block text-xs sm:text-sm text-gray-600">
+                Stitching Trust Since 1982
+              </span>
+            </div>
           </Link>
 
           <div className="hidden lg:flex items-center space-x-6">
@@ -102,8 +108,8 @@ export default function Header() {
                         setShowBrandsDropdown(!showBrandsDropdown);
                       }}
                       className={`flex items-center px-3 py-2 text-sm font-medium ${isActive(item.path) || location.pathname.startsWith('/brands')
-                          ? 'text-[#c54513] border-b-2 border-[#c54513]'
-                          : 'text-gray-700 hover:text-[#c54513]'
+                        ? 'text-[#c54513] border-b-2 border-[#c54513]'
+                        : 'text-gray-700 hover:text-[#c54513]'
                         } transition-colors`}
                     >
                       {item.name}
@@ -133,8 +139,8 @@ export default function Header() {
                   key={item.path}
                   to={item.path}
                   className={`px-3 py-2 text-sm font-medium ${isActive(item.path)
-                      ? 'text-[#c54513] border-b-2 border-[#c54513]'
-                      : 'text-gray-700 hover:text-[#c54513]'
+                    ? 'text-[#c54513] border-b-2 border-[#c54513]'
+                    : 'text-gray-700 hover:text-[#c54513]'
                     } transition-colors`}
                 >
                   {item.name}
@@ -245,8 +251,8 @@ export default function Header() {
               <Link
                 to="/"
                 className={`block px-3 py-3 rounded-md text-base font-medium ${isActive('/')
-                    ? 'bg-gray-100 text-[#c54513]'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
+                  ? 'bg-gray-100 text-[#c54513]'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
                   }`}
                 onClick={() => setShowMobileMenu(false)}
               >
@@ -258,8 +264,8 @@ export default function Header() {
               <Link
                 to="/products"
                 className={`block px-3 py-3 rounded-md text-base font-medium ${isActive('/products') || location.pathname.startsWith('/products')
-                    ? 'bg-gray-100 text-[#c54513]'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
+                  ? 'bg-gray-100 text-[#c54513]'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
                   }`}
                 onClick={closeMobileMenu}
               >
@@ -283,8 +289,8 @@ export default function Header() {
                         key={brand.path}
                         to={brand.path}
                         className={`block py-2 px-2 rounded-md text-sm ${isActive(brand.path)
-                            ? 'bg-gray-100 text-[#c54513]'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-[#c54513]'
+                          ? 'bg-gray-100 text-[#c54513]'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-[#c54513]'
                           }`}
                         onClick={closeMobileMenu}
                       >
@@ -302,8 +308,8 @@ export default function Header() {
                   key={`mobile-${item.toLowerCase()}`}
                   to={`/${item.toLowerCase()}`}
                   className={`block px-3 py-3 rounded-md text-base font-medium ${isActive(`/${item.toLowerCase()}`)
-                      ? 'bg-gray-100 text-[#c54513]'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
+                    ? 'bg-gray-100 text-[#c54513]'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
                     }`}
                   onClick={() => setShowMobileMenu(false)}
                 >
