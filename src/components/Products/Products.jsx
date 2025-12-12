@@ -542,20 +542,20 @@ const Products = () => {
                     )}
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
                   </Link>
-                  <div className="flex-1 p-4 flex flex-col">
+                  <div className="flex-1 p-3 sm:p-4 flex flex-col">
                     <Link to={`/products/${product.id}`} className="group">
-                      <h3 className="text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors">
+                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
                         {product.name}
                       </h3>
                     </Link>
-                    <p className="text-sm text-gray-500">{product.brand}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">{product.brand}</p>
                     <div className="flex-1 flex flex-col justify-end">
                       <div className="flex items-center mt-2">
                         <div className="flex items-center">
                           {[0, 1, 2, 3, 4].map((rating) => (
                             <Star
                               key={rating}
-                              className={`h-4 w-4 ${
+                              className={`h-3 w-3 sm:h-4 sm:w-4 ${
                                 rating < Math.floor(product.rating)
                                   ? 'text-yellow-400'
                                   : 'text-gray-300'
@@ -564,32 +564,32 @@ const Products = () => {
                             />
                           ))}
                         </div>
-                        <p className="ml-2 text-sm text-gray-500">
+                        <p className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500">
                           {product.reviewCount} reviews
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center justify-between">
-                        <p className="text-base font-medium text-gray-900">
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <p className="text-sm sm:text-base font-medium text-gray-900 flex-shrink-0">
                           ₹{Math.round(product.price * 83).toLocaleString('en-IN')}
                           {product.originalPrice && (
-                            <span className="ml-2 text-sm text-gray-500 line-through">
+                            <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500 line-through">
                               ₹{Math.round(product.originalPrice * 83).toLocaleString('en-IN')}
                             </span>
                           )}
                         </p>
-                        <div className="flex space-x-2 relative z-10">
+                        <div className="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
                           <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               toggleFavorite(product);
                             }}
-                            className={`p-2 transition-colors rounded-full hover:bg-gray-100 ${
+                            className={`p-1.5 sm:p-2 transition-colors rounded-full hover:bg-gray-100 flex-shrink-0 ${
                               isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
                             }`}
                             title={isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
                           >
-                            <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} aria-hidden="true" />
+                            <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} aria-hidden="true" />
                           </button>
                           <button
                             onClick={(e) => {
@@ -598,10 +598,10 @@ const Products = () => {
                               addToCart(product, 1);
                               alert(`${product.name} added to cart!`);
                             }}
-                            className="p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100"
+                            className="p-1.5 sm:p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100 flex-shrink-0"
                             title="Add to cart"
                           >
-                            <ShoppingCart className="h-5 w-5" aria-hidden="true" />
+                            <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                           </button>
                         </div>
                       </div>

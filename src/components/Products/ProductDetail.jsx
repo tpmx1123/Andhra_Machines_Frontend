@@ -426,21 +426,21 @@ const ProductDetail = () => {
             </div>
 
             <div className="mb-6 pb-6 border-b border-gray-200">
-              <div className="flex flex-wrap items-center gap-3">
-                <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Quantity:</label>
-                <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex flex-nowrap items-center gap-2 sm:gap-3">
+                <label className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap hidden sm:inline">Quantity:</label>
+                <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden flex-shrink-0">
                   <button
                     type="button"
-                    className="h-12 w-12 flex items-center justify-center text-gray-700 hover:bg-gray-100 hover:text-[#c54513] text-xl font-semibold transition-colors"
+                    className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center text-gray-700 hover:bg-gray-100 hover:text-[#c54513] text-lg sm:text-xl font-semibold transition-colors"
                     onClick={() => handleQuantityChange(quantity - 1)}
                     aria-label="Decrease quantity"
                   >
                     -
                   </button>
-                  <span className="w-16 text-center font-semibold text-gray-900 text-lg">{quantity}</span>
+                  <span className="w-12 sm:w-16 text-center font-semibold text-gray-900 text-base sm:text-lg">{quantity}</span>
                   <button
                     type="button"
-                    className="h-12 w-12 flex items-center justify-center text-gray-700 hover:bg-gray-100 hover:text-[#c54513] text-xl font-semibold transition-colors"
+                    className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center text-gray-700 hover:bg-gray-100 hover:text-[#c54513] text-lg sm:text-xl font-semibold transition-colors"
                     onClick={() => handleQuantityChange(quantity + 1)}
                     aria-label="Increase quantity"
                   >
@@ -450,17 +450,17 @@ const ProductDetail = () => {
                 <button
                   type="button"
                   onClick={addToCart}
-                  className="flex-1 min-w-[140px] bg-[#c54513] border border-transparent rounded-lg py-3 px-4 sm:px-6 flex items-center justify-center text-sm sm:text-base font-semibold text-white hover:bg-[#a43a10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-all shadow-md hover:shadow-lg"
+                  className="flex-1 min-w-0 bg-[#c54513] border border-transparent rounded-lg py-2.5 sm:py-3 px-2 sm:px-4 flex items-center justify-center text-xs sm:text-sm md:text-base font-semibold text-white hover:bg-[#a43a10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-all shadow-md hover:shadow-lg"
                 >
-                  <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Add to cart</span>
+                  <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2 flex-shrink-0" />
+                  <span className="whitespace-nowrap text-xs sm:text-sm md:text-base">Add to cart</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleBuyNow}
-                  className="flex-1 min-w-[120px] bg-white border-2 border-[#c54513] rounded-lg py-3 px-4 sm:px-6 flex items-center justify-center text-sm sm:text-base font-semibold text-[#c54513] hover:bg-[#c54513] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-all shadow-md hover:shadow-lg whitespace-nowrap"
+                  className="flex-1 min-w-0 bg-white border-2 border-[#c54513] rounded-lg py-2.5 sm:py-3 px-2 sm:px-4 flex items-center justify-center text-xs sm:text-sm md:text-base font-semibold text-[#c54513] hover:bg-[#c54513] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-all shadow-md hover:shadow-lg whitespace-nowrap"
                 >
-                  <span>Buy Now</span>
+                  <span className="text-xs sm:text-sm md:text-base">Buy Now</span>
                 </button>
               </div>
             </div>
@@ -826,7 +826,8 @@ const ProductDetail = () => {
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{
-                transform: `translateX(-${currentSlide * (100 / productsPerView)}%)`
+                transform: `translateX(calc(-${currentSlide * (100 / productsPerView)}% - ${currentSlide * 1}rem))`,
+                gap: '1rem'
               }}
             >
               {relatedProducts.map((product) => (
@@ -835,8 +836,7 @@ const ProductDetail = () => {
                   to={`/products/${product.id}`}
                   className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex-shrink-0"
                   style={{
-                    width: `calc(${100 / productsPerView}% - ${(productsPerView - 1) * 24 / productsPerView}px)`,
-                    marginRight: `${24 / productsPerView}px`
+                    width: `calc((100% - ${Math.max(0, productsPerView - 1) * 1}rem) / ${productsPerView})`
                   }}
                 >
                   <div className="aspect-square bg-gray-100 overflow-hidden">
