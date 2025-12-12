@@ -285,37 +285,51 @@ const BrandDetail = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-48 bg-gray-100 overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/300x300?text=Product+Image';
-                      }}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">{product.name}</h3>
-                    <div className="flex items-center mb-2">
-                      <div className="flex text-amber-400">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${star <= Math.floor(product.rating) ? 'fill-current' : ''}`}
-                          />
-                        ))}
+              {products.map((product) => {
+                const convertToINR = (usdPrice) => Math.round(usdPrice * 83);
+                return (
+                  <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow relative group">
+                    <Link 
+                      to={`/products/${product.id}`}
+                      className="block"
+                    >
+                      <div className="h-48 bg-gray-100 overflow-hidden">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/300x300?text=Product+Image';
+                          }}
+                        />
                       </div>
-                      <span className="ml-2 text-sm text-gray-500">{product.rating}</span>
-                    </div>
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-lg font-bold text-gray-900">${product.price.toFixed(2)}</span>
+                      <div className="p-4">
+                        <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-[#c54513] transition-colors">{product.name}</h3>
+                        <div className="flex items-center mb-2">
+                          <div className="flex text-amber-400">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`h-4 w-4 ${star <= Math.floor(product.rating) ? 'fill-current' : ''}`}
+                              />
+                            ))}
+                          </div>
+                          <span className="ml-2 text-sm text-gray-500">{product.rating}</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-4">
+                          <span className="text-lg font-bold text-gray-900">₹{convertToINR(product.price).toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+                    </Link>
+                    <div className="px-4 pb-4 flex items-center justify-between gap-2">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => toggleFavorite(product)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(product);
+                          }}
                           className={`p-2 transition-colors rounded-full hover:bg-gray-100 ${
                             isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
                           }`}
@@ -324,27 +338,33 @@ const BrandDetail = () => {
                           <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
                         </button>
                         <button
-                          onClick={() => shareProduct(product, 'native')}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            shareProduct(product, 'native');
+                          }}
                           className="p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100"
                           title="Share product"
                         >
                           <Share2 className="h-5 w-5" />
                         </button>
-                        <button
-                          onClick={() => {
-                            addToCart(product, 1);
-                            alert(`${product.name} added to cart!`);
-                          }}
-                          className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-1" />
-                          Add to Cart
-                        </button>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addToCart(product, 1);
+                          alert(`${product.name} added to cart!`);
+                        }}
+                        className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-1" />
+                        Add to Cart
+                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
