@@ -59,7 +59,7 @@ export default function Header() {
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
-  
+
   const brandItems = [
     { name: 'Usha', path: '/brands/usha' },
     { name: 'Singer', path: '/brands/singer' },
@@ -68,7 +68,7 @@ export default function Header() {
     { name: 'Brother', path: '/brands/brother' },
     { name: 'Shiela', path: '/brands/shiela' },
   ];
-  
+
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -81,68 +81,66 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-            <img 
-              src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765255577/logo_sewing_td6tcf.png" 
-              alt="Murthy Sewing Machines" 
-              className="h-8 sm:h-10 lg:h-14 w-auto"
+            <img
+              src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765255577/logo_sewing_td6tcf.png"
+              alt="Murthy Sewing Machines"
+              className="h-12 sm:h-14 lg:h-16 w-auto"
             />
             <span className="hidden sm:block text-base sm:text-lg lg:text-xl font-bold text-[#c54513]">
               Murthy Sewing Machines
             </span>
           </Link>
-          
+
           <div className="hidden lg:flex items-center space-x-6">
 
             {navItems.map((item) => {
-                if (item.name === 'Brands') {
-                  return (
-                    <div key={item.path} className="relative" ref={brandsRef}>
-                      <button
-                        onClick={() => {
-                          setShowBrandsDropdown(!showBrandsDropdown);
-                        }}
-                        className={`flex items-center px-3 py-2 text-sm font-medium ${
-                          isActive(item.path) || location.pathname.startsWith('/brands')
-                            ? 'text-[#c54513] border-b-2 border-[#c54513]'
-                            : 'text-gray-700 hover:text-[#c54513]'
-                        } transition-colors`}
-                      >
-                        {item.name}
-                        <ChevronDown className="ml-1 h-4 w-4" />
-                      </button>
-                      {showBrandsDropdown && (
-                        <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                          <div className="py-1">
-                            {brandItems.map((brand) => (
-                              <Link
-                                key={brand.path}
-                                to={brand.path}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#c54513]"
-                                onClick={() => setShowBrandsDropdown(false)}
-                              >
-                                {brand.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
+              if (item.name === 'Brands') {
                 return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`px-3 py-2 text-sm font-medium ${
-                      isActive(item.path)
-                        ? 'text-[#c54513] border-b-2 border-[#c54513]'
-                        : 'text-gray-700 hover:text-[#c54513]'
-                    } transition-colors`}
-                  >
-                    {item.name}
-                  </Link>
+                  <div key={item.path} className="relative" ref={brandsRef}>
+                    <button
+                      onClick={() => {
+                        setShowBrandsDropdown(!showBrandsDropdown);
+                      }}
+                      className={`flex items-center px-3 py-2 text-sm font-medium ${isActive(item.path) || location.pathname.startsWith('/brands')
+                          ? 'text-[#c54513] border-b-2 border-[#c54513]'
+                          : 'text-gray-700 hover:text-[#c54513]'
+                        } transition-colors`}
+                    >
+                      {item.name}
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </button>
+                    {showBrandsDropdown && (
+                      <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                        <div className="py-1">
+                          {brandItems.map((brand) => (
+                            <Link
+                              key={brand.path}
+                              to={brand.path}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#c54513]"
+                              onClick={() => setShowBrandsDropdown(false)}
+                            >
+                              {brand.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
-              })}
+              }
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-3 py-2 text-sm font-medium ${isActive(item.path)
+                      ? 'text-[#c54513] border-b-2 border-[#c54513]'
+                      : 'text-gray-700 hover:text-[#c54513]'
+                    } transition-colors`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Desktop Search Bar */}
@@ -165,7 +163,7 @@ export default function Header() {
                     <X className="h-4 w-4" />
                   </button>
                 )}
-                <button 
+                <button
                   type="submit"
                   className="bg-[#c54513] text-white p-1.5 rounded-r-md hover:bg-[#a43a10] transition-colors"
                 >
@@ -196,7 +194,7 @@ export default function Header() {
                   <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
               )}
-              <button 
+              <button
                 type="submit"
                 className="absolute right-1 bg-[#c54513] text-white p-1.5 rounded hover:bg-[#a43a10] transition-colors"
               >
@@ -208,16 +206,16 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-4 sm:space-x-6">
-            <Link 
-              to="/profile" 
+            <Link
+              to="/profile"
               className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/profile' ? 'text-[#c54513]' : ''}`}
               title="My Account"
             >
               <User className="w-5 h-5 sm:w-6 sm:h-6" />
               <span className="sr-only">My Account</span>
             </Link>
-            <Link 
-              to="/cart" 
+            <Link
+              to="/cart"
               className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/cart' ? 'text-[#c54513]' : ''}`}
               title="Shopping Cart"
             >
@@ -246,32 +244,30 @@ export default function Header() {
             <div className="space-y-0.5 py-2">
               <Link
                 to="/"
-                className={`block px-3 py-3 rounded-md text-base font-medium ${
-                  isActive('/')
+                className={`block px-3 py-3 rounded-md text-base font-medium ${isActive('/')
                     ? 'bg-gray-100 text-[#c54513]'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
-                }`}
+                  }`}
                 onClick={() => setShowMobileMenu(false)}
               >
                 Home
               </Link>
-              
+
               <div className="border-t border-gray-100 my-1"></div>
-              
+
               <Link
                 to="/products"
-                className={`block px-3 py-3 rounded-md text-base font-medium ${
-                  isActive('/products') || location.pathname.startsWith('/products')
+                className={`block px-3 py-3 rounded-md text-base font-medium ${isActive('/products') || location.pathname.startsWith('/products')
                     ? 'bg-gray-100 text-[#c54513]'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
-                }`}
+                  }`}
                 onClick={closeMobileMenu}
               >
                 Products
               </Link>
-              
+
               <div className="border-t border-gray-100 my-1"></div>
-              
+
               <div className="px-3 py-2">
                 <button
                   onClick={() => setMobileBrandsOpen(!mobileBrandsOpen)}
@@ -286,11 +282,10 @@ export default function Header() {
                       <Link
                         key={brand.path}
                         to={brand.path}
-                        className={`block py-2 px-2 rounded-md text-sm ${
-                          isActive(brand.path)
+                        className={`block py-2 px-2 rounded-md text-sm ${isActive(brand.path)
                             ? 'bg-gray-100 text-[#c54513]'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-[#c54513]'
-                        }`}
+                          }`}
                         onClick={closeMobileMenu}
                       >
                         {brand.name}
@@ -299,18 +294,17 @@ export default function Header() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="border-t border-gray-100 my-1"></div>
-              
+
               {['Blog', 'About', 'Contact'].map((item) => (
                 <Link
                   key={`mobile-${item.toLowerCase()}`}
                   to={`/${item.toLowerCase()}`}
-                  className={`block px-3 py-3 rounded-md text-base font-medium ${
-                    isActive(`/${item.toLowerCase()}`)
+                  className={`block px-3 py-3 rounded-md text-base font-medium ${isActive(`/${item.toLowerCase()}`)
                       ? 'bg-gray-100 text-[#c54513]'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-[#c54513]'
-                  }`}
+                    }`}
                   onClick={() => setShowMobileMenu(false)}
                 >
                   {item}
