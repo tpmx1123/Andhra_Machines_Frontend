@@ -1,40 +1,78 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import products from '../data/products';
+import { api } from '../services/api';
 
 export default function SearchResults() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [allProducts, setAllProducts] = useState([]);
   const location = useLocation();
   
+  // Fetch all products from database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const products = await api.getAllProducts();
+        setAllProducts(products || []);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setAllProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
+  
+  // Filter products based on search query
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const query = searchParams.get('q')?.toLowerCase() || '';
     
-    // Simulate API call with timeout
-    const timer = setTimeout(() => {
-      if (!query.trim()) {
-        setFilteredProducts([]);
-      } else {
-        const results = products.filter(product => 
-          product.name.toLowerCase().includes(query) ||
-          product.brand.toLowerCase().includes(query) ||
-          product.description.toLowerCase().includes(query)
-        );
-        setFilteredProducts(results);
-      }
-      setLoading(false);
-    }, 500);
+    if (!query.trim()) {
+      setFilteredProducts([]);
+      return;
+    }
     
-    return () => clearTimeout(timer);
-  }, [location.search]);
+    // Filter products from database
+    const results = allProducts
+      .filter(product => product.isActive !== false)
+      .filter(product => {
+        const title = (product.title || '').toLowerCase();
+        const brandName = (product.brandName || '').toLowerCase();
+        const description = (product.description || '').toLowerCase();
+        
+        return title.includes(query) ||
+               brandName.includes(query) ||
+               description.includes(query);
+      })
+      .map(product => ({
+        id: product.id,
+        name: product.title,
+        brand: product.brandName || 'Unknown',
+        description: product.description || '',
+        price: parseFloat(product.price) || 0,
+        originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+        image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+        rating: product.rating ? parseFloat(product.rating) : 0,
+        reviewCount: product.reviewCount || 0,
+        isNew: product.isNew || false,
+        isOnSale: product.isOnSale || false,
+        inStock: product.inStock !== false
+      }));
+    
+    setFilteredProducts(results);
+  }, [location.search, allProducts]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c54513] mx-auto mb-4"></div>
             <h2 className="text-3xl font-extrabold text-gray-900">Searching for products...</h2>
           </div>
         </div>

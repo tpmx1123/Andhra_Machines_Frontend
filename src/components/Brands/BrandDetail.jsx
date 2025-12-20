@@ -3,23 +3,41 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, ShoppingCart, Heart, Share2, ChevronRight } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
+import { useToast } from '../../contexts/ToastContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { shareProduct } from '../../utils/share';
+import { api } from '../../services/api';
 
 const BrandDetail = () => {
   const { brandId } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { showToast } = useToast();
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
+  const [brand, setBrand] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data - in a real app, this would be an API call
+  // Brand logos from BrandsSection.jsx
+  const brandLogos = {
+    usha: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765961705/page1-800px-USHA_Logo.pdf_aaotn8.jpg',
+    singer: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962024/Singer-Logo_tgjv61.png',
+    jack: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962082/images_uwvfcp.jpg',
+    shiela: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765965701/c0ba20498b688b78d1aa85683be2eb55_zodny4.jpg',
+    juki: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962246/212201_pic_20250106180407_tlwac9.webp',
+    brother: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962370/Screenshot_2025-12-17_143538_v845iu.png',
+    
+    guru: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765964234/images_yfisez.png',
+  };
+
+  // Brand metadata (can be moved to database later)
   const brands = {
     usha: {
       id: 'usha',
       name: 'Usha',
       description: 'Usha International Ltd. is an Indian consumer durable company headquartered in New Delhi. The company is a part of the $4.5 billion CK Birla Group. Usha is one of the leading manufacturers of sewing machines in India with a market share of over 25%.',
-      logo: 'https://www.ushainternational.com/images/logo.png',
+      logo: brandLogos.usha,
       banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
       founded: 1934,
       headquarters: 'New Delhi, India',
@@ -29,7 +47,7 @@ const BrandDetail = () => {
       id: 'singer',
       name: 'Singer',
       description: 'The Singer Corporation is an American manufacturer of sewing machines, first established as I. M. Singer & Co. in 1851 by Isaac Merritt Singer with New York lawyer Edward C. Clark.',
-      logo: 'https://www.singer.com/sites/all/themes/singer/logo.png',
+      logo: brandLogos.singer,
       banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
       founded: 1851,
       headquarters: 'La Vergne, Tennessee, U.S.',
@@ -39,7 +57,7 @@ const BrandDetail = () => {
       id: 'juki',
       name: 'JUKI',
       description: 'JUKI Corporation is a Japanese manufacturer of industrial sewing machines, household sewing machines, and related equipment. The company is one of the largest manufacturers of industrial sewing machines in the world.',
-      logo: 'https://www.juki.co.jp/english/company/logo/img/logo.png',
+      logo: brandLogos.juki,
       banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
       founded: 1938,
       headquarters: 'Tama, Tokyo, Japan',
@@ -49,84 +67,82 @@ const BrandDetail = () => {
       id: 'brother',
       name: 'Brother',
       description: 'Brother Industries, Ltd. is a Japanese multinational electronics and electrical equipment company headquartered in Nagoya, Japan. Its main products include printers, multifunction printers, desktop computers, consumer and industrial sewing machines, and machine tools.',
-      logo: 'https://www.brother-usa.com/-/media/brother/images/logo.png',
+      logo: brandLogos.brother,
       banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
       founded: 1908,
       headquarters: 'Nagoya, Japan',
       website: 'https://www.brother.com',
     },
-    shiela: {
-      id: 'shiela',
-      name: 'Shiela',
-      description: 'Shiela is a well-known Indian brand of sewing machines, offering a range of models for household use. Known for its durability and affordability, Shiela sewing machines are popular in the Indian market.',
-      logo: 'https://5.imimg.com/data5/SELLER/Default/2022/3/GL/OD/HS/136959241/sheila-sewing-machine-logo.png',
-      banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
-      founded: 1970,
-      headquarters: 'Mumbai, India',
-      website: '#',
-    },
+    
     jack: {
       id: 'jack',
       name: 'Jack',
       description: 'Zhejiang Jack Sewing Machine Co., Ltd. is a Chinese manufacturer of industrial sewing machines. The company is one of the largest industrial sewing machine manufacturers in the world, with products sold in over 130 countries.',
-      logo: 'https://www.jacksew.com/upload/logo/20210713/20210713090003_904.png',
+      logo: brandLogos.jack,
       banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
       founded: 1995,
       headquarters: 'Taizhou, Zhejiang, China',
       website: 'https://www.jacksew.com',
     },
-  };
-
-  // Mock product data for each brand
-  const brandProducts = {
-    usha: [
-      { id: 'usha-excel', name: 'Usha Excel Automatic', price: 249.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.5 },
-      { id: 'usha-janome', name: 'Usha Janome Dream Stitch', price: 199.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.3 },
-      { id: 'usha-silai', name: 'Usha Silai Machine', price: 179.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.0 },
-    ],
-    singer: [
-      { id: 'singer-traditional', name: 'Singer Traditional', price: 219.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.4 },
-      { id: 'singer-simple', name: 'Singer Simple', price: 189.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.2 },
-      { id: 'singer-heavy-duty', name: 'Singer Heavy Duty', price: 299.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.8 },
-    ],
-    brother: [
-      { id: 'brother-innovis', name: 'Brother Innov-is', price: 399.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.7 },
-      { id: 'brother-se600', name: 'Brother SE600', price: 499.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.9 },
-      { id: 'brother-cs6000i', name: 'Brother CS6000i', price: 429.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.8 },
-    ],
-    juki: [
-      { id: 'juki-tl2010q', name: 'Juki TL-2010Q', price: 1299.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.9 },
-      { id: 'juki-hzl-f600', name: 'Juki HZL-F600', price: 1099.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.8 },
-      { id: 'juki-mo644d', name: 'Juki MO-644D', price: 1199.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.7 },
-    ],
-    shiela: [
-      { id: 'shiela-deluxe', name: 'Shiela Deluxe', price: 149.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.0 },
-      { id: 'shiela-premium', name: 'Shiela Premium', price: 199.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.2 },
-      { id: 'shiela-super', name: 'Shiela Super', price: 179.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.1 },
-    ],
-    jack: [
-      { id: 'jack-f4', name: 'Jack F4', price: 899.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.6 },
-      { id: 'jack-a4', name: 'Jack A4', price: 1299.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.7 },
-      { id: 'jack-f5', name: 'Jack F5', price: 1499.99, image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg', rating: 4.8 },
-    ],
+    shiela: {
+      id: 'shiela',
+      name: 'Shiela',
+      description: 'Shiela is a trusted Indian brand offering durable and affordable sewing machines for home tailoring, small businesses, and daily sewing needs. Known for ease of use, strong build quality, and reliable performance.',
+      logo: brandLogos.shiela,
+      banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765430247/usha_ban_fzzvty.png',
+      founded: 1985,
+      headquarters: 'India',
+      website: 'https://www.shielasewingmachine.com',
+    },
+    guru: {
+      id: 'guru',
+      name: 'Guru',
+      description: 'Guru Sewing Machines is a trusted Indian brand offering durable and affordable sewing machines for home tailoring, small businesses, and daily sewing needs. Known for ease of use, strong build quality, and reliable performance.',
+      logo: brandLogos.guru,
+      banner: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765964234/images_yfisez.png',
+      founded: 1985,
+      headquarters: 'India',
+      website: 'https://www.gurusewingmachine.com',
+    },
+    
   };
 
   useEffect(() => {
-    // Simulate API call
-    const timer = setTimeout(() => {
-      const brand = brands[brandId];
-      if (!brand) {
-        navigate('/brands');
-        return;
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const brandData = brands[brandId];
+        if (!brandData) {
+          navigate('/brands');
+          return;
+        }
+        setBrand(brandData);
+        
+        // Fetch all products and filter by brand name
+        const allProducts = await api.getAllProducts();
+        const brandProducts = allProducts
+          .filter(p => p.brandName && p.brandName.toLowerCase() === brandData.name.toLowerCase() && p.isActive !== false)
+          .map(product => ({
+            id: product.id,
+            name: product.title,
+            brandSlug: product.brandSlug || product.id.toString(),
+            price: parseFloat(product.price) || 0,
+            originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+            rating: product.rating ? parseFloat(product.rating) : 0,
+            image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+            inStock: product.inStock !== false
+          }));
+        setProducts(brandProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
       }
-      setProducts(brandProducts[brandId] || []);
-      setIsLoading(false);
-    }, 500);
+    };
 
-    return () => clearTimeout(timer);
+    fetchProducts();
   }, [brandId, navigate]);
-
-  const brand = brands[brandId];
   
   if (!brand) return null;
 
@@ -158,17 +174,7 @@ const BrandDetail = () => {
             e.target.src = 'https://via.placeholder.com/1920x300?text=' + brand.name;
           }}
         />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <img
-            src={brand.logo}
-            alt={`${brand.name} logo`}
-            className="h-24 object-contain"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = 'https://via.placeholder.com/200x80?text=' + brand.name;
-            }}
-          />
-        </div>
+        
       </div>
 
       {/* Brand Info */}
@@ -281,7 +287,6 @@ const BrandDetail = () => {
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => {
-                const convertToINR = (usdPrice) => Math.round(usdPrice * 83);
                 return (
                   <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow relative group">
                     <Link 
@@ -306,14 +311,22 @@ const BrandDetail = () => {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
-                                className={`h-4 w-4 ${star <= Math.floor(product.rating) ? 'fill-current' : ''}`}
+                                fill={star <= Math.floor(product.rating) ? 'currentColor' : 'none'}
+                                className="h-4 w-4"
                               />
                             ))}
                           </div>
                           <span className="ml-2 text-sm text-gray-500">{product.rating}</span>
                         </div>
                         <div className="flex items-center justify-between mt-4">
-                          <span className="text-lg font-bold text-gray-900">₹{convertToINR(product.price).toLocaleString('en-IN')}</span>
+                          <div>
+                            <span className="text-lg font-bold text-gray-900">₹{product.price.toLocaleString('en-IN')}</span>
+                            {product.originalPrice && product.originalPrice > product.price && (
+                              <span className="ml-2 text-sm text-gray-500 line-through">
+                                ₹{product.originalPrice.toLocaleString('en-IN')}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -344,18 +357,53 @@ const BrandDetail = () => {
                           <Share2 className="h-5 w-5" />
                         </button>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          addToCart(product, 1);
-                          alert(`${product.name} added to cart!`);
-                        }}
-                        className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-1" />
-                        Add to Cart
-                      </button>
+                      {product.inStock ? (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            if (!user) {
+                              showToast('Please login to add items to cart', 'error');
+                              navigate('/login');
+                              return;
+                            }
+                            
+                            const cartProduct = {
+                              id: product.id,
+                              name: product.name,
+                              brand: brand?.name || 'Unknown',
+                              price: product.price,
+                              originalPrice: product.originalPrice || product.price,
+                              image: product.image,
+                              brandSlug: product.brandSlug,
+                              inStock: product.inStock
+                            };
+                            
+                            // Check if product is already in cart
+                            const existingItem = cartItems.find(item => item.id === product.id);
+                            if (existingItem) {
+                              // Update quantity instead of adding again
+                              updateQuantity(product.id, existingItem.quantity + 1);
+                              showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
+                            } else {
+                              addToCart(cartProduct, 1);
+                              showToast(`${product.name} added to cart!`, 'success');
+                            }
+                          }}
+                          className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          Add to Cart
+                        </button>
+                      ) : (
+                        <button
+                          disabled
+                          className="flex items-center px-3 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-md cursor-not-allowed"
+                        >
+                          Out of Stock
+                        </button>
+                      )}
                     </div>
                   </div>
                 );

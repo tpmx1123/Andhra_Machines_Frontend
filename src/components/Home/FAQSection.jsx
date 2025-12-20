@@ -13,8 +13,7 @@ export default function FAQSection() {
     { id: 'warranty', name: 'Warranty' },
     { id: 'delivery', name: 'Delivery' },
     { id: 'services', name: 'Services' },
-    { id: 'payments', name: 'Payments' },
-    { id: 'training', name: 'Training' }
+    { id: 'payments', name: 'Payments' }
   ];
 
   const faqs = [
@@ -50,7 +49,7 @@ export default function FAQSection() {
     },
     {
       question: 'What is your return policy?',
-      answer: 'We offer a 7-day return policy for damaged products with original packaging. Please contact our customer support within 7 days of delivery to initiate a return. Some exclusions may apply.',
+      answer: 'We offer a 7-day return policy for damaged products with original packaging. Please contact our customer support within 7 days of delivery to Initiate Replacement. Some exclusions may apply.',
       category: 'services'
     }
   ];

@@ -4,39 +4,39 @@ export default function BrandsSection() {
   const brands = [
     {
       name: 'Usha',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/USHA_Logo.pdf/page1-800px-USHA_Logo.pdf.jpg',
+      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765961705/page1-800px-USHA_Logo.pdf_aaotn8.jpg',
       description: 'Pioneering sewing technology since 1934',
       slug: 'usha'
     },
     {
       name: 'Singer',
-      logo: 'data:image/png;base64,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',
+      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962024/Singer-Logo_tgjv61.png',
       description: 'The original sewing machine company',
       slug: 'singer'
     },
     {
       name: 'Jack',
-      logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfg080VwnUnpyNq9fBhay40SYMxDpaWxWzCw&s',
+      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962082/images_uwvfcp.jpg',
       description: 'Industrial strength performance',
       slug: 'jack'
     },
     {
       name: 'JUKI',
-      logo: 'data:image/jpeg;base64,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',
+      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962246/212201_pic_20250106180407_tlwac9.webp',
       description: 'Precision engineering from Japan',
       slug: 'juki'
     },
     {
       name: 'Brother',
-      logo: 'data:image/png;base64,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',
+      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962370/Screenshot_2025-12-17_143538_v845iu.png',
       description: 'Innovative sewing solutions',
       slug: 'brother'
     },
     {
-      name: 'Janome',
-      logo: 'data:image/png;base64,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',
-      description: 'Quality home sewing machines',
-      slug: 'janome'
+      name: 'Guru',
+      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765964234/images_yfisez.png',
+      description: 'Reliable, affordable sewing machines for everyday use',
+      slug: 'guru'
     },
   ];
 
@@ -56,34 +56,54 @@ export default function BrandsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 px-4">
-          {brands.map((brand) => (
-            <Link 
-              to={`/brands/${brand.slug}`}
-              key={brand.name}
-              className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-[#c54513]/20"
-            >
-              <div className="p-6 flex flex-col items-center justify-center h-full">
-                <div className="w-full h-16 flex items-center justify-center mb-4">
-                  <img 
-                    src={brand.logo} 
-                    alt={`${brand.name} logo`}
-                    className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/150x60?text=' + brand.name;
-                    }}
-                  />
+        <div className="overflow-hidden px-4">
+          <div className="flex animate-scroll-slow gap-6">
+            {/* Duplicate brands for seamless loop */}
+            {[...brands, ...brands].map((brand, index) => (
+              <Link 
+                to={`/brands/${brand.slug}`}
+                key={`${brand.name}-${index}`}
+                className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-[#c54513]/20 flex-shrink-0 w-[280px]"
+              >
+                <div className="p-6 flex flex-col items-center justify-center h-full">
+                  <div className="w-full h-16 flex items-center justify-center mb-4">
+                    <img 
+                      src={brand.logo} 
+                      alt={`${brand.name} logo`}
+                      className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/150x60?text=' + brand.name;
+                      }}
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{brand.name}</h3>
+                  <p className="text-sm text-gray-500 text-center group-hover:text-[#c54513] transition-colors">
+                    {brand.description}
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">{brand.name}</h3>
-                <p className="text-sm text-gray-500 text-center group-hover:text-[#c54513] transition-colors">
-                  {brand.description}
-                </p>
-              </div>
-              <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#c54513]/30 rounded-xl pointer-events-none transition-all duration-300"></div>
-            </Link>
-          ))}
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#c54513]/30 rounded-xl pointer-events-none transition-all duration-300"></div>
+              </Link>
+            ))}
+          </div>
         </div>
+        
+        <style>{`
+          @keyframes scroll-slow {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          .animate-scroll-slow {
+            animation: scroll-slow 60s linear infinite;
+          }
+          .animate-scroll-slow:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
 
         <div className="mt-12 text-center">
           <Link 

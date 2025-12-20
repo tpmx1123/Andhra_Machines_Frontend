@@ -1,9 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Check, Award, Lightbulb, Hand,Webhook, Handshake } from "lucide-react";
+import SEO from "../SEO";
 
 export default function About() {
   return (
+    <>
+      <SEO
+        title="About Us - Andhra Machines Agencies | Trusted Sewing Machine Dealer Since 1982"
+        description="Learn about Andhra Machines Agencies - your trusted partner for premium sewing machines since 1982. Four decades of excellence in Rajahmundry, Andhra Pradesh. Expert service, genuine products, and customer satisfaction."
+        keywords="Andhra Machines Agencies about, sewing machine dealer Rajahmundry, trusted sewing machine store, sewing machine service since 1982, Andhra Pradesh sewing machines"
+      />
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#eef2f7] py-10 sm:py-14 px-3 sm:px-4 md:px-6 lg:px-8">
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto text-center mb-16">
@@ -152,5 +159,6 @@ export default function About() {
         </div>
       </section>
     </div>
+    </>
   );
 }

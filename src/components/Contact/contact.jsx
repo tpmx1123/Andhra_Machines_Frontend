@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Instagram, Send } from "lucide-react";
+import { api } from "../../services/api";
+import { useToast } from "../../contexts/ToastContext";
+import SEO from "../SEO";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -9,8 +11,9 @@ export default function Contact() {
     phone: '',
     message: ''
   });
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState({ success: null, message: '' });
+  const { showToast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,42 +21,179 @@ export default function Contact() {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
-  // Handle success message from URL parameter
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
-      // Add small delay to ensure smooth transition after page load
-      const timer = setTimeout(() => {
-        setSubmitStatus({
-          success: true,
-          message: 'Thank you for your message! We will get back to you soon.'
-        });
-        // Clear the URL parameters without triggering scroll
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }, 300);
-      
-      return () => clearTimeout(timer);
+  // Strong email validation
+  const validateEmail = (email) => {
+    if (!email) return 'Email is required';
+    
+    const emailPattern = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$/;
+    
+    if (!emailPattern.test(email)) {
+      return 'Invalid email format. Please enter a valid email address.';
     }
-  }, []);
+    
+    if (email.startsWith('.') || email.endsWith('.')) {
+      return 'Email cannot start or end with a dot.';
+    }
+    
+    if (email.includes('..')) {
+      return 'Email cannot contain consecutive dots.';
+    }
+    
+    const atIndex = email.indexOf('@');
+    if (atIndex <= 0 || atIndex >= email.length - 1) {
+      return 'Invalid email format.';
+    }
+    
+    const domain = email.substring(atIndex + 1);
+    if (!domain.includes('.')) {
+      return 'Email domain must contain a dot.';
+    }
+    
+    const domainParts = domain.split('.');
+    if (domainParts.length < 2) {
+      return 'Invalid email domain.';
+    }
+    
+    const extension = domainParts[domainParts.length - 1];
+    if (extension.length < 2 || extension.length > 7) {
+      return 'Invalid email domain extension.';
+    }
+    
+    return '';
+  };
 
-  const handleSubmit = (e) => {
+  // Strong phone validation (Indian phone numbers)
+  const validatePhone = (phone) => {
+    if (!phone) return 'Phone number is required';
+    
+    // Remove spaces and dashes
+    const cleaned = phone.replace(/[\s-]/g, '');
+    
+    // Pattern: 10 digits starting with 6-9, or +91/91/0 followed by 10 digits
+    const phonePattern = /^(\+91|91|0)?[6-9]\d{9}$/;
+    
+    if (!phonePattern.test(cleaned)) {
+      return 'Invalid phone number. Please enter a valid 10-digit Indian phone number.';
+    }
+    
+    // Extract just digits
+    const digitsOnly = cleaned.replace(/[^\d]/g, '');
+    
+    // Must be 10-13 digits total
+    if (digitsOnly.length < 10 || digitsOnly.length > 13) {
+      return 'Phone number must be 10 digits.';
+    }
+    
+    // If starts with +91 or 91, check remaining digits
+    if (cleaned.startsWith('+91') || cleaned.startsWith('91')) {
+      const remaining = digitsOnly.substring(2);
+      if (remaining.length !== 10 || remaining.charAt(0) < '6' || remaining.charAt(0) > '9') {
+        return 'Invalid phone number format.';
+      }
+    } else if (digitsOnly.startsWith('0') && digitsOnly.length === 11) {
+      const remaining = digitsOnly.substring(1);
+      if (remaining.length !== 10 || remaining.charAt(0) < '6' || remaining.charAt(0) > '9') {
+        return 'Invalid phone number format.';
+      }
+    } else if (digitsOnly.length === 10) {
+      if (digitsOnly.charAt(0) < '6' || digitsOnly.charAt(0) > '9') {
+        return 'Phone number must start with 6, 7, 8, or 9.';
+      }
+    } else {
+      return 'Invalid phone number format.';
+    }
+    
+    return '';
+  };
+
+  const countWords = (text) => {
+    if (!text || text.trim().length === 0) return 0;
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.name || formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters long.';
+    }
+    
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
+    }
+    
+    const phoneError = validatePhone(formData.phone);
+    if (phoneError) {
+      newErrors.phone = phoneError;
+    }
+    
+    if (!formData.message || formData.message.trim().length === 0) {
+      newErrors.message = 'Message is required.';
+    } else {
+      const wordCount = countWords(formData.message);
+      if (wordCount > 500) {
+        newErrors.message = `Message must not exceed 500 words. Current word count: ${wordCount}`;
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      showToast('Please fix the errors in the form', 'error');
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    // The form will be submitted to FormSubmit
-    setSubmitStatus({
-      success: true,
-      message: 'Sending your message...'
-    });
-    
-    // The actual form submission is handled by the browser
-    e.target.submit();
+    try {
+      await api.submitContactForm({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.replace(/[\s-]/g, ''),
+        message: formData.message.trim()
+      });
+      
+      showToast('Thank you for contacting us! We will get back to you soon.', 'success');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+      setErrors({});
+    } catch (err) {
+      console.error('Contact form error:', err);
+      showToast(err.message || 'Failed to send message. Please try again later.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#eef2f7] py-6 sm:py-10 px-3 sm:px-4 md:px-6 lg:px-8">
+    <>
+      <SEO
+        title="Contact Us - Andhra Machines Agencies | Get in Touch | Rajahmundry"
+        description="Contact Andhra Machines Agencies for all your sewing machine needs. Call +91 97013 32707 or email andhramachinesagencies@gmail.com. Visit us at Kandakam Road, Rajahmundry. We're here to help!"
+        keywords="contact Andhra Machines Agencies, sewing machine dealer contact, Rajahmundry sewing machine store, sewing machine service contact"
+      />
+      <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#eef2f7] py-6 sm:py-10 px-3 sm:px-4 md:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Heading - Optimized for mobile */}
         <div className="text-center mb-6 sm:mb-10 px-2">
@@ -179,24 +319,11 @@ export default function Contact() {
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
               <h2 className="text-2xl sm:text-3xl font-bold text-[#1a365d] mb-4">Send us a Message</h2>
               
-              {submitStatus.message && (
-                <div className={`p-3 rounded-lg mb-4 ${submitStatus.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                  {submitStatus.message}
-                </div>
-              )}
-              
               <form 
-                action="https://formsubmit.co/bhanu.rupa2003@gmail.com" 
-                method="POST"
                 onSubmit={handleSubmit}
                 className="space-y-3 sm:space-y-4"
+                noValidate
               >
-                <input type="hidden" name="_subject" value="New Contact Form Submission - Andhra Machines" />
-                <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_next" value={`${window.location.origin}${window.location.pathname}?success=true`} />
-                <input type="text" name="_honey" style={{display: 'none'}} />
-                
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Full Name <span className="text-red-500">*</span>
@@ -208,9 +335,14 @@ export default function Contact() {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base"
+                    className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base ${
+                      errors.name ? 'border-red-500' : 'border-gray-300'
+                    }`}
                     placeholder="Your name"
                   />
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -225,26 +357,35 @@ export default function Contact() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base"
+                      className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base ${
+                        errors.email ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       placeholder="your.email@example.com"
                     />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                    )}
                   </div>
                   
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number
+                      Phone Number <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
                       id="phone"
                       name="phone"
+                      required
                       value={formData.phone}
                       onChange={handleChange}
-                      pattern="[0-9]{10}"
-                      title="Please enter a valid 10-digit Indian phone number"
-                      className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base"
-                      placeholder="98XXXXXX70"
+                      className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base ${
+                        errors.phone ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      placeholder="+91 "
                     />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                    )}
                   </div>
                 </div>
                 
@@ -259,9 +400,20 @@ export default function Contact() {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base"
+                    className={`w-full px-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-[#c54513] focus:border-transparent transition-all text-sm sm:text-base ${
+                      errors.message ? 'border-red-500' : 'border-gray-300'
+                    }`}
                     placeholder="How can we help you?"
                   ></textarea>
+                  <div className="mt-1 flex justify-between items-center">
+                    {errors.message ? (
+                      <p className="text-sm text-red-600">{errors.message}</p>
+                    ) : (
+                      <p className="text-xs text-gray-500">
+                        {countWords(formData.message)} / 500 words
+                      </p>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="mt-10 sm:mt-14">
@@ -387,5 +539,6 @@ export default function Contact() {
         </div>
       </div>
     </div>
+    </>
   );
 }

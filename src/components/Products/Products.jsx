@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Star, Heart, Filter, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Star, Heart, Filter, X, Plus, Minus } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
+import { useToast } from '../../contexts/ToastContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
+import SEO from '../SEO';
+import StructuredData, { generateBreadcrumbSchema } from '../StructuredData';
 
 const Products = () => {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { showToast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     category: 'all',
     priceRange: 'all',
@@ -14,223 +22,82 @@ const Products = () => {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [cartQuantities, setCartQuantities] = useState({});
 
-  // Mock product data with different categories and brands
-  const allProducts = [
-    {
-      id: 'usha-excel',
-      name: 'Usha Excel Automatic',
-      brand: 'Usha',
-      price: 249.99,
-      originalPrice: 299.99,
-      rating: 4.5,
-      reviewCount: 128,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'domestic',
-      inStock: true,
-      isNew: true,
-      isOnSale: true,
-    },
-    {
-      id: 'singer-tradition',
-      name: 'Singer Tradition 2250',
-      brand: 'Singer',
-      price: 199.99,
-      rating: 4.7,
-      reviewCount: 215,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'domestic',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'brother-cs6000i',
-      name: 'Brother CS6000i',
-      brand: 'Brother',
-      price: 349.99,
-      originalPrice: 399.99,
-      rating: 4.6,
-      reviewCount: 342,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'domestic',
-      inStock: true,
-      isNew: true,
-      isOnSale: true,
-    },
-    {
-      id: 'juki-tl2010q',
-      name: 'JUKI TL-2010Q',
-      brand: 'JUKI',
-      price: 1299.99,
-      rating: 4.9,
-      reviewCount: 156,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'industrial',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'jack-a4',
-      name: 'Jack A4 Industrial',
-      brand: 'Jack',
-      price: 1599.99,
-      rating: 4.7,
-      reviewCount: 67,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'industrial',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'janome-memorycraft',
-      name: 'Janome Memory Craft 9850',
-      brand: 'Janome',
-      price: 899.99,
-      originalPrice: 1099.99,
-      rating: 4.6,
-      reviewCount: 89,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'embroidery',
-      inStock: true,
-      isNew: true,
-      isOnSale: true,
-    },
-    {
-      id: 'singer-heavy-duty',
-      name: 'Singer Heavy Duty 4423',
-      brand: 'Singer',
-      price: 279.99,
-      rating: 4.4,
-      reviewCount: 523,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'domestic',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'brother-overlock',
-      name: 'Brother 1034D Overlock',
-      brand: 'Brother',
-      price: 349.99,
-      originalPrice: 399.99,
-      rating: 4.5,
-      reviewCount: 234,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'overlock',
-      inStock: true,
-      isNew: true,
-      isOnSale: true,
-    },
-    {
-      id: 'juki-mo644d',
-      name: 'JUKI MO-644D Overlock',
-      brand: 'JUKI',
-      price: 449.99,
-      rating: 4.8,
-      reviewCount: 198,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'overlock',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'usha-janome',
-      name: 'Usha Janome Dream Maker',
-      brand: 'Usha',
-      price: 179.99,
-      rating: 4.3,
-      reviewCount: 187,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'domestic',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'brother-embroidery',
-      name: 'Brother SE600 Embroidery',
-      brand: 'Brother',
-      price: 599.99,
-      originalPrice: 699.99,
-      rating: 4.8,
-      reviewCount: 312,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'embroidery',
-      inStock: true,
-      isNew: true,
-      isOnSale: true,
-    },
-    {
-      id: 'jack-f4',
-      name: 'Jack F4 Industrial',
-      brand: 'Jack',
-      price: 899.99,
-      rating: 4.6,
-      reviewCount: 94,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'industrial',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'singer-accessories',
-      name: 'Singer Presser Feet Set',
-      brand: 'Singer',
-      price: 24.99,
-      rating: 4.5,
-      reviewCount: 145,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'accessories',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'brother-accessories',
-      name: 'Brother Needle Set',
-      brand: 'Brother',
-      price: 12.99,
-      rating: 4.4,
-      reviewCount: 203,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'accessories',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'juki-accessories',
-      name: 'JUKI Bobbin Set',
-      brand: 'JUKI',
-      price: 8.99,
-      rating: 4.6,
-      reviewCount: 178,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'accessories',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-    {
-      id: 'usha-accessories',
-      name: 'Usha Thread Set',
-      brand: 'Usha',
-      price: 15.99,
-      rating: 4.3,
-      reviewCount: 256,
-      image: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-      category: 'accessories',
-      inStock: true,
-      isNew: false,
-      isOnSale: false,
-    },
-  ];
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const products = await api.getAllProducts();
+        // Map backend products to frontend format
+        const mappedProducts = products.map(product => ({
+          id: product.id,
+          name: product.title,
+          brand: product.brandName || 'Unknown',
+          brandSlug: product.brandSlug || product.id.toString(), // Use brand slug or fallback to ID
+          price: parseFloat(product.price) || 0,
+          originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+          rating: product.rating ? parseFloat(product.rating) : 0,
+          reviewCount: product.reviewCount || 0,
+          image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+          category: product.category || 'domestic',
+          inStock: product.inStock !== undefined ? product.inStock : true,
+          isNew: product.isNew || false,
+          isOnSale: product.isOnSale || false,
+        }));
+        setAllProducts(mappedProducts);
+      } catch (err) {
+        setError(err.message || 'Failed to load products');
+        console.error('Error fetching products:', err);
+        setAllProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Update cart quantities when cartItems change
+  useEffect(() => {
+    const quantities = {};
+    cartItems.forEach(item => {
+      quantities[item.id] = item.quantity;
+    });
+    setCartQuantities(quantities);
+  }, [cartItems]);
+
+  const handleAddToCart = (product) => {
+    if (!user) {
+      showToast('Please login to add items to cart', 'error');
+      navigate('/login', { state: { from: '/products' } });
+      return;
+    }
+    
+    // Check if product is already in cart
+    const existingItem = cartItems.find(item => item.id === product.id);
+    if (existingItem) {
+      // Update quantity instead of adding again
+      updateQuantity(product.id, existingItem.quantity + 1);
+      showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
+    } else {
+      addToCart(product, 1);
+      showToast(`${product.name} added to cart!`, 'success');
+    }
+  };
+
+  const handleQuantityChange = (productId, newQuantity) => {
+    if (newQuantity < 1) {
+      return;
+    }
+    updateQuantity(productId, newQuantity);
+    showToast('Cart updated!', 'success');
+  };
 
   const categories = [
     { id: 'all', name: 'All Products' },
@@ -243,10 +110,10 @@ const Products = () => {
 
   const priceRanges = [
     { id: 'all', name: 'All Prices' },
-    { id: 'under-100', name: 'Under ₹8,000' },
-    { id: '100-300', name: '₹8,000 - ₹25,000' },
-    { id: '300-500', name: '₹25,000 - ₹40,000' },
-    { id: 'over-500', name: 'Over ₹40,000' },
+    { id: 'under-10000', name: 'Under ₹10,000' },
+    { id: '10000-25000', name: '₹10,000 - ₹25,000' },
+    { id: '25000-50000', name: '₹25,000 - ₹50,000' },
+    { id: 'over-50000', name: 'Over ₹50,000' },
   ];
 
   const sortOptions = [
@@ -284,19 +151,19 @@ const Products = () => {
       filtered = filtered.filter(product => product.category === filters.category);
     }
 
-    // Filter by price range (converting INR ranges back to USD for comparison)
+    // Filter by price range (price is already in INR from backend)
     if (filters.priceRange !== 'all') {
       filtered = filtered.filter(product => {
         const price = product.price;
         switch (filters.priceRange) {
-          case 'under-100':
-            return price < 100; // Under ₹8,000
-          case '100-300':
-            return price >= 100 && price <= 300; // ₹8,000 - ₹25,000
-          case '300-500':
-            return price > 300 && price <= 500; // ₹25,000 - ₹40,000
-          case 'over-500':
-            return price > 500; // Over ₹40,000
+          case 'under-10000':
+            return price < 10000; // Under ₹10,000
+          case '10000-25000':
+            return price >= 10000 && price <= 25000; // ₹10,000 - ₹25,000
+          case '25000-50000':
+            return price > 25000 && price <= 50000; // ₹25,000 - ₹50,000
+          case 'over-50000':
+            return price > 50000; // Over ₹50,000
           default:
             return true;
         }
@@ -332,9 +199,46 @@ const Products = () => {
 
   const products = getFilteredAndSortedProducts();
 
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c54513]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-[#c54513] hover:underline"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Products', url: '/products' }
+  ]);
+
   return (
-    <div className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <>
+      <SEO
+        title="Sewing Machines Online - Buy Premium Usha, Singer, JUKI, Brother | Andhra Machines Agencies"
+        description="Shop premium sewing machines online. Browse domestic, industrial, embroidery, and overlock machines from top brands like Usha, Singer, JUKI, Brother, Jack, Guru, and Shiela. Free delivery across India."
+        keywords="buy sewing machines online, Usha sewing machine price, Singer sewing machine online, JUKI industrial sewing machine, Brother sewing machine, domestic sewing machines, industrial sewing machines, embroidery machines, overlock machines"
+        image="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
+      />
+      <StructuredData data={breadcrumbSchema} />
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Our Products</h1>
           
@@ -520,7 +424,7 @@ const Products = () => {
                   key={product.id}
                   className="group relative bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-200"
                 >
-                  <Link to={`/products/${product.id}`} className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none sm:h-64 block relative">
+                  <Link to={`/products/${product.brandSlug}`} className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none sm:h-64 block relative">
                     <img
                       src={product.image}
                       alt={product.name}
@@ -543,7 +447,7 @@ const Products = () => {
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
                   </Link>
                   <div className="flex-1 p-3 sm:p-4 flex flex-col">
-                    <Link to={`/products/${product.id}`} className="group">
+                    <Link to={`/products/${product.brandSlug}`} className="group">
                       <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
                         {product.name}
                       </h3>
@@ -555,6 +459,7 @@ const Products = () => {
                           {[0, 1, 2, 3, 4].map((rating) => (
                             <Star
                               key={rating}
+                              fill={rating < Math.floor(product.rating) ? 'currentColor' : 'none'}
                               className={`h-3 w-3 sm:h-4 sm:w-4 ${
                                 rating < Math.floor(product.rating)
                                   ? 'text-yellow-400'
@@ -570,10 +475,10 @@ const Products = () => {
                       </div>
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <p className="text-sm sm:text-base font-medium text-gray-900 flex-shrink-0">
-                          ₹{Math.round(product.price * 83).toLocaleString('en-IN')}
-                          {product.originalPrice && (
+                          ₹{product.price.toLocaleString('en-IN')}
+                          {product.originalPrice && product.originalPrice > product.price && (
                             <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500 line-through">
-                              ₹{Math.round(product.originalPrice * 83).toLocaleString('en-IN')}
+                              ₹{product.originalPrice.toLocaleString('en-IN')}
                             </span>
                           )}
                         </p>
@@ -591,18 +496,56 @@ const Products = () => {
                           >
                             <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} aria-hidden="true" />
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              addToCart(product, 1);
-                              alert(`${product.name} added to cart!`);
-                            }}
-                            className="p-1.5 sm:p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100 flex-shrink-0"
-                            title="Add to cart"
-                          >
-                            <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
-                          </button>
+                          {product.inStock ? (
+                            cartQuantities[product.id] ? (
+                              <div className="flex items-center gap-1 border border-gray-300 rounded-lg">
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleQuantityChange(product.id, cartQuantities[product.id] - 1);
+                                  }}
+                                  className="p-1 hover:bg-gray-100 rounded-l-lg transition-colors"
+                                >
+                                  <Minus size={12} />
+                                </button>
+                                <span className="px-2 py-1 text-xs font-medium">
+                                  {cartQuantities[product.id]}
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleQuantityChange(product.id, cartQuantities[product.id] + 1);
+                                  }}
+                                  className="p-1 hover:bg-gray-100 rounded-r-lg transition-colors"
+                                >
+                                  <Plus size={12} />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCart(product);
+                                }}
+                                className="px-2 py-1.5 sm:px-3 sm:py-2 bg-[#c54513] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#a43a10] transition-colors flex items-center gap-1 flex-shrink-0"
+                                title="Add to cart"
+                              >
+                                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">Add</span>
+                              </button>
+                            )
+                          ) : (
+                            <button
+                              disabled
+                              className="p-1.5 sm:p-2 text-gray-300 cursor-not-allowed rounded-full flex-shrink-0"
+                              title="Out of stock"
+                            >
+                              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -710,6 +653,7 @@ const Products = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

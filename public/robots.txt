@@ -1,0 +1,31 @@
+# robots.txt for andhramachinesagencies.com
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /login
+Disallow: /signup
+Disallow: /search
+
+# Allow important pages
+Allow: /products
+Allow: /products/
+Allow: /brands
+Allow: /brands/
+Allow: /blog
+Allow: /blog/
+Allow: /about
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-of-service
+
+# Sitemap location
+Sitemap: https://andhramachinesagencies.com/sitemap.xml
+
+# Crawl-delay (optional, helps prevent server overload)
+Crawl-delay: 1
+

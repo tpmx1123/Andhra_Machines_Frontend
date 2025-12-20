@@ -47,13 +47,14 @@ export const CartProvider = ({ children }) => {
                 // Add new product to cart
                 const newItem = {
                     id: product.id,
-                    name: product.name,
-                    brand: product.brand || 'Unknown',
-                    price: product.price,
-                    originalPrice: product.originalPrice || product.price,
-                    image: product.image || product.images?.[0] || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
+                    name: product.name || product.title,
+                    brand: product.brand || product.brandName || 'Unknown',
+                    price: typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0,
+                    originalPrice: product.originalPrice ? (typeof product.originalPrice === 'number' ? product.originalPrice : parseFloat(product.originalPrice)) : (typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0),
+                    image: product.image || product.mainImageUrl || product.imageUrl || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
                     quantity: quantity,
                     inStock: product.inStock !== false,
+                    brandSlug: product.brandSlug,
                     accessories: accessories
                 };
                 return [...prevItems, newItem];
@@ -66,6 +67,18 @@ export const CartProvider = ({ children }) => {
     };
 
     const updateQuantity = (productId, newQuantity) => {
+        if (newQuantity < 1) {
+            removeFromCart(productId);
+            return;
+        }
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+                item.id === productId ? { ...item, quantity: newQuantity } : item
+            )
+        );
+    };
+
+    const setQuantity = (productId, newQuantity) => {
         if (newQuantity < 1) {
             removeFromCart(productId);
             return;
@@ -94,6 +107,7 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         updateQuantity,
+        setQuantity,
         clearCart,
         getCartTotal,
         getCartCount

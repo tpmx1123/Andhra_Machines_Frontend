@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, ChevronDown, LogOut } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Header() {
   const { getCartCount } = useCart();
+  const { isAuthenticated, user, logout } = useAuth();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showBrandsDropdown, setShowBrandsDropdown] = useState(false);
   const [mobileBrandsOpen, setMobileBrandsOpen] = useState(false);
@@ -12,6 +14,11 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const brandsRef = useRef(null);
+
+  const handleLogout = () => {
+    logout();
+    setShowMobileMenu(false);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -67,6 +74,7 @@ export default function Header() {
     { name: 'Jack', path: '/brands/jack' },
     { name: 'Brother', path: '/brands/brother' },
     { name: 'Shiela', path: '/brands/shiela' },
+    { name: 'Guru', path: '/brands/guru' },
   ];
 
 
@@ -82,7 +90,7 @@ export default function Header() {
         <div className="flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-10">
             <img
-              src="https://res.cloudinary.com/durbtkhbz/image/upload/v1765255577/logo_sewing_td6tcf.png"
+              src="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
               alt="Andhra Machines Agencies"
               className="h-14 sm:h-16 lg:h-18 w-auto object-contain"
               style={{ display: 'block' }}
@@ -97,7 +105,7 @@ export default function Header() {
             </div>
           </Link>
 
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-4">
 
             {navItems.map((item) => {
               if (item.name === 'Brands') {
@@ -212,14 +220,35 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-4 sm:space-x-6">
-            <Link
-              to="/profile"
-              className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/profile' ? 'text-[#c54513]' : ''}`}
-              title="My Account"
-            >
-              <User className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span className="sr-only">My Account</span>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/profile"
+                  className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/profile' ? 'text-[#c54513]' : ''}`}
+                  title="My Account"
+                >
+                  <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <span className="sr-only">My Account</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="relative p-1 text-gray-700 hover:text-[#c54513] transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <span className="sr-only">Logout</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/login' ? 'text-[#c54513]' : ''}`}
+                title="Login"
+              >
+                <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="sr-only">Login</span>
+              </Link>
+            )}
             <Link
               to="/cart"
               className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/cart' ? 'text-[#c54513]' : ''}`}

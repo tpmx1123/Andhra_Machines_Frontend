@@ -1,31 +1,41 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const removeItem = (id) => {
     removeFromCart(id);
   };
 
-  // Convert USD to INR (approximate rate: 1 USD = 83 INR)
-  const convertToINR = (usdPrice) => {
-    return Math.round(usdPrice * 83);
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + (convertToINR(item.price) * item.quantity), 0);
-  const discount = cartItems.reduce((sum, item) => 
-    sum + ((convertToINR(item.originalPrice) - convertToINR(item.price)) * item.quantity), 0);
+  // Products are already in INR from database
+  const subtotal = cartItems.reduce((sum, item) => {
+    const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+    return sum + (price * item.quantity);
+  }, 0);
+  
+  const discount = cartItems.reduce((sum, item) => {
+    const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+    const originalPrice = item.originalPrice ? (typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)) : price;
+    const itemDiscount = (originalPrice - price) * item.quantity;
+    return sum + (itemDiscount > 0 ? itemDiscount : 0);
+  }, 0);
+  
   const total = subtotal;
-  const deliveryCharge = total > 0 ? 0 : 0; // Free delivery for all orders
+  const deliveryCharge = 0; // Free delivery for all orders
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Shopping Cart</h1>
-          <p className="text-gray-500">Review and manage your items</p>
+          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <p className="text-gray-500 mt-1">Review and manage your items</p>
         </div>
 
         {cartItems.length === 0 ? (
@@ -44,8 +54,8 @@ export default function Cart() {
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16">
             {/* Cart items */}
             <div className="lg:col-span-8">
-              <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                <div className="hidden md:grid grid-cols-12 bg-gray-50 px-6 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+              <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+                <div className="hidden md:grid grid-cols-12 bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
                   <div className="col-span-5">Product</div>
                   <div className="col-span-2 text-center">Price</div>
                   <div className="col-span-3 text-center">Quantity</div>
@@ -54,16 +64,20 @@ export default function Cart() {
                 
                 <ul className="divide-y divide-gray-200">
                   {cartItems.map((item) => (
-                    <li key={item.id} className="p-4 sm:p-6">
+                    <li key={item.id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
                       <div className="flex flex-col sm:flex-row">
                         <Link 
                           to={`/products/${item.id}`}
-                          className="flex-shrink-0 w-full sm:w-32 mb-4 sm:mb-0 hover:opacity-80 transition-opacity"
+                          className="flex-shrink-0 w-full sm:w-32 mb-4 sm:mb-0 hover:opacity-80 transition-opacity bg-gray-50 rounded-lg p-2"
                         >
                           <img
                             src={item.image}
                             alt={item.name}
                             className="w-full h-32 object-contain"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg';
+                            }}
                           />
                         </Link>
 
@@ -92,10 +106,12 @@ export default function Cart() {
 
                           <div className="mt-4 flex-1 flex items-end justify-between sm:mt-0 sm:block">
                             <div className="sm:hidden text-sm text-gray-500">
-                              <span className="font-medium text-gray-900">₹{Math.round(item.price * 83).toLocaleString('en-IN')}</span>
-                              {item.originalPrice > item.price && (
+                              <span className="font-medium text-gray-900">
+                                ₹{(typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0).toLocaleString('en-IN')}
+                              </span>
+                              {item.originalPrice && (typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)) > (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0) && (
                                 <span className="ml-2 text-sm text-gray-500 line-through">
-                                  ₹{Math.round(item.originalPrice * 83).toLocaleString('en-IN')}
+                                  ₹{(typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)).toLocaleString('en-IN')}
                                 </span>
                               )}
                             </div>
@@ -125,11 +141,11 @@ export default function Cart() {
                               
                               <div className="hidden sm:block text-right">
                                 <p className="text-sm font-medium text-gray-900">
-                                  ₹{(convertToINR(item.price) * item.quantity).toLocaleString('en-IN')}
+                                  ₹{((typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0) * item.quantity).toLocaleString('en-IN')}
                                 </p>
-                                {item.originalPrice > item.price && (
+                                {item.originalPrice && (typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)) > (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0) && (
                                   <p className="text-xs text-gray-500 line-through">
-                                    ₹{(convertToINR(item.originalPrice) * item.quantity).toLocaleString('en-IN')}
+                                    ₹{((typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)) * item.quantity).toLocaleString('en-IN')}
                                   </p>
                                 )}
                               </div>
@@ -145,8 +161,8 @@ export default function Cart() {
 
             {/* Order summary */}
             <div className="mt-10 lg:mt-0 lg:col-span-4">
-              <div className="bg-white shadow-sm rounded-lg p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h2>
+              <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200 sticky top-4">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-200">Order Summary</h2>
                 
                 <div className="space-y-4">
                   <div className="flex justify-between">
@@ -168,22 +184,29 @@ export default function Cart() {
                     </span>
                   </div>
                   
-                  <div className="border-t border-gray-200 pt-4 mt-4">
-                    <div className="flex justify-between">
-                      <span className="text-base font-medium">Total</span>
-                      <span className="text-base font-bold">₹{(total + deliveryCharge).toLocaleString()}</span>
+                  <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-xl font-bold text-[#c54513]">₹{(total + deliveryCharge).toLocaleString('en-IN')}</span>
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">Including all taxes</p>
+                    <p className="mt-2 text-xs text-gray-500">Including all taxes</p>
                   </div>
                 </div>
                 
                 <div className="mt-6">
-                  <Link
-                    to="/checkout"
-                    className="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-[#c54513] hover:bg-[#a43a10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513]"
+                  <button
+                    onClick={() => {
+                      if (!user) {
+                        showToast('Please login to proceed with checkout', 'error');
+                        navigate('/login', { state: { from: '/checkout' } });
+                        return;
+                      }
+                      navigate('/checkout');
+                    }}
+                    className="w-full flex justify-center items-center px-6 py-4 border border-transparent rounded-md shadow-md text-base font-semibold text-white bg-gradient-to-r from-[#c54513] to-[#a43a10] hover:from-[#a43a10] hover:to-[#8b2f0d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-all transform hover:scale-[1.02]"
                   >
                     Proceed to Checkout
-                  </Link>
+                  </button>
                 </div>
                 
                 <div className="mt-4 text-center">
