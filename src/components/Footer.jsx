@@ -5,24 +5,31 @@ export default function Footer() {
   return (
     <footer className="relative bg-gray-50 border-t-2 border-[#c54513]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Centered Company Name */}
+        {/* Centered Company Name with Logo */}
         <div className="text-center mb-6">
           <Link
             to="/"
             className="inline-block group"
             onClick={() => window.scrollTo(0, 0)}
           >
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 group-hover:text-[#c54513] transition-colors">
-              Andhra Machines Agencies
-            </h3>
-            <p className="text-sm sm:text-base text-gray-500 mt-1 cursor-default">Since 1982</p>
+            <div className="flex flex-col items-center">
+              <img 
+                src="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
+                alt="Andhra Machines Agencies Logo"
+                className="h-16 sm:h-20 lg:h-24 w-auto mb-3 object-contain"
+              />
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 group-hover:text-[#c54513] transition-colors">
+                Andhra Machines Agencies
+              </h3>
+              <p className="text-sm sm:text-base text-gray-500 mt-1 cursor-default">Since 1982</p>
+            </div>
           </Link>
         </div>
 
         {/* Main Content Grid - 3 Columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-5">
           {/* Quick Links */}
-          <div>
+          <div className="sm:ml-4 lg:ml-8">
             <h4 className="text-sm sm:text-base font-bold mb-3 sm:mb-4 text-gray-900 uppercase tracking-wide">
               Quick Links
             </h4>
