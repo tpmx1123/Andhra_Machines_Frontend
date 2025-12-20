@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function Header() {
   const { getCartCount } = useCart();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin } = useAuth();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showBrandsDropdown, setShowBrandsDropdown] = useState(false);
   const [mobileBrandsOpen, setMobileBrandsOpen] = useState(false);
@@ -223,12 +223,12 @@ export default function Header() {
             {isAuthenticated ? (
               <>
                 <Link
-                  to="/profile"
-                  className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${location.pathname === '/profile' ? 'text-[#c54513]' : ''}`}
-                  title="My Account"
+                  to={isAdmin ? "/admin" : "/profile"}
+                  className={`relative p-1 text-gray-700 hover:text-[#c54513] transition-colors ${(isAdmin && location.pathname.startsWith('/admin')) || (!isAdmin && location.pathname === '/profile') ? 'text-[#c54513]' : ''}`}
+                  title={isAdmin ? "Admin Panel" : "My Account"}
                 >
                   <User className="w-5 h-5 sm:w-6 sm:h-6" />
-                  <span className="sr-only">My Account</span>
+                  <span className="sr-only">{isAdmin ? "Admin Panel" : "My Account"}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
