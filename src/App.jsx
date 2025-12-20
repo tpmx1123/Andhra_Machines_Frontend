@@ -8,7 +8,7 @@ import Home from './components/Home';
 import About from './components/AboutUs/about';
 import Contact from './components/Contact/contact';
 import Blog from './components/Blog/blog';
-import Brands from './components/Brands/Brands';
+import Brands from './components/Brands/Brands.jsx';
 import BrandDetail from './components/Brands/BrandDetail';
 import Products from './components/Products/Products';
 import ProductDetail from './components/Products/ProductDetail';
