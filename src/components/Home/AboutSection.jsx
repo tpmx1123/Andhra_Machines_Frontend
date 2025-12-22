@@ -54,7 +54,7 @@ export default function AboutSection() {
                   <div className="text-sm sm:text-base text-gray-600">Years Experience</div>
                 </div>
                 <div className="text-center lg:text-left">
-                  <div className="text-3xl sm:text-4xl font-bold text-[#c54513] mb-1">1000+</div>
+                  <div className="text-3xl sm:text-4xl font-bold text-[#c54513] mb-1">2,50,000+</div>
                   <div className="text-sm sm:text-base text-gray-600">Happy Customers</div>
                 </div>
                

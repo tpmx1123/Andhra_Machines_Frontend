@@ -137,7 +137,7 @@ export default function About() {
             <div className="text-gray-700 text-sm sm:text-base">Years of Excellence</div>
           </div>
           <div className="p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#c54513] mb-1 sm:mb-2">10,000+</div>
+            <div className="text-3xl sm:text-4xl font-bold text-[#c54513] mb-1 sm:mb-2">2,50,000+</div>
             <div className="text-gray-700 text-sm sm:text-base">Happy Customers</div>
           </div>
           
