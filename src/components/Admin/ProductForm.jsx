@@ -172,16 +172,21 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       // Build specifications JSON from individual fields
       let specificationsJson = null;
       const specs = {};
-      if (formData.specType.trim()) specs.Type = formData.specType.trim();
-      if (formData.specStitches.trim()) specs.Stitches = formData.specStitches.trim();
-      if (formData.specButtonholes.trim()) specs.Buttonholes = formData.specButtonholes.trim();
-      if (formData.specStitchWidth.trim()) specs['Stitch Width'] = formData.specStitchWidth.trim();
-      if (formData.specStitchLength.trim()) specs['Stitch Length'] = formData.specStitchLength.trim();
-      if (formData.specSpeed.trim()) specs.Speed = formData.specSpeed.trim();
-      if (formData.specWarranty.trim()) specs.Warranty = formData.specWarranty.trim();
+      
+      // Safely check and add each field (handle undefined/null)
+      if (formData.specType && formData.specType.trim()) specs.Type = formData.specType.trim();
+      if (formData.specStitches && formData.specStitches.trim()) specs.Stitches = formData.specStitches.trim();
+      if (formData.specButtonholes && formData.specButtonholes.trim()) specs.Buttonholes = formData.specButtonholes.trim();
+      if (formData.specStitchWidth && formData.specStitchWidth.trim()) specs['Stitch Width'] = formData.specStitchWidth.trim();
+      if (formData.specStitchLength && formData.specStitchLength.trim()) specs['Stitch Length'] = formData.specStitchLength.trim();
+      if (formData.specSpeed && formData.specSpeed.trim()) specs.Speed = formData.specSpeed.trim();
+      if (formData.specWarranty && formData.specWarranty.trim()) specs.Warranty = formData.specWarranty.trim();
       
       if (Object.keys(specs).length > 0) {
         specificationsJson = JSON.stringify(specs);
+        console.log('Specifications JSON being sent:', specificationsJson);
+      } else {
+        console.log('No specifications to save');
       }
 
       // Handle date conversion - datetime-local format is YYYY-MM-DDTHH:mm
@@ -228,8 +233,23 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         priceEndDate: priceEndDate,
         highlights: highlights,
         galleryImages: galleryImages,
-        specificationsJson: specificationsJson ? JSON.stringify(specificationsJson) : null,
+        specificationsJson: specificationsJson, // Already a JSON string from JSON.stringify(specs)
+        // Remove individual spec fields from the data sent to backend
+        specType: undefined,
+        specStitches: undefined,
+        specButtonholes: undefined,
+        specStitchWidth: undefined,
+        specStitchLength: undefined,
+        specSpeed: undefined,
+        specWarranty: undefined,
       };
+      
+      // Clean up undefined fields
+      Object.keys(productData).forEach(key => {
+        if (productData[key] === undefined) {
+          delete productData[key];
+        }
+      });
 
       if (product) {
         await api.updateProduct(product.id, productData);
