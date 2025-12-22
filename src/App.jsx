@@ -12,7 +12,7 @@ const Home = lazy(() => import('./components/Home'));
 const About = lazy(() => import('./components/AboutUs/about'));
 const Contact = lazy(() => import('./components/Contact/contact'));
 const Blog = lazy(() => import('./components/Blog/blog'));
-const Brands = lazy(() => import('./components/Brands/brands'));
+const Brands = lazy(() => import('./components/Brands/Brands'));
 const BrandDetail = lazy(() => import('./components/Brands/BrandDetail'));
 const Products = lazy(() => import('./components/Products/Products'));
 const ProductDetail = lazy(() => import('./components/Products/ProductDetail'));
@@ -27,6 +27,7 @@ const AdminPanel = lazy(() => import('./components/Admin/AdminPanel'));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
 const CancellationReturns = lazy(() => import('./components/CancellationReturns'));
+const Legal = lazy(() => import('./components/Legal'));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -72,6 +73,7 @@ function App() {
                     <Route path="privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="terms-of-service" element={<TermsOfService />} />
                     <Route path="cancellation-returns" element={<CancellationReturns />} />
+                    <Route path="legal" element={<Legal />} />
                 </Route>
               </Routes>
               </Suspense>

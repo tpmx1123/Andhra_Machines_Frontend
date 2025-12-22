@@ -141,14 +141,16 @@ export default function Footer() {
         <div className="pt-3 sm:pt-4 border-t border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-1.5 sm:space-y-0">
             <p className="text-[10px] sm:text-xs text-gray-500 text-center sm:text-left">
-              &copy; {new Date().getFullYear()} <span className="text-[#c54513] font-semibold">Yes Lorvens PVT LTD</span>. All rights reserved.
+              &copy; {new Date().getFullYear()} <a href="https://www.yeslorvens.com/" target="_blank" rel="noopener noreferrer" className="text-[#c54513] font-semibold hover:underline">Yes Lorvens PVT LTD</a>. All rights reserved.
             </p>
             <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs text-gray-500">
-              <Link to="/privacy-policy" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Privacy Policy</Link>
+              <Link to="/legal" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Legal</Link>
               <span>•</span>
-              <Link to="/terms-of-service" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Terms of Service</Link>
+              <Link to="/privacy-policy" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Privacy</Link>
               <span>•</span>
-              <Link to="/cancellation-returns" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Cancellation & Returns</Link>
+              <Link to="/terms-of-service" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Terms</Link>
+              <span>•</span>
+              <Link to="/cancellation-returns" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Refunds</Link>
             </div>
           </div>
         </div>

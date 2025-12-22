@@ -164,17 +164,19 @@ export default function CancellationReturns() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Exchanges</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Exchanges & Replacements</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                We currently do not offer direct exchanges. If you wish to exchange a product:
+                We offer replacements for defective or damaged products. If you wish to exchange a product:
               </p>
               <ol className="list-decimal pl-6 mb-4 space-y-2 text-gray-700">
-                <li>Return the original product as per our Returns Policy</li>
-                <li>Once the return is processed and refunded, place a new order for the desired product</li>
-                <li>We will process your new order with priority</li>
+                <li>Contact us immediately if you receive a defective or damaged product</li>
+                <li>We will arrange for a replacement of the same product</li>
+                <li>For defective products, we offer replacements instead of exchanges</li>
+                <li>The replacement will be processed with priority</li>
+                <li>If you wish to exchange for a different product, contact our customer service team to discuss available options</li>
               </ol>
               <p className="text-gray-700 leading-relaxed">
-                For defective products, we may offer a replacement instead of a refund. This will be discussed during the return process.
+                All replacements are subject to product availability and our quality inspection. We will work with you to find the best solution for your needs.
               </p>
             </section>
 

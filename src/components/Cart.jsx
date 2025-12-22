@@ -132,12 +132,19 @@ export default function Cart() {
                                 <button
                                   type="button"
                                   onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                  className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                  disabled={item.quantity >= 50}
+                                  className={`px-3 py-1 text-gray-600 hover:bg-gray-100 ${item.quantity >= 50 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  title={item.quantity >= 50 ? 'Maximum quantity limit reached (50 items)' : 'Increase quantity'}
                                 >
                                   <span className="sr-only">Increase quantity</span>
                                   <Plus className="h-4 w-4" />
                                 </button>
                               </div>
+                              {item.quantity >= 50 && (
+                                <p className="text-xs text-orange-600 mt-1 sm:mt-2">
+                                  Maximum quantity limit reached (50 items per product)
+                                </p>
+                              )}
                               
                               <div className="hidden sm:block text-right">
                                 <p className="text-sm font-medium text-gray-900">

@@ -29,15 +29,40 @@ const getScheduleStatus = (product) => {
   }
   
   try {
-    // Dates are stored as UTC ISO strings, convert to Date objects
+    // Get current time in IST (Asia/Kolkata) timezone
     const now = new Date();
-    const startDate = new Date(product.priceStartDate);
-    const endDate = new Date(product.priceEndDate);
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+    const istNow = new Date(now.getTime() + (istOffset - now.getTimezoneOffset() * 60 * 1000));
     
-    // Compare directly - Date objects handle timezone automatically
-    if (now < startDate) {
+    // Parse dates - backend sends LocalDateTime which should be interpreted as IST
+    // Convert to IST for comparison
+    const startDateStr = product.priceStartDate;
+    const endDateStr = product.priceEndDate;
+    
+    // If dates are in ISO format, parse them and treat as IST
+    let startDate = new Date(startDateStr);
+    let endDate = new Date(endDateStr);
+    
+    // If the date string doesn't have timezone info, assume it's IST
+    if (!startDateStr.includes('Z') && !startDateStr.includes('+') && !startDateStr.includes('-', 10)) {
+      // Date is timezone-naive, add IST offset
+      const startDateUTC = new Date(startDateStr + '+05:30');
+      startDate = startDateUTC;
+    }
+    
+    if (!endDateStr.includes('Z') && !endDateStr.includes('+') && !endDateStr.includes('-', 10)) {
+      const endDateUTC = new Date(endDateStr + '+05:30');
+      endDate = endDateUTC;
+    }
+    
+    // Compare current IST time with schedule dates
+    const nowTime = istNow.getTime();
+    const startTime = startDate.getTime();
+    const endTime = endDate.getTime();
+    
+    if (nowTime < startTime) {
       return { status: 'upcoming', message: 'Scheduled (Not Started)' };
-    } else if (now >= startDate && now <= endDate) {
+    } else if (nowTime >= startTime && nowTime <= endTime) {
       return { status: 'active', message: 'Scheduled (Active)' };
     } else {
       return { status: 'expired', message: 'Scheduled (Expired)' };
