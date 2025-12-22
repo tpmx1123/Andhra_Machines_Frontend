@@ -16,27 +16,33 @@ export default function BrandsSection() {
     },
     {
       name: 'Jack',
-      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962082/images_uwvfcp.jpg',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380965/images_uwvfcp_l3g1xg.jpg',
       description: 'Industrial strength performance',
       slug: 'jack'
     },
     {
       name: 'JUKI',
-      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962246/212201_pic_20250106180407_tlwac9.webp',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381358/212201_pic_20250106180407_tlwac9_jyw2ln.webp',
       description: 'Precision engineering from Japan',
       slug: 'juki'
     },
     {
       name: 'Brother',
-      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962370/Screenshot_2025-12-17_143538_v845iu.png',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381417/Screenshot_2025-12-17_143538_v845iu_keavdh.png',
       description: 'Innovative sewing solutions',
       slug: 'brother'
     },
     {
       name: 'Guru',
-      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765964234/images_yfisez.png',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381542/images_yfisez_1_xoqcmb.png',
       description: 'Reliable, affordable sewing machines for everyday use',
       slug: 'guru'
+    },
+    {
+      name: 'Shiela',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381608/c0ba20498b688b78d1aa85683be2eb55_zodny4_x8uikd.jpg',
+      description: 'Reliable, affordable sewing machines for everyday use',
+      slug: 'shiela'
     },
   ];
 
@@ -98,7 +104,7 @@ export default function BrandsSection() {
             }
           }
           .animate-scroll-slow {
-            animation: scroll-slow 60s linear infinite;
+            animation: scroll-slow 20s linear infinite;
           }
           .animate-scroll-slow:hover {
             animation-play-state: paused;

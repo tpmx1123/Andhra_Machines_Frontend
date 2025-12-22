@@ -589,11 +589,11 @@ const ProductDetail = () => {
             {Object.keys(specifications).length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <dl className="space-y-3">
                   {Object.entries(specifications).map(([key, value]) => (
-                    <div key={key} className="bg-gray-50 rounded-lg p-3">
-                      <dt className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{key}</dt>
-                      <dd className="text-sm font-medium text-gray-900">{value}</dd>
+                    <div key={key} className="flex flex-col sm:flex-row sm:items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                      <dt className="text-sm font-semibold text-gray-700 mb-1 sm:mb-0 sm:w-1/3 sm:pr-4">{key}:</dt>
+                      <dd className="text-sm text-gray-900 sm:w-2/3">{value}</dd>
                     </div>
                   ))}
                 </dl>

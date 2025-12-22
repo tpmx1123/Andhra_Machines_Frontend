@@ -7,11 +7,11 @@ const Brands = () => {
   const brandLogos = {
     usha: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380473/page1-800px-USHA_Logo.pdf_aaotn8_v4iosh.jpg',
     singer: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380889/Singer-Logo_tgjv61_nk8vfi.png',
-    jack: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962082/images_uwvfcp.jpg',
-    juki: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962246/212201_pic_20250106180407_tlwac9.webp',
-    brother: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962370/Screenshot_2025-12-17_143538_v845iu.png',
-    guru: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765964234/images_yfisez.png',
-    shiela: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765965701/c0ba20498b688b78d1aa85683be2eb55_zodny4.jpg',
+    jack: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380965/images_uwvfcp_l3g1xg.jpg',
+    juki: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381358/212201_pic_20250106180407_tlwac9_jyw2ln.webp',
+    brother: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381417/Screenshot_2025-12-17_143538_v845iu_keavdh.png',
+    guru: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381542/images_yfisez_1_xoqcmb.png',
+    shiela: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381608/c0ba20498b688b78d1aa85683be2eb55_zodny4_x8uikd.jpg',
   };
 
   const brands = [
