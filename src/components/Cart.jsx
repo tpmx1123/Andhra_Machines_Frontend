@@ -14,12 +14,13 @@ export default function Cart() {
     removeFromCart(id);
   };
 
-  // Products are already in INR from database
+  // Calculate subtotal using original prices (before discount)
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
-    return sum + (price * item.quantity);
+    const originalPrice = item.originalPrice ? (typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)) : (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0);
+    return sum + (originalPrice * item.quantity);
   }, 0);
   
+  // Calculate discount (difference between original and current price)
   const discount = cartItems.reduce((sum, item) => {
     const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
     const originalPrice = item.originalPrice ? (typeof item.originalPrice === 'number' ? item.originalPrice : parseFloat(item.originalPrice)) : price;
@@ -27,7 +28,8 @@ export default function Cart() {
     return sum + (itemDiscount > 0 ? itemDiscount : 0);
   }, 0);
   
-  const total = subtotal;
+  // Total is subtotal minus discount
+  const total = subtotal - discount;
   const deliveryCharge = 0; // Free delivery for all orders
 
   return (
