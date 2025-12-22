@@ -95,6 +95,20 @@ export const CartProvider = ({ children }) => {
         );
     };
 
+    const updateProductPrice = (productId, newPrice, newOriginalPrice) => {
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+                item.id === productId
+                    ? {
+                        ...item,
+                        price: typeof newPrice === 'number' ? newPrice : parseFloat(newPrice) || item.price,
+                        originalPrice: newOriginalPrice ? (typeof newOriginalPrice === 'number' ? newOriginalPrice : parseFloat(newOriginalPrice)) : item.originalPrice
+                    }
+                    : item
+            )
+        );
+    };
+
     const clearCart = () => {
         setCartItems([]);
     };
@@ -115,7 +129,8 @@ export const CartProvider = ({ children }) => {
         setQuantity,
         clearCart,
         getCartTotal,
-        getCartCount
+        getCartCount,
+        updateProductPrice
     };
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

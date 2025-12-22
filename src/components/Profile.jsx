@@ -5,6 +5,7 @@ import { useFavorites } from '../contexts/FavoritesContext';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { api } from '../services/api';
 
 export default function Profile() {
@@ -31,6 +32,23 @@ export default function Profile() {
       fetchOrders();
     }
   }, [isAuthenticated, authLoading]);
+
+  // Handle real-time order status updates via WebSocket
+  const handleOrderStatusUpdate = (orderUpdate) => {
+    // Update the order in the orders list
+    setOrders(prevOrders =>
+      prevOrders.map(order =>
+        order.id === orderUpdate.orderId
+          ? { ...order, status: orderUpdate.newStatus }
+          : order
+      )
+    );
+    // Show notification
+    showToast(`Order ${orderUpdate.orderNumber} status updated to ${orderUpdate.newStatus}`, 'info');
+  };
+
+  // Subscribe to WebSocket updates
+  useWebSocket(null, handleOrderStatusUpdate);
 
   const fetchOrders = async () => {
     try {

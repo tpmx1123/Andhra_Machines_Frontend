@@ -1,14 +1,35 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 export default function Cart() {
-  const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, updateProductPrice } = useCart();
   const { user } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    // Check if the updated product is in the cart
+    const cartItem = cartItems.find(item => item.id === priceUpdate.productId);
+    if (cartItem) {
+      // Update the price in cart
+      updateProductPrice(
+        priceUpdate.productId,
+        priceUpdate.newPrice,
+        priceUpdate.originalPrice
+      );
+      // Show notification
+      showToast(`Price updated for ${cartItem.name}`, 'info');
+    }
+  };
+
+  // Subscribe to WebSocket updates
+  useWebSocket(handlePriceUpdate, null);
 
   const removeItem = (id) => {
     removeFromCart(id);
