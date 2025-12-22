@@ -35,7 +35,13 @@ export default function ProductForm({ product, onClose, onSuccess }) {
     isOnSale: false,
     isNew: false,
     highlights: '',
-    specificationsJson: '',
+    specType: '',
+    specStitches: '',
+    specButtonholes: '',
+    specStitchWidth: '',
+    specStitchLength: '',
+    specSpeed: '',
+    specWarranty: '',
     scheduledPrice: '',
     priceStartDate: '',
     priceEndDate: '',
@@ -49,14 +55,14 @@ export default function ProductForm({ product, onClose, onSuccess }) {
   useEffect(() => {
     if (product) {
       // Parse specifications JSON if it exists
-      let specsJson = '';
+      let specs = {};
       if (product.specificationsJson) {
         try {
-          specsJson = typeof product.specificationsJson === 'string' 
-            ? product.specificationsJson 
-            : JSON.stringify(product.specificationsJson, null, 2);
+          specs = typeof product.specificationsJson === 'string' 
+            ? JSON.parse(product.specificationsJson) 
+            : product.specificationsJson;
         } catch {
-          specsJson = '';
+          specs = {};
         }
       }
 
@@ -74,7 +80,13 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         isOnSale: product.isOnSale || false,
         isNew: product.isNew || false,
         highlights: product.highlights ? product.highlights.join('\n') : '',
-        specificationsJson: specsJson,
+        specType: specs.Type || '',
+        specStitches: specs.Stitches || '',
+        specButtonholes: specs.Buttonholes || '',
+        specStitchWidth: specs['Stitch Width'] || '',
+        specStitchLength: specs['Stitch Length'] || '',
+        specSpeed: specs.Speed || '',
+        specWarranty: specs.Warranty || '',
         scheduledPrice: product.scheduledPrice || '',
         priceStartDate: product.priceStartDate
           ? convertToLocalDateTime(product.priceStartDate)
@@ -157,16 +169,19 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         .map(url => url.trim())
         .filter(url => url.length > 0);
 
-      // Parse specifications JSON
+      // Build specifications JSON from individual fields
       let specificationsJson = null;
-      if (formData.specificationsJson.trim()) {
-        try {
-          specificationsJson = JSON.parse(formData.specificationsJson);
-        } catch (e) {
-          setError('Invalid JSON format for specifications');
-          setLoading(false);
-          return;
-        }
+      const specs = {};
+      if (formData.specType.trim()) specs.Type = formData.specType.trim();
+      if (formData.specStitches.trim()) specs.Stitches = formData.specStitches.trim();
+      if (formData.specButtonholes.trim()) specs.Buttonholes = formData.specButtonholes.trim();
+      if (formData.specStitchWidth.trim()) specs['Stitch Width'] = formData.specStitchWidth.trim();
+      if (formData.specStitchLength.trim()) specs['Stitch Length'] = formData.specStitchLength.trim();
+      if (formData.specSpeed.trim()) specs.Speed = formData.specSpeed.trim();
+      if (formData.specWarranty.trim()) specs.Warranty = formData.specWarranty.trim();
+      
+      if (Object.keys(specs).length > 0) {
+        specificationsJson = JSON.stringify(specs);
       }
 
       // Handle date conversion - datetime-local format is YYYY-MM-DDTHH:mm
@@ -544,21 +559,101 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         </div>
 
         {/* Specifications */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Specifications (JSON Format)
-          </label>
-          <textarea
-            name="specificationsJson"
-            value={formData.specificationsJson}
-            onChange={handleChange}
-            rows={10}
-            placeholder='Enter specifications as JSON:&#10;{&#10;  "Type": "Computerized",&#10;  "Stitches": "110",&#10;  "Buttonholes": "7 one-step",&#10;  "Stitch Width": "5mm",&#10;  "Stitch Length": "4mm",&#10;  "Speed": "800 stitches per minute",&#10;  "Warranty": "2 years"&#10;}'
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent font-mono text-sm"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Enter valid JSON format. Each key-value pair will be displayed in the specifications section.
-          </p>
+        <div className="border-t pt-4">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Specifications</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Type
+              </label>
+              <input
+                type="text"
+                name="specType"
+                value={formData.specType}
+                onChange={handleChange}
+                placeholder="e.g., Mechanical, Computerized"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stitches
+              </label>
+              <input
+                type="text"
+                name="specStitches"
+                value={formData.specStitches}
+                onChange={handleChange}
+                placeholder="e.g., 15, 110"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Buttonholes
+              </label>
+              <input
+                type="text"
+                name="specButtonholes"
+                value={formData.specButtonholes}
+                onChange={handleChange}
+                placeholder="e.g., 1 step automatic, 7 one-step"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stitch Width
+              </label>
+              <input
+                type="text"
+                name="specStitchWidth"
+                value={formData.specStitchWidth}
+                onChange={handleChange}
+                placeholder="e.g., 5mm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stitch Length
+              </label>
+              <input
+                type="text"
+                name="specStitchLength"
+                value={formData.specStitchLength}
+                onChange={handleChange}
+                placeholder="e.g., 4mm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Speed
+              </label>
+              <input
+                type="text"
+                name="specSpeed"
+                value={formData.specSpeed}
+                onChange={handleChange}
+                placeholder="e.g., 800 stitches per minute"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Warranty
+              </label>
+              <input
+                type="text"
+                name="specWarranty"
+                value={formData.specWarranty}
+                onChange={handleChange}
+                placeholder="e.g., 1 year, 2 years"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Price Scheduling */}

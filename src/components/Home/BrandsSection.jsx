@@ -4,13 +4,13 @@ export default function BrandsSection() {
   const brands = [
     {
       name: 'Usha',
-      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765961705/page1-800px-USHA_Logo.pdf_aaotn8.jpg',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380473/page1-800px-USHA_Logo.pdf_aaotn8_v4iosh.jpg',
       description: 'Pioneering sewing technology since 1934',
       slug: 'usha'
     },
     {
       name: 'Singer',
-      logo: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962024/Singer-Logo_tgjv61.png',
+      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380889/Singer-Logo_tgjv61_nk8vfi.png',
       description: 'The original sewing machine company',
       slug: 'singer'
     },
