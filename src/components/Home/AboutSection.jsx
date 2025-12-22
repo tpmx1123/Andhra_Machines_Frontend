@@ -8,10 +8,10 @@ export default function AboutSection() {
         {/* Main Content with Logo and Text */}
         <div className="mb-16 sm:mb-20">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-10 lg:gap-12">
-            {/* Logo Section - Left */}
-            <div className="flex-shrink-0 w-full lg:w-auto">
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-10 shadow-lg border border-gray-200">
-                <Link to="/" className="inline-block group">
+            {/* Logo Section - Left on Desktop, Centered on Mobile */}
+            <div className="flex-shrink-0 w-full lg:w-auto flex justify-center lg:justify-start">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-10 shadow-lg border border-gray-200 w-full max-w-md lg:max-w-none">
+                <Link to="/" className="inline-block group w-full">
                   <div className="text-center lg:text-left">
                     <img
                       src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/WhatsApp_Image_2025-12-20_at_2.29.17_PM-removebg-preview_lhqolz_ohtts7.png"
@@ -29,16 +29,16 @@ export default function AboutSection() {
               </div>
             </div>
 
-            {/* Content Section - Right */}
-            <div className="flex-1">
-              <div className="mb-6">
+            {/* Content Section - Right on Desktop, Centered on Mobile */}
+            <div className="flex-1 w-full lg:w-auto">
+              <div className="mb-6 text-center lg:text-left">
                 <h2 className="text-3xl sm:text-4xl lg:text-4xl font-bold text-gray-900 mb-4">
                   Who We Are?
                 </h2>
-                <div className="w-20 h-1.5 bg-[#c54513] rounded-full"></div>
+                <div className="w-20 h-1.5 bg-[#c54513] rounded-full mx-auto lg:mx-0"></div>
               </div>
 
-              <div className="space-y-5 text-gray-700">
+              <div className="space-y-5 text-gray-700 text-center lg:text-left">
                 <p className="text-base sm:text-lg leading-relaxed">
                   We are one of <span className="font-semibold text-[#c54513]">Andhra Pradesh's most trusted sewing machine specialists</span>, serving customers since 1982. With over 43 years of experience, we provide a complete range of domestic, professional, and industrial sewing machines, along with genuine accessories and expert servicing.
                 </p>
@@ -71,7 +71,7 @@ export default function AboutSection() {
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Authorized Dealer</h3>
             <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-              Official authorized dealer for all major brands including Usha, Singer, Jack, Brother, Juki, and more.
+              Official authorized dealer for all major brands including Usha, Singer, Jack, Brother, and more.
             </p>
           </div>
 

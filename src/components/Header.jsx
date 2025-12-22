@@ -70,7 +70,6 @@ export default function Header() {
   const brandItems = [
     { name: 'Usha', path: '/brands/usha' },
     { name: 'Singer', path: '/brands/singer' },
-    { name: 'Juki', path: '/brands/juki' },
     { name: 'Jack', path: '/brands/jack' },
     { name: 'Brother', path: '/brands/brother' },
     { name: 'Shiela', path: '/brands/shiela' },
@@ -90,7 +89,7 @@ export default function Header() {
         <div className="flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-10">
             <img
-              src="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
+              src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc_bemxiy.png"
               alt="Andhra Machines Agencies"
               className="h-14 sm:h-16 lg:h-18 w-auto object-contain"
               style={{ display: 'block' }}

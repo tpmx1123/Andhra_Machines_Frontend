@@ -21,12 +21,6 @@ export default function BrandsSection() {
       slug: 'jack'
     },
     {
-      name: 'JUKI',
-      logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381358/212201_pic_20250106180407_tlwac9_jyw2ln.webp',
-      description: 'Precision engineering from Japan',
-      slug: 'juki'
-    },
-    {
       name: 'Brother',
       logo: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381417/Screenshot_2025-12-17_143538_v845iu_keavdh.png',
       description: 'Innovative sewing solutions',

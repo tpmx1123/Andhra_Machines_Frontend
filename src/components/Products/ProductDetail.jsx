@@ -370,14 +370,6 @@ const ProductDetail = () => {
   const highlights = product?.highlights || [];
   const ratingValue = product?.rating;
   
-  // Debug: Log specifications to console (remove in production)
-  useEffect(() => {
-    if (product?.specificationsJson) {
-      console.log('Raw specificationsJson:', product.specificationsJson);
-      console.log('Parsed specifications:', specifications);
-      console.log('Type of specifications:', typeof specifications);
-    }
-  }, [product, specifications]);
   const productRating = ratingValue ? parseFloat(ratingValue) : 0;
   const reviewCount = product?.reviewCount ?? reviews.length;
 
@@ -466,15 +458,15 @@ const ProductDetail = () => {
       />
       <StructuredData data={productSchema} />
       <StructuredData data={breadcrumbSchema} />
-      <div className="bg-white min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex items-center text-sm text-gray-500 mb-4">
-            <Link to="/" className="hover:text-[#c54513] transition-colors">Home</Link>
-            <ChevronRight className="h-4 w-4 mx-2" />
-            <Link to="/products" className="hover:text-[#c54513] transition-colors">Products</Link>
-            <ChevronRight className="h-4 w-4 mx-2" />
-            <span className="text-gray-400 truncate">{product.title}</span>
-          </div>
+    <div className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="flex items-center text-sm text-gray-500 mb-4">
+          <Link to="/" className="hover:text-[#c54513] transition-colors">Home</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <Link to="/products" className="hover:text-[#c54513] transition-colors">Products</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <span className="text-gray-400 truncate">{product.title}</span>
+        </div>
 
         <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
           {/* Image gallery */}
@@ -644,8 +636,8 @@ const ProductDetail = () => {
                       <div key={key} className="flex flex-col sm:flex-row sm:items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                         <dt className="text-sm font-semibold text-gray-700 mb-1 sm:mb-0 sm:w-1/3 sm:pr-4">{key}:</dt>
                         <dd className="text-sm text-gray-900 sm:w-2/3">{String(value)}</dd>
-                      </div>
-                    ))}
+                    </div>
+                  ))}
                 </dl>
               </div>
             )}

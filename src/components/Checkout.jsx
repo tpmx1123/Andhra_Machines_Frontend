@@ -159,6 +159,9 @@ ${formData.landmark ? `Landmark: ${formData.landmark}\n` : ''}${formData.deliver
 *Contact:*
 Phone: ${formData.phone}
 Email: ${formData.email}
+
+✅ *GST Invoice will be provided with this order*
+📄 Valid GST invoice as per Government of India regulations.
         `.trim();
 
         // WhatsApp number with country code
@@ -392,10 +395,23 @@ Email: ${formData.email}
                   />
                 </div>
 
+                {/* GST Invoice Message before Place Order */}
+                <div className="mt-6 mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <svg className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-semibold text-green-800">📄 GST Invoice will be provided with this order</p>
+                      <p className="text-xs text-green-700 mt-1">Valid GST invoice as per Government of India regulations.</p>
+                    </div>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full mt-6 px-6 py-3 bg-[#c54513] text-white text-base font-semibold rounded-md hover:bg-[#a43a10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-6 py-3 bg-[#c54513] text-white text-base font-semibold rounded-md hover:bg-[#a43a10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Placing Order...' : 'Submit & Continue to WhatsApp'}
                 </button>
@@ -450,6 +466,19 @@ Email: ${formData.email}
                   <span className="text-xl font-bold text-[#c54513]">
                     ₹{(total + deliveryCharge).toLocaleString('en-IN')}
                   </span>
+                </div>
+              </div>
+
+              {/* GST Invoice Message */}
+              <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                <div className="flex items-start gap-2">
+                  <svg className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-semibold text-green-800">GST Invoice Available</p>
+                    <p className="text-xs text-green-700 mt-1">Invoice will be issued as per Government of India GST regulations.</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@ export default function Footer() {
           >
             <div className="flex flex-col items-center">
               <img 
-                src="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
+                src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc_bemxiy.png"
                 alt="Andhra Machines Agencies Logo"
                 className="h-16 sm:h-20 lg:h-24 w-auto mb-3 object-contain"
               />
@@ -29,7 +29,7 @@ export default function Footer() {
         {/* Main Content Grid - 3 Columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-5">
           {/* Quick Links */}
-          <div className="sm:ml-4 lg:ml-8">
+          <div className="text-center sm:text-left sm:ml-4 lg:ml-8">
             <h4 className="text-sm sm:text-base font-bold mb-3 sm:mb-4 text-gray-900 uppercase tracking-wide">
               Quick Links
             </h4>
@@ -56,7 +56,7 @@ export default function Footer() {
           </div>
 
           {/* Contact Us */}
-          <div>
+          <div className="text-center sm:text-left">
             <h4 className="text-sm sm:text-base font-bold mb-3 sm:mb-4 text-gray-900 uppercase tracking-wide">
               Contact Us
             </h4>
@@ -105,11 +105,11 @@ export default function Footer() {
           </div>
 
           {/* Follow Us & Business Hours */}
-          <div>
+          <div className="text-center sm:text-left">
             <h4 className="text-sm sm:text-base font-bold mb-3 sm:mb-4 text-gray-900 uppercase tracking-wide">
               Follow Us
             </h4>
-            <div className="flex items-center space-x-3 mb-4">
+            <div className="flex items-center justify-center sm:justify-start space-x-3 mb-4">
               <a
                 href="https://www.facebook.com/andhramachinesagencies"
                 target="_blank"

@@ -25,9 +25,7 @@ const BrandDetail = () => {
     singer: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962024/Singer-Logo_tgjv61.png',
     jack: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962082/images_uwvfcp.jpg',
     shiela: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765965701/c0ba20498b688b78d1aa85683be2eb55_zodny4.jpg',
-    juki: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962246/212201_pic_20250106180407_tlwac9.webp',
     brother: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765962370/Screenshot_2025-12-17_143538_v845iu.png',
-    
     guru: 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765964234/images_yfisez.png',
   };
 
@@ -38,37 +36,27 @@ const BrandDetail = () => {
       name: 'Usha',
       description: 'Usha International Ltd. is an Indian consumer durable company headquartered in New Delhi. The company is a part of the $4.5 billion CK Birla Group. Usha is one of the leading manufacturers of sewing machines in India with a market share of over 25%.',
       logo: brandLogos.usha,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766382061/page1-800px-USHA_Logo.pdf_aaotn8_dpv9la.png',
+      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385110/ChatGPT_Image_Dec_22_2025_12_01_07_PM_rfkzly.png',
       founded: 1934,
       headquarters: 'New Delhi, India',
-      website: 'https://www.ushainternational.com',
+      website: 'https://www.ushasew.com/',
     },
     singer: {
       id: 'singer',
       name: 'Singer',
       description: 'The Singer Corporation is an American manufacturer of sewing machines, first established as I. M. Singer & Co. in 1851 by Isaac Merritt Singer with New York lawyer Edward C. Clark.',
       logo: brandLogos.singer,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380889/Singer-Logo_tgjv61_nk8vfi.png',
+      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766386088/ChatGPT_Image_Dec_22_2025_12_17_50_PM_plf7bn.png',
       founded: 1851,
       headquarters: 'La Vergne, Tennessee, U.S.',
       website: 'https://www.singer.com',
-    },
-    juki: {
-      id: 'juki',
-      name: 'JUKI',
-      description: 'JUKI Corporation is a Japanese manufacturer of industrial sewing machines, household sewing machines, and related equipment. The company is one of the largest manufacturers of industrial sewing machines in the world.',
-      logo: brandLogos.juki,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381358/212201_pic_20250106180407_tlwac9_jyw2ln.webp',
-      founded: 1938,
-      headquarters: 'Tama, Tokyo, Japan',
-      website: 'https://www.juki.co.jp',
     },
     brother: {
       id: 'brother',
       name: 'Brother',
       description: 'Brother Industries, Ltd. is a Japanese multinational electronics and electrical equipment company headquartered in Nagoya, Japan. Its main products include printers, multifunction printers, desktop computers, consumer and industrial sewing machines, and machine tools.',
       logo: brandLogos.brother,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381417/Screenshot_2025-12-17_143538_v845iu_keavdh.png',
+      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385482/ChatGPT_Image_Dec_22_2025_12_07_45_PM_bx7a2s.png',
       founded: 1908,
       headquarters: 'Nagoya, Japan',
       website: 'https://www.brother.com',
@@ -79,7 +67,7 @@ const BrandDetail = () => {
       name: 'Jack',
       description: 'Zhejiang Jack Sewing Machine Co., Ltd. is a Chinese manufacturer of industrial sewing machines. The company is one of the largest industrial sewing machine manufacturers in the world, with products sold in over 130 countries.',
       logo: brandLogos.jack,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380965/images_uwvfcp_l3g1xg.jpg',
+      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385962/ChatGPT_Image_Dec_22_2025_12_14_41_PM_c2fbke.png',
       founded: 1995,
       headquarters: 'Taizhou, Zhejiang, China',
       website: 'https://www.jacksew.com',
@@ -89,20 +77,19 @@ const BrandDetail = () => {
       name: 'Shiela',
       description: 'Shiela is a trusted Indian brand offering durable and affordable sewing machines for home tailoring, small businesses, and daily sewing needs. Known for ease of use, strong build quality, and reliable performance.',
       logo: brandLogos.shiela,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381608/c0ba20498b688b78d1aa85683be2eb55_zodny4_x8uikd.jpg',
+      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385576/ChatGPT_Image_Dec_22_2025_12_08_48_PM_ehqdup.png',
       founded: 1985,
-      headquarters: 'India',
-      website: 'https://www.shielasewingmachine.com',
+      headquarters: 'India'
     },
     guru: {
       id: 'guru',
       name: 'Guru',
       description: 'Guru Sewing Machines is a trusted Indian brand offering durable and affordable sewing machines for home tailoring, small businesses, and daily sewing needs. Known for ease of use, strong build quality, and reliable performance.',
       logo: brandLogos.guru,
-      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381542/images_yfisez_1_xoqcmb.png',
+      banner: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385577/ChatGPT_Image_Dec_22_2025_12_08_40_PM_vgew9o.png',
       founded: 1985,
       headquarters: 'India',
-      website: 'https://www.gurusewingmachine.com',
+      website: 'https://www.gursewingmachines.com',
     },
     
   };
@@ -122,16 +109,26 @@ const BrandDetail = () => {
         const allProducts = await api.getAllProducts();
         const brandProducts = allProducts
           .filter(p => p.brandName && p.brandName.toLowerCase() === brandData.name.toLowerCase() && p.isActive !== false)
-          .map(product => ({
-            id: product.id,
-            name: product.title,
-            brandSlug: product.brandSlug || product.id.toString(),
-            price: parseFloat(product.price) || 0,
-            originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
-            rating: product.rating ? parseFloat(product.rating) : 0,
-            image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
-            inStock: product.inStock !== false
-          }));
+          .map(product => {
+            // Calculate discount percentage
+            const discount = product.originalPrice && product.originalPrice > product.price
+              ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+              : 0;
+            
+            return {
+              id: product.id,
+              name: product.title,
+              brandSlug: product.brandSlug || product.id.toString(),
+              price: parseFloat(product.price) || 0,
+              originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+              rating: product.rating ? parseFloat(product.rating) : 0,
+              image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+              discount: discount,
+              isNew: product.isNew || false,
+              isOnSale: product.isOnSale || false,
+              inStock: product.inStock !== false
+            };
+          });
         setProducts(brandProducts);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -150,35 +147,36 @@ const BrandDetail = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Brand Header */}
       <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex items-center justify-center sm:justify-start">
             <button
               onClick={() => navigate(-1)}
-              className="mr-4 p-1 rounded-full hover:bg-gray-100"
+              className="absolute left-4 sm:relative sm:left-0 mr-0 sm:mr-4 p-1 rounded-full hover:bg-gray-100"
             >
               <ArrowLeft className="h-5 w-5 text-gray-600" />
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">{brand.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center flex-1 sm:flex-none">{brand.name}</h1>
           </div>
         </div>
       </div>
 
       {/* Brand Banner */}
-      <div className="relative bg-gray-300 h-[400px] overflow-hidden">
+      <div className="relative bg-gray-300 h-[400px] sm:h-[500px] md:h-[600px] lg:h-[750px] overflow-hidden">
         <img
           src={brand.banner}
           alt={`${brand.name} banner`}
-          className="w-full h-[500px] object-cover opacity-80"
+          className="w-full h-full object-cover opacity-80"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = 'https://via.placeholder.com/1920x300?text=' + brand.name;
           }}
         />
-        
       </div>
 
+     
+
       {/* Brand Info */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white rounded-xl shadow-sm p-6 mb-12">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
@@ -293,16 +291,40 @@ const BrandDetail = () => {
                       to={`/products/${product.id}`}
                       className="block"
                     >
-                      <div className="h-48 bg-gray-100 overflow-hidden">
+                      <div className="relative h-56 bg-gray-50 overflow-hidden">
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = 'https://via.placeholder.com/300x300?text=Product+Image';
                           }}
                         />
+                        
+                        {/* Discount and Brand Tags */}
+                        <div className="absolute top-3 left-3 flex flex-col space-y-2">
+                          {product.discount > 0 && (
+                            <span className="inline-block bg-[#c54513] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                              {product.discount}% OFF
+                            </span>
+                          )}
+                          <span className="inline-block bg-white text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+                            {brand.name}
+                          </span>
+                        </div>
+
+                        {/* New and Sale Badges */}
+                        {product.isNew && (
+                          <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            New
+                          </div>
+                        )}
+                        {product.isOnSale && !product.isNew && (
+                          <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Sale
+                          </div>
+                        )}
                       </div>
                       <div className="p-4">
                         <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-[#c54513] transition-colors">{product.name}</h3>

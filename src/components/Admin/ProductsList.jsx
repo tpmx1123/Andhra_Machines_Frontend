@@ -86,8 +86,7 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
 
     try {
       setLoading(true);
-      const result = await api.deleteProduct(id);
-      console.log('Delete result:', result);
+      await api.deleteProduct(id);
       
       // Refresh the products list to reflect the deletion
       await fetchProducts();

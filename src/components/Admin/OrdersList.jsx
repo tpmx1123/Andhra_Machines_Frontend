@@ -266,7 +266,7 @@ export default function OrdersList() {
 
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -295,43 +295,43 @@ export default function OrdersList() {
             <tbody className="bg-white divide-y divide-gray-200">
               {orders.map((order) => (
                 <>
-                  <tr key={order.id} className="hover:bg-gray-50">
+                <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{order.orderNumber}</div>
-                    </td>
+                    <div className="text-sm font-medium text-gray-900">{order.orderNumber}</div>
+                  </td>
                     <td className="px-4 lg:px-6 py-4">
-                      <div className="text-sm text-gray-900">{order.shippingAddress.name}</div>
-                      <div className="text-sm text-gray-500">{order.shippingAddress.email}</div>
-                      <div className="text-sm text-gray-500">{order.shippingAddress.phone}</div>
-                    </td>
+                    <div className="text-sm text-gray-900">{order.shippingAddress.name}</div>
+                    <div className="text-sm text-gray-500">{order.shippingAddress.email}</div>
+                    <div className="text-sm text-gray-500">{order.shippingAddress.phone}</div>
+                  </td>
                     <td className="px-4 lg:px-6 py-4">
-                      <div className="text-sm text-gray-900">{order.items.length} item{order.items.length !== 1 ? 's' : ''}</div>
-                      <div className="text-xs text-gray-500">
-                        {order.items.slice(0, 2).map(item => item.productName).join(', ')}
-                        {order.items.length > 2 && ` +${order.items.length - 2} more`}
-                      </div>
-                    </td>
+                    <div className="text-sm text-gray-900">{order.items.length} item{order.items.length !== 1 ? 's' : ''}</div>
+                    <div className="text-xs text-gray-500">
+                      {order.items.slice(0, 2).map(item => item.productName).join(', ')}
+                      {order.items.length > 2 && ` +${order.items.length - 2} more`}
+                    </div>
+                  </td>
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">₹{order.total.toLocaleString('en-IN')}</div>
-                      {order.discount > 0 && (
-                        <div className="text-xs text-green-600">Saved ₹{order.discount.toLocaleString('en-IN')}</div>
-                      )}
-                    </td>
+                    <div className="text-sm font-medium text-gray-900">₹{order.total.toLocaleString('en-IN')}</div>
+                    {order.discount > 0 && (
+                      <div className="text-xs text-green-600">Saved ₹{order.discount.toLocaleString('en-IN')}</div>
+                    )}
+                  </td>
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        {order.status}
-                      </span>
-                    </td>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                      {getStatusIcon(order.status)}
+                      {order.status}
+                    </span>
+                  </td>
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(order.createdAt).toLocaleDateString('en-IN', { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric'
-                      })}
-                    </td>
+                    {new Date(order.createdAt).toLocaleDateString('en-IN', { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric'
+                    })}
+                  </td>
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                         <button
                           onClick={() => toggleOrderDetails(order.id)}
                           className="p-1.5 text-gray-600 hover:text-[#c54513] hover:bg-gray-50 rounded-md transition-colors"
@@ -343,29 +343,29 @@ export default function OrdersList() {
                             <Eye className="h-4 w-4" />
                           )}
                         </button>
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
-                          disabled={updating === order.id}
-                          className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#c54513] disabled:opacity-50"
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="CONFIRMED">Confirmed</option>
-                          <option value="PROCESSING">Processing</option>
-                          <option value="SHIPPED">Shipped</option>
-                          <option value="DELIVERED">Delivered</option>
-                          <option value="CANCELLED">Cancelled</option>
-                        </select>
-                        <button
-                          onClick={() => handleDeleteClick(order.id, order.orderNumber)}
-                          className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
-                          title="Delete order"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                      <select
+                        value={order.status}
+                        onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                        disabled={updating === order.id}
+                        className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#c54513] disabled:opacity-50"
+                      >
+                        <option value="PENDING">Pending</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="PROCESSING">Processing</option>
+                        <option value="SHIPPED">Shipped</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="CANCELLED">Cancelled</option>
+                      </select>
+                      <button
+                        onClick={() => handleDeleteClick(order.id, order.orderNumber)}
+                        className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                        title="Delete order"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
                   {expandedOrders.has(order.id) && (
                     <tr>
                       <td colSpan={7} className="px-4 lg:px-6 py-4 bg-gray-50">
@@ -443,7 +443,7 @@ export default function OrdersList() {
               ))}
             </tbody>
           </table>
-          </div>
+        </div>
         </>
       )}
 

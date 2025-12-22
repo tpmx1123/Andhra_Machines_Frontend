@@ -184,9 +184,6 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       
       if (Object.keys(specs).length > 0) {
         specificationsJson = JSON.stringify(specs);
-        console.log('Specifications JSON being sent:', specificationsJson);
-      } else {
-        console.log('No specifications to save');
       }
 
       // Handle date conversion - datetime-local format is YYYY-MM-DDTHH:mm
@@ -200,11 +197,6 @@ export default function ProductForm({ product, onClose, onSuccess }) {
           // Append ":00" for seconds to match ISO format without timezone
           // This preserves the exact time entered by the user
           priceStartDate = formData.priceStartDate + ':00';
-          
-          console.log('Start date conversion:', {
-            input: formData.priceStartDate,
-            output: priceStartDate
-          });
         } catch (e) {
           console.error('Invalid start date:', e);
         }
@@ -214,11 +206,6 @@ export default function ProductForm({ product, onClose, onSuccess }) {
           // datetime-local format: "YYYY-MM-DDTHH:mm"
           // Append ":00" for seconds
           priceEndDate = formData.priceEndDate + ':00';
-          
-          console.log('End date conversion:', {
-            input: formData.priceEndDate,
-            output: priceEndDate
-          });
         } catch (e) {
           console.error('Invalid end date:', e);
         }

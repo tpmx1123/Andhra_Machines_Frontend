@@ -274,6 +274,18 @@ export default function Profile() {
                           ))}
                         </div>
                       </div>
+
+                      {/* GST Invoice Message */}
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2">
+                            <svg className="h-5 w-5 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="text-sm font-semibold text-green-800">GST Invoice Available</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}

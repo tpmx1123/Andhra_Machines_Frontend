@@ -27,6 +27,36 @@ const Products = () => {
   const [error, setError] = useState('');
   const [cartQuantities, setCartQuantities] = useState({});
 
+  // Function to determine category based on title and description
+  const determineCategory = (title, description) => {
+    const titleLower = (title || '').toLowerCase();
+    const descLower = (description || '').toLowerCase();
+    const combined = `${titleLower} ${descLower}`;
+
+    // Check for embroidery keywords
+    if (combined.match(/\b(embroidery|embroid|digitiz|hoop|monogram)\b/)) {
+      return 'embroidery';
+    }
+
+    // Check for overlock keywords
+    if (combined.match(/\b(overlock|serger|overlocker|merrow)\b/)) {
+      return 'overlock';
+    }
+
+    // Check for industrial keywords
+    if (combined.match(/\b(industrial|heavy.?duty|commercial|factory|production|garment|manufacturing)\b/)) {
+      return 'industrial';
+    }
+
+    // Check for accessories keywords
+    if (combined.match(/\b(accessory|accessories|needle|thread|bobbin|presser.?foot|foot|case|stand|table|carrying|bag|cover|oil|lubricant|scissors|seam.?ripper|thimble|pin|pincushion)\b/)) {
+      return 'accessories';
+    }
+
+    // Default to domestic
+    return 'domestic';
+  };
+
   // Fetch products from API
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,7 +65,16 @@ const Products = () => {
         setError('');
         const products = await api.getAllProducts();
         // Map backend products to frontend format
-        const mappedProducts = products.map(product => ({
+        const mappedProducts = products.map(product => {
+          // Determine category based on title and description
+          const detectedCategory = determineCategory(product.title, product.description);
+          
+          // Calculate discount percentage
+          const discount = product.originalPrice && product.originalPrice > product.price
+            ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+            : 0;
+          
+          return {
           id: product.id,
           name: product.title,
           brand: product.brandName || 'Unknown',
@@ -45,11 +84,14 @@ const Products = () => {
           rating: product.rating ? parseFloat(product.rating) : 0,
           reviewCount: product.reviewCount || 0,
           image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
-          category: product.category || 'domestic',
+            category: detectedCategory, // Use detected category
+            description: product.description || '', // Store description for search
+            discount: discount, // Discount percentage
           inStock: product.inStock !== undefined ? product.inStock : true,
           isNew: product.isNew || false,
           isOnSale: product.isOnSale || false,
-        }));
+          };
+        });
         setAllProducts(mappedProducts);
       } catch (err) {
         setError(err.message || 'Failed to load products');
@@ -99,13 +141,25 @@ const Products = () => {
     showToast('Cart updated!', 'success');
   };
 
+  // Get unique brands from products
+  const uniqueBrands = React.useMemo(() => {
+    const brands = new Set();
+    allProducts.forEach(product => {
+      if (product.brand && product.brand.trim()) {
+        brands.add(product.brand.trim());
+      }
+    });
+    return Array.from(brands).sort();
+  }, [allProducts]);
+
   const categories = [
     { id: 'all', name: 'All Products' },
     { id: 'domestic', name: 'Domestic Machines' },
     { id: 'industrial', name: 'Industrial Machines' },
     { id: 'embroidery', name: 'Embroidery Machines' },
     { id: 'overlock', name: 'Overlock Machines' },
-    { id: 'accessories', name: 'Accessories' },
+    // Add brand filters
+    ...uniqueBrands.map(brand => ({ id: `brand-${brand}`, name: brand, type: 'brand' }))
   ];
 
   const priceRanges = [
@@ -142,13 +196,21 @@ const Products = () => {
         product =>
           product.name.toLowerCase().includes(query) ||
           product.brand.toLowerCase().includes(query) ||
-          product.category.toLowerCase().includes(query)
+          product.category.toLowerCase().includes(query) ||
+          (product.description && product.description.toLowerCase().includes(query))
       );
     }
 
-    // Filter by category
+    // Filter by category or brand
     if (filters.category !== 'all') {
-      filtered = filtered.filter(product => product.category === filters.category);
+      if (filters.category.startsWith('brand-')) {
+        // Filter by brand name
+        const brandName = filters.category.replace('brand-', '');
+        filtered = filtered.filter(product => product.brand === brandName);
+      } else {
+        // Filter by category
+        filtered = filtered.filter(product => product.category === filters.category);
+      }
     }
 
     // Filter by price range (price is already in INR from backend)
@@ -231,14 +293,14 @@ const Products = () => {
   return (
     <>
       <SEO
-        title="Sewing Machines Online - Buy Premium Usha, Singer, JUKI, Brother | Andhra Machines Agencies"
-        description="Shop premium sewing machines online. Browse domestic, industrial, embroidery, and overlock machines from top brands like Usha, Singer, JUKI, Brother, Jack, Guru, and Shiela. Free delivery across India."
-        keywords="buy sewing machines online, Usha sewing machine price, Singer sewing machine online, JUKI industrial sewing machine, Brother sewing machine, domestic sewing machines, industrial sewing machines, embroidery machines, overlock machines"
+        title="Sewing Machines Online - Buy Premium Usha, Singer, Brother | Andhra Machines Agencies"
+        description="Shop premium sewing machines online. Browse domestic, industrial, embroidery, and overlock machines from top brands like Usha, Singer, Brother, Jack, Guru, and Shiela. Free delivery across India."
+        keywords="buy sewing machines online, Usha sewing machine price, Singer sewing machine online, Brother sewing machine, domestic sewing machines, industrial sewing machines, embroidery machines, overlock machines"
         image="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
       />
       <StructuredData data={breadcrumbSchema} />
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Our Products</h1>
           
@@ -291,7 +353,9 @@ const Products = () => {
                     <span className="text-sm text-gray-500">Active filters:</span>
                     {filters.category !== 'all' && (
                       <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#c54513]/10 text-[#c54513] rounded-full text-xs font-medium">
-                        {categories.find(c => c.id === filters.category)?.name}
+                        {filters.category.startsWith('brand-') 
+                          ? categories.find(c => c.id === filters.category)?.name || filters.category.replace('brand-', '')
+                          : categories.find(c => c.id === filters.category)?.name}
                         <button
                           onClick={() => handleFilterChange('category', 'all')}
                           className="hover:text-[#a43a10]"
@@ -424,26 +488,41 @@ const Products = () => {
                   key={product.id}
                   className="group relative bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-200"
                 >
-                  <Link to={`/products/${product.brandSlug}`} className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none sm:h-64 block relative">
+                  <Link to={`/products/${product.brandSlug}`} className="relative h-56 bg-gray-50 overflow-hidden block">
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-center object-cover sm:w-full sm:h-full"
+                      className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = 'https://images.unsplash.com/photo-1584917860127-7ee3bf0d81d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
                       }}
                     />
+                    
+                    {/* Discount and Brand Tags */}
+                    <div className="absolute top-3 left-3 flex flex-col space-y-2">
+                      {product.discount > 0 && (
+                        <span className="inline-block bg-[#c54513] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                          {product.discount}% OFF
+                        </span>
+                      )}
+                      <span className="inline-block bg-white text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+                        {product.brand}
+                      </span>
+                    </div>
+
+                    {/* New and Sale Badges */}
                     {product.isNew && (
-                      <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                         New
                       </div>
                     )}
-                    {product.isOnSale && (
-                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    {product.isOnSale && !product.isNew && (
+                      <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                         Sale
                       </div>
                     )}
+                    
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
                   </Link>
                   <div className="flex-1 p-3 sm:p-4 flex flex-col">

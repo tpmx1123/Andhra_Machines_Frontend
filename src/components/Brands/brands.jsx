@@ -8,7 +8,6 @@ const Brands = () => {
     usha: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380473/page1-800px-USHA_Logo.pdf_aaotn8_v4iosh.jpg',
     singer: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380889/Singer-Logo_tgjv61_nk8vfi.png',
     jack: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380965/images_uwvfcp_l3g1xg.jpg',
-    juki: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381358/212201_pic_20250106180407_tlwac9_jyw2ln.webp',
     brother: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381417/Screenshot_2025-12-17_143538_v845iu_keavdh.png',
     guru: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381542/images_yfisez_1_xoqcmb.png',
     shiela: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381608/c0ba20498b688b78d1aa85683be2eb55_zodny4_x8uikd.jpg',
@@ -44,13 +43,6 @@ const Brands = () => {
       featured: true
     },
     {
-      id: 'juki',
-      name: 'JUKI',
-      description: 'A Japanese company known for industrial and home sewing machines, JUKI is the choice of professionals for its durability and precision.',
-      logo: brandLogos.juki,
-      featured: true
-    },
-    {
       id: 'brother',
       name: 'Brother',
       description: 'Innovative sewing and embroidery machines with user-friendly features, perfect for both beginners and experienced sewists.',
@@ -71,9 +63,9 @@ const Brands = () => {
   return (
     <>
       <SEO
-        title="Sewing Machine Brands - Usha, Singer, JUKI, Brother, Jack | Andhra Machines Agencies"
-        description="Explore premium sewing machine brands at Andhra Machines Agencies. Shop Usha, Singer, JUKI, Brother, Jack, Guru, and Shiela sewing machines. Trusted brands since 1982."
-        keywords="Usha sewing machine, Singer sewing machine, JUKI sewing machine, Brother sewing machine, Jack sewing machine, sewing machine brands, best sewing machine brands"
+        title="Sewing Machine Brands - Usha, Singer, Brother, Jack | Andhra Machines Agencies"
+        description="Explore premium sewing machine brands at Andhra Machines Agencies. Shop Usha, Singer, Brother, Jack, Guru, and Shiela sewing machines. Trusted brands since 1982."
+        keywords="Usha sewing machine, Singer sewing machine, Brother sewing machine, Jack sewing machine, sewing machine brands, best sewing machine brands"
       />
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

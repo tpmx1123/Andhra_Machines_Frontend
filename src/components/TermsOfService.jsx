@@ -35,7 +35,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. About Us</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                Andhra Machines Agencies is an e-commerce platform specializing in the sale of sewing machines and related products. We have been serving customers since 1982, offering quality products from renowned brands including Usha, Singer, JUKI, Brother, Jack, Guru, and Shiela.
+                Andhra Machines Agencies is an e-commerce platform specializing in the sale of sewing machines and related products. We have been serving customers since 1982, offering quality products from renowned brands including Usha, Singer, Brother, Jack, Guru, and Shiela.
               </p>
               <div className="bg-gray-50 rounded-lg p-6 mt-4">
                 <p className="text-gray-700">

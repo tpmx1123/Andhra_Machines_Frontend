@@ -14,7 +14,7 @@ const SEO = ({
   const currentUrl = `${baseUrl}${location.pathname}`;
   const defaultImage = 'https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png';
   const defaultTitle = 'Andhra Machines Agencies - Premium Sewing Machines Since 1982';
-  const defaultDescription = 'Your trusted partner for premium sewing machines since 1982. Shop Usha, Singer, JUKI, Brother, Jack, Guru & Shiela sewing machines. Delivery across India. Expert service & genuine products.';
+  const defaultDescription = 'Your trusted partner for premium sewing machines since 1982. Shop Usha, Singer, Brother, Jack, Guru & Shiela sewing machines. Delivery across India. Expert service & genuine products.';
 
   useEffect(() => {
     // Update document title

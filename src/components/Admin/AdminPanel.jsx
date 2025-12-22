@@ -79,13 +79,13 @@ export default function AdminPanel() {
               <p className="text-xs sm:text-sm text-gray-500">Welcome, {user?.name}</p>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={handleLogout}
+            <button
+              onClick={handleLogout}
                 className="hidden sm:flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </button>
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </button>
               <button
                 onClick={handleLogout}
                 className="sm:hidden p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"

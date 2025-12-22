@@ -34,7 +34,7 @@ export const generateOrganizationSchema = () => ({
   "@type": "Store",
   "name": "Andhra Machines Agencies",
   "image": "https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png",
-  "description": "Premium sewing machines dealer since 1982. Specializing in Usha, Singer, JUKI, Brother, Jack, Guru, and Shiela sewing machines.",
+  "description": "Premium sewing machines dealer since 1982. Specializing in Usha, Singer, Brother, Jack, Guru, and Shiela sewing machines.",
   "url": "https://andhramachinesagencies.com",
   "telephone": "+919701332707",
   "email": "andhramachinesagencies@gmail.com",
