@@ -12,7 +12,7 @@ const Home = lazy(() => import('./components/Home'));
 const About = lazy(() => import('./components/AboutUs/about'));
 const Contact = lazy(() => import('./components/Contact/contact'));
 const Blog = lazy(() => import('./components/Blog/blog'));
-const Brands = lazy(() => import('./components/Brands/Brands'));
+const Brands = lazy(() => import('./components/Brands/brands'));
 const BrandDetail = lazy(() => import('./components/Brands/BrandDetail'));
 const Products = lazy(() => import('./components/Products/Products'));
 const ProductDetail = lazy(() => import('./components/Products/ProductDetail'));
