@@ -90,10 +90,33 @@ const ProductDetail = () => {
   const getSpecifications = () => {
     if (!product?.specificationsJson) return {};
     try {
-      return typeof product.specificationsJson === 'string' 
-        ? JSON.parse(product.specificationsJson) 
-        : product.specificationsJson;
-    } catch {
+      let specs = product.specificationsJson;
+      
+      // If it's already an object, return it
+      if (typeof specs === 'object' && specs !== null && !Array.isArray(specs)) {
+        return specs;
+      }
+      
+      // If it's a string, try to parse it
+      if (typeof specs === 'string') {
+        // Remove any extra whitespace
+        specs = specs.trim();
+        
+        // If empty, return empty object
+        if (!specs) return {};
+        
+        // Try to parse as JSON
+        const parsed = JSON.parse(specs);
+        
+        // Ensure it's an object, not an array or primitive
+        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
+      
+      return {};
+    } catch (error) {
+      console.error('Error parsing specifications:', error, product.specificationsJson);
       return {};
     }
   };
@@ -339,9 +362,22 @@ const ProductDetail = () => {
 
   // Derived values for product and images
   const productImages = getProductImages();
-  const specifications = getSpecifications();
+  const rawSpecs = getSpecifications();
+  // Ensure specifications is always an object, never a string
+  const specifications = (rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs) && rawSpecs !== null) 
+    ? rawSpecs 
+    : {};
   const highlights = product?.highlights || [];
   const ratingValue = product?.rating;
+  
+  // Debug: Log specifications to console (remove in production)
+  useEffect(() => {
+    if (product?.specificationsJson) {
+      console.log('Raw specificationsJson:', product.specificationsJson);
+      console.log('Parsed specifications:', specifications);
+      console.log('Type of specifications:', typeof specifications);
+    }
+  }, [product, specifications]);
   const productRating = ratingValue ? parseFloat(ratingValue) : 0;
   const reviewCount = product?.reviewCount ?? reviews.length;
 
@@ -586,16 +622,30 @@ const ProductDetail = () => {
             </div>
 
             {/* Specifications Section - Always below images */}
-            {Object.keys(specifications).length > 0 && (
+            {specifications && 
+             typeof specifications === 'object' && 
+             !Array.isArray(specifications) &&
+             specifications !== null &&
+             Object.keys(specifications).length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
                 <dl className="space-y-3">
-                  {Object.entries(specifications).map(([key, value]) => (
-                    <div key={key} className="flex flex-col sm:flex-row sm:items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                      <dt className="text-sm font-semibold text-gray-700 mb-1 sm:mb-0 sm:w-1/3 sm:pr-4">{key}:</dt>
-                      <dd className="text-sm text-gray-900 sm:w-2/3">{value}</dd>
-                    </div>
-                  ))}
+                  {Object.entries(specifications)
+                    .filter(([key, value]) => {
+                      // Only show valid key-value pairs
+                      return key && 
+                             key !== null && 
+                             typeof key === 'string' && 
+                             value !== null && 
+                             value !== undefined &&
+                             (typeof value === 'string' || typeof value === 'number');
+                    })
+                    .map(([key, value]) => (
+                      <div key={key} className="flex flex-col sm:flex-row sm:items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                        <dt className="text-sm font-semibold text-gray-700 mb-1 sm:mb-0 sm:w-1/3 sm:pr-4">{key}:</dt>
+                        <dd className="text-sm text-gray-900 sm:w-2/3">{String(value)}</dd>
+                      </div>
+                    ))}
                 </dl>
               </div>
             )}
