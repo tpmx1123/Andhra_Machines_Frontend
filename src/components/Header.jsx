@@ -274,7 +274,15 @@ export default function Header() {
 
         {/* Mobile menu */}
         {showMobileMenu && (
-          <div className="lg:hidden mt-3 pb-3 bg-white shadow-inner rounded-lg">
+          <div 
+            className="lg:hidden mt-3 pb-3 bg-white shadow-inner rounded-lg max-h-[calc(100vh-200px)] landscape:max-h-[calc(100vh-150px)] overflow-y-auto overscroll-contain"
+            style={{ 
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth',
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#c54513 #f3f4f6'
+            }}
+          >
             <div className="space-y-0.5 py-2">
               <Link
                 to="/"
