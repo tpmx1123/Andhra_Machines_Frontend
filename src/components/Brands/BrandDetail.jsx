@@ -7,6 +7,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { shareProduct } from '../../utils/share';
 import { api } from '../../services/api';
+import SEO from '../SEO';
 
 const BrandDetail = () => {
   const { brandId } = useParams();
@@ -144,6 +145,14 @@ const BrandDetail = () => {
   if (!brand) return null;
 
   return (
+    <>
+      <SEO
+        title={`${brand.name} Sewing Machines | Buy Online | Andhra Machines Agencies`}
+        description={`Shop ${brand.name} sewing machines online. Premium quality, genuine products. Free delivery across India. Expert service since 1982. Browse our collection of ${brand.name} sewing machines.`}
+        keywords={`${brand.name} sewing machine, buy ${brand.name} online, ${brand.name} price, ${brand.name} dealer, sewing machine ${brand.name}, ${brand.name} India`}
+        image={brand.logo || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png'}
+        type="website"
+      />
     <div className="min-h-screen bg-gray-50">
       {/* Brand Header */}
       <div className="bg-white shadow">
@@ -508,6 +517,7 @@ const BrandDetail = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

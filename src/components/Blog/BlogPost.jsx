@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Share2, Calendar, ArrowRight } from 'lucide-react';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
+import SEO from '../SEO';
+import StructuredData, { generateArticleSchema } from '../StructuredData';
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -104,6 +106,22 @@ const BlogPost = () => {
   }
 
   return (
+    <>
+      <SEO
+        title={`${post.title} | Andhra Machines Agencies Blog`}
+        description={post.excerpt || post.content?.substring(0, 160) || `Read about ${post.title} on Andhra Machines Agencies blog. Expert tips and insights about sewing machines.`}
+        keywords={`${post.category}, sewing machine tips, ${post.title}, sewing machine guide, Andhra Machines`}
+        image={post.imageUrl || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png'}
+        type="article"
+      />
+      <StructuredData data={generateArticleSchema({
+        title: post.title,
+        excerpt: post.excerpt,
+        content: post.content,
+        image: post.imageUrl,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt
+      })} />
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative bg-gray-900">
@@ -288,6 +306,7 @@ const BlogPost = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 
 const SEO = ({ 
@@ -16,74 +16,32 @@ const SEO = ({
   const defaultTitle = 'Andhra Machines Agencies - Premium Sewing Machines Since 1982';
   const defaultDescription = 'Your trusted partner for premium sewing machines since 1982. Shop Usha, Singer, Brother, Jack, Guru & Shiela sewing machines. Delivery across India. Expert service & genuine products.';
 
-  useEffect(() => {
-    // Update document title
-    document.title = title || defaultTitle;
-
-    // Update or create meta tags
-    const updateMetaTag = (name, content, isProperty = false) => {
-      if (!content) return;
+  return (
+    <Helmet>
+      <title>{title || defaultTitle}</title>
+      <meta name="description" content={description || defaultDescription} />
+      {keywords && <meta name="keywords" content={keywords} />}
+      <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
       
-      const attribute = isProperty ? 'property' : 'name';
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      {/* Open Graph Tags */}
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={currentUrl} />
+      <meta property="og:title" content={title || defaultTitle} />
+      <meta property="og:description" content={description || defaultDescription} />
+      <meta property="og:image" content={image || defaultImage} />
+      <meta property="og:site_name" content="Andhra Machines Agencies" />
       
-      if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attribute, name);
-        document.head.appendChild(element);
-      }
+      {/* Twitter Card Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={currentUrl} />
+      <meta name="twitter:title" content={title || defaultTitle} />
+      <meta name="twitter:description" content={description || defaultDescription} />
+      <meta name="twitter:image" content={image || defaultImage} />
       
-      element.setAttribute('content', content);
-    };
-
-    // Update or create link tags
-    const updateLinkTag = (rel, href) => {
-      if (!href) return;
-      
-      let element = document.querySelector(`link[rel="${rel}"]`);
-      
-      if (!element) {
-        element = document.createElement('link');
-        element.setAttribute('rel', rel);
-        document.head.appendChild(element);
-      }
-      
-      element.setAttribute('href', href);
-    };
-
-    // Primary Meta Tags
-    updateMetaTag('title', title || defaultTitle);
-    updateMetaTag('description', description || defaultDescription);
-    if (keywords) {
-      updateMetaTag('keywords', keywords);
-    }
-    updateMetaTag('robots', noindex ? 'noindex, nofollow' : 'index, follow');
-
-    // Open Graph Tags
-    updateMetaTag('og:type', type, true);
-    updateMetaTag('og:url', currentUrl, true);
-    updateMetaTag('og:title', title || defaultTitle, true);
-    updateMetaTag('og:description', description || defaultDescription, true);
-    updateMetaTag('og:image', image || defaultImage, true);
-    updateMetaTag('og:site_name', 'Andhra Machines Agencies', true);
-
-    // Twitter Card Tags
-    updateMetaTag('twitter:card', 'summary_large_image', true);
-    updateMetaTag('twitter:url', currentUrl, true);
-    updateMetaTag('twitter:title', title || defaultTitle, true);
-    updateMetaTag('twitter:description', description || defaultDescription, true);
-    updateMetaTag('twitter:image', image || defaultImage, true);
-
-    // Canonical URL
-    updateLinkTag('canonical', currentUrl);
-
-    // Cleanup function (optional, but good practice)
-    return () => {
-      // Meta tags will persist, which is what we want for SEO
-    };
-  }, [title, description, keywords, image, type, noindex, currentUrl]);
-
-  return null; // This component doesn't render anything
+      {/* Canonical URL */}
+      <link rel="canonical" href={currentUrl} />
+    </Helmet>
+  );
 };
 
 export default SEO;
