@@ -34,7 +34,8 @@ export const FavoritesProvider = ({ children }) => {
               price: parseFloat(item.price),
               originalPrice: item.originalPrice ? parseFloat(item.originalPrice) : parseFloat(item.price),
               image: item.image,
-              rating: 0
+              rating: 0,
+              inStock: item.inStock !== undefined ? item.inStock : true
             }));
             setFavorites(dbFavorites);
           } else {
@@ -106,7 +107,8 @@ export const FavoritesProvider = ({ children }) => {
         price: product.price,
         originalPrice: product.originalPrice || product.price,
         image: product.image || product.images?.[0] || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-        rating: product.rating || 0
+        rating: product.rating || 0,
+        inStock: product.inStock !== undefined ? product.inStock : true
       };
       
       setFavorites(prev => [...prev, favoriteItem]);

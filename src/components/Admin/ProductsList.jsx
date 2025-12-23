@@ -247,7 +247,7 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <span
                       className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         product.isActive
@@ -256,6 +256,15 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
                       }`}
                     >
                       {product.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        product.inStock
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
+                      {product.inStock ? 'In Stock' : 'Out of Stock'}
                     </span>
                     {product.scheduledPrice && (
                       <div className="flex items-center gap-1">
@@ -372,15 +381,26 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        product.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {product.isActive ? 'Active' : 'Inactive'}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {product.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.inStock
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-sm">
                     {product.scheduledPrice ? (
