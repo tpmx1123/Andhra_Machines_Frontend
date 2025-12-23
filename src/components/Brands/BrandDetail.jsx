@@ -288,7 +288,7 @@ const BrandDetail = () => {
                 return (
                   <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow relative group">
                     <Link 
-                      to={`/products/${product.id}`}
+                      to={`/products/${product.brandSlug || product.id}`}
                       className="block"
                     >
                       <div className="relative h-56 bg-gray-50 overflow-hidden">

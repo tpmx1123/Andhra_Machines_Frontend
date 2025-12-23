@@ -466,12 +466,37 @@ export default function Profile() {
                       
                       <div className="mt-3 pt-3 border-t border-gray-100">
                         <p className="text-sm font-medium text-gray-700 mb-2">Order Items:</p>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {order.items.map((item) => (
-                            <div key={item.id} className="flex items-center justify-between text-sm">
-                              <span className="text-gray-700">{item.productName} x {item.quantity}</span>
-                              <span className="font-medium text-gray-900">₹{item.totalPrice.toLocaleString('en-IN')}</span>
-                            </div>
+                            <Link
+                              key={item.id}
+                              to={`/products/${item.brandSlug || item.productId}`}
+                              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                            >
+                              {item.productImage && (
+                                <img
+                                  src={item.productImage}
+                                  alt={item.productName}
+                                  className="w-16 h-16 object-contain rounded border border-gray-200 bg-gray-50 flex-shrink-0"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://images.unsplash.com/photo-1584917860127-7ee3bf0d81d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+                                  }}
+                                />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
+                                  {item.productName}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-0.5">Quantity: {item.quantity}</p>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <p className="text-sm font-semibold text-gray-900">₹{item.totalPrice.toLocaleString('en-IN')}</p>
+                                {item.unitPrice && (
+                                  <p className="text-xs text-gray-500">₹{item.unitPrice.toLocaleString('en-IN')} each</p>
+                                )}
+                              </div>
+                            </Link>
                           ))}
                         </div>
                       </div>
