@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock } from 'lucide-react';
 import { api } from '../../services/api';
-import { useToast } from '../../hooks/useToast';
+import { useToast } from '../../contexts/ToastContext';
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState([]);

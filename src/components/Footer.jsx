@@ -1,7 +1,9 @@
 import { Facebook, Instagram, Mail as MailIcon, Phone, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 
 export default function Footer() {
+  const { showToast } = useToast();
   return (
     <footer className="relative bg-gray-50 border-t-2 border-[#c54513]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -92,10 +94,27 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://mail.google.com/mail/?view=cm&fs=1&to=andhramachinesagencies@gmail.com&su=Inquiry%20from%20Website"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="text-sm sm:text-base text-gray-600 hover:text-[#c54513] transition-colors flex items-start break-all"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    const email = 'andhramachinesagencies@gmail.com';
+                    const subject = 'Contact from Andhra Machines Website';
+                    
+                    if (isMobile) {
+                      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+                      setTimeout(() => {
+                        navigator.clipboard.writeText(email).then(() => {
+                          showToast('Email address copied to clipboard!', 'success');
+                        });
+                      }, 200);
+                    } else {
+                      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+                      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}`, '_blank');
+                    }
+                    return false;
+                  }}
                 >
                   <MailIcon size={14} className="mr-2 mt-0.5 flex-shrink-0" />
                   <span className="break-all">andhramachinesagencies@gmail.com</span>

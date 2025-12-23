@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Share2, Calendar, ArrowRight } from 'lucide-react';
 import { api } from '../../services/api';
-import { useToast } from '../../hooks/useToast';
+import { useToast } from '../../contexts/ToastContext';
 
 const BlogPost = () => {
   const { slug } = useParams();
