@@ -44,7 +44,7 @@ export default function BrandsSection() {
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1 text-sm font-semibold text-[#c54513] bg-[#fde8e1] rounded-full mb-4">
+          <span className="inline-block px-4 py-1 text-sm font-semibold text-[#f8f6f6] bg-[#eb5a2a] rounded-full mb-4">
             OUR BRANDS
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">

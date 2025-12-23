@@ -5,12 +5,12 @@ import SEO from '../SEO';
 const Brands = () => {
   // Brand logos from BrandsSection.jsx
   const brandLogos = {
-    usha: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380473/page1-800px-USHA_Logo.pdf_aaotn8_v4iosh.jpg',
-    singer: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380889/Singer-Logo_tgjv61_nk8vfi.png',
-    jack: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766380965/images_uwvfcp_l3g1xg.jpg',
-    brother: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381417/Screenshot_2025-12-17_143538_v845iu_keavdh.png',
-    guru: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381542/images_yfisez_1_xoqcmb.png',
-    shiela: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766381608/c0ba20498b688b78d1aa85683be2eb55_zodny4_x8uikd.jpg',
+    usha: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385110/ChatGPT_Image_Dec_22_2025_12_01_07_PM_rfkzly.png',
+    singer: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766386088/ChatGPT_Image_Dec_22_2025_12_17_50_PM_plf7bn.png',
+    jack: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385962/ChatGPT_Image_Dec_22_2025_12_14_41_PM_c2fbke.png',
+    brother: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385482/ChatGPT_Image_Dec_22_2025_12_07_45_PM_bx7a2s.png',
+    guru: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385577/ChatGPT_Image_Dec_22_2025_12_08_40_PM_vgew9o.png',
+    shiela: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766385576/ChatGPT_Image_Dec_22_2025_12_08_48_PM_ehqdup.png',
   };
 
   const brands = [
@@ -85,11 +85,11 @@ const Brands = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {brands.filter(brand => brand.featured).map((brand) => (
               <div key={brand.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <div className="h-48 bg-white flex items-center justify-center p-6">
+                <div className="h-48 bg-white flex items-center justify-center p-2">
                   <img 
                     src={brand.logo} 
                     alt={`${brand.name} logo`} 
-                    className="max-h-20 max-w-full object-contain "
+                    className=" max-w-full object-contain rounded-lg "
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = 'https://via.placeholder.com/200x80?text=' + brand.name;

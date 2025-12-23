@@ -222,41 +222,49 @@ const BlogPost = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </div>
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               {relatedPosts.map((relatedPost) => (
                 <Link
                   key={relatedPost.id}
                   to={`/blog/${relatedPost.slug}`}
                   className="group block"
                 >
-                  <article className="h-full bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <div className="h-48 overflow-hidden">
+                  <article className="group relative bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                    <div className="relative h-56 bg-gray-50 overflow-hidden block">
                       <img
                         src={relatedPost.imageUrl || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg'}
                         alt={relatedPost.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg';
+                        }}
                       />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
                     </div>
-                    <div className="p-6">
-                      <div className="flex items-center text-sm text-gray-500 mb-3">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                    <div className="flex-1 p-3 sm:p-4 flex flex-col">
+                      <div className="mb-2">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#c54513]/10 text-[#c54513]">
                           {relatedPost.category}
                         </span>
-                        <span className="mx-2">•</span>
-                        <time dateTime={relatedPost.createdAt} className="flex items-center">
-                          <Calendar className="h-3.5 w-3.5 mr-1" />
-                          {formatDate(relatedPost.createdAt)}
-                        </time>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#c54513] transition-colors mb-2 line-clamp-2">
+                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2 mb-2">
                         {relatedPost.title}
                       </h3>
-                      <p className="text-gray-600 line-clamp-2 mb-4">
+                      <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-3 flex-1">
                         {relatedPost.excerpt}
                       </p>
-                      <div className="flex items-center text-sm font-medium text-[#c54513]">
-                        Read more
-                        <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <time dateTime={relatedPost.createdAt} className="text-xs text-gray-500 flex items-center">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {formatDate(relatedPost.createdAt)}
+                          </time>
+                          <div className="inline-flex items-center text-xs sm:text-sm font-medium text-[#c54513] hover:text-[#a43a10] transition-colors">
+                            Read more
+                            <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </article>

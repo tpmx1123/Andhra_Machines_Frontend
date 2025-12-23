@@ -152,42 +152,48 @@ const Blog = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8 px-1 sm:px-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-1 sm:px-0">
               {blogPosts.filter(p => !featuredPost || p.id !== featuredPost.id).map((post, index) => (
                 <article
                   key={post.id || index}
-                  className="group bg-white rounded-lg sm:rounded-xl shadow-sm overflow-hidden transition-all duration-300 h-full flex flex-col border border-gray-100 hover:border-gray-200 hover:-translate-y-1 hover:shadow-lg"
+                  className="group relative bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-200"
                 >
-                  <div className="relative h-48 overflow-hidden rounded-t-xl">
+                  <Link to={`/blog/${post.slug}`} className="relative h-56 bg-gray-50 overflow-hidden block">
                     <img
                       src={post.imageUrl}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg';
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                  </div>
-
-                  <div className="p-4 sm:p-5 flex-grow flex flex-col">
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
+                  </Link>
+                  
+                  <div className="flex-1 p-3 sm:p-4 flex flex-col">
+                    <div className="mb-2">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#c54513]/10 text-[#c54513]">
                         {post.category}
                       </span>
                     </div>
-
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 leading-tight group-hover:text-[#c54513] transition-colors line-clamp-2">
-                      {post.title}
-                    </h3>
-
-                    <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-3">
+                    
+                    <Link to={`/blog/${post.slug}`} className="group">
+                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2 mb-2">
+                        {post.title}
+                      </h3>
+                    </Link>
+                    
+                    <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-3 flex-1">
                       {post.excerpt}
                     </p>
-
+                    
                     <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-500 whitespace-nowrap">{formatDate(post.createdAt)}</p>
+                        <p className="text-xs text-gray-500">{formatDate(post.createdAt)}</p>
                         <Link
                           to={`/blog/${post.slug}`}
-                          className="inline-flex items-center text-xs sm:text-sm font-medium text-[#c54513] hover:text-[#a4370f] group whitespace-nowrap"
+                          className="inline-flex items-center text-xs sm:text-sm font-medium text-[#c54513] hover:text-[#a43a10] transition-colors"
                         >
                           Read more
                           <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />

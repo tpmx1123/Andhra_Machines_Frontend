@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider } from './contexts/CartContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -74,6 +74,7 @@ function App() {
                     <Route path="terms-of-service" element={<TermsOfService />} />
                     <Route path="cancellation-returns" element={<CancellationReturns />} />
                     <Route path="legal" element={<Legal />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
               </Routes>
               </Suspense>

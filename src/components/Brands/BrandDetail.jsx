@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, ShoppingCart, Heart, Share2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingCart, Heart, Share2, ChevronRight, Plus, Minus } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -161,7 +161,7 @@ const BrandDetail = () => {
       </div>
 
       {/* Brand Banner */}
-      <div className="relative bg-gray-300 h-[400px] sm:h-[500px] md:h-[600px] lg:h-[750px] overflow-hidden">
+      <div className="relative bg-gray-300  lg:h-full ">
         <img
           src={brand.banner}
           alt={`${brand.name} banner`}
@@ -325,6 +325,13 @@ const BrandDetail = () => {
                             Sale
                           </div>
                         )}
+                        
+                        {/* Out of Stock Badge */}
+                        {!product.inStock && (
+                          <div className="absolute top-3 right-3 bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Out of Stock
+                          </div>
+                        )}
                       </div>
                       <div className="p-4">
                         <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-[#c54513] transition-colors">{product.name}</h3>
@@ -358,12 +365,12 @@ const BrandDetail = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            toggleFavorite(product);
+                            toggleFavorite(product, showToast, navigate);
                           }}
                           className={`p-2 transition-colors rounded-full hover:bg-gray-100 ${
                             isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
                           }`}
-                          title={isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                          title={isFavorite(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
                         >
                           <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
                         </button>
@@ -380,44 +387,80 @@ const BrandDetail = () => {
                         </button>
                       </div>
                       {product.inStock ? (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            if (!user) {
-                              showToast('Please login to add items to cart', 'error');
-                              navigate('/login');
-                              return;
-                            }
-                            
-                            const cartProduct = {
-                              id: product.id,
-                              name: product.name,
-                              brand: brand?.name || 'Unknown',
-                              price: product.price,
-                              originalPrice: product.originalPrice || product.price,
-                              image: product.image,
-                              brandSlug: product.brandSlug,
-                              inStock: product.inStock
-                            };
-                            
-                            // Check if product is already in cart
-                            const existingItem = cartItems.find(item => item.id === product.id);
-                            if (existingItem) {
-                              // Update quantity instead of adding again
-                              updateQuantity(product.id, existingItem.quantity + 1);
-                              showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
-                            } else {
+                        cartItems.find(item => item.id === product.id) ? (
+                          <div className="flex items-center gap-1 border border-gray-300 rounded-lg">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const existingItem = cartItems.find(item => item.id === product.id);
+                                if (existingItem && existingItem.quantity > 1) {
+                                  updateQuantity(product.id, existingItem.quantity - 1);
+                                  showToast('Cart updated!', 'success');
+                                } else if (existingItem) {
+                                  updateQuantity(product.id, 0);
+                                  showToast('Item removed from cart', 'success');
+                                }
+                              }}
+                              className="p-1.5 hover:bg-gray-100 rounded-l-lg transition-colors"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="px-3 py-1.5 text-sm font-medium">
+                              {cartItems.find(item => item.id === product.id)?.quantity || 0}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const existingItem = cartItems.find(item => item.id === product.id);
+                                if (existingItem) {
+                                  updateQuantity(product.id, existingItem.quantity + 1);
+                                  showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
+                                } else {
+                                  const cartProduct = {
+                                    id: product.id,
+                                    name: product.name,
+                                    brand: brand?.name || 'Unknown',
+                                    price: product.price,
+                                    originalPrice: product.originalPrice || product.price,
+                                    image: product.image,
+                                    brandSlug: product.brandSlug,
+                                    inStock: product.inStock
+                                  };
+                                  addToCart(cartProduct, 1);
+                                  showToast(`${product.name} added to cart!`, 'success');
+                                }
+                              }}
+                              className="p-1.5 hover:bg-gray-100 rounded-r-lg transition-colors"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const cartProduct = {
+                                id: product.id,
+                                name: product.name,
+                                brand: brand?.name || 'Unknown',
+                                price: product.price,
+                                originalPrice: product.originalPrice || product.price,
+                                image: product.image,
+                                brandSlug: product.brandSlug,
+                                inStock: product.inStock
+                              };
                               addToCart(cartProduct, 1);
                               showToast(`${product.name} added to cart!`, 'success');
-                            }
-                          }}
-                          className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-1" />
-                          Add to Cart
-                        </button>
+                            }}
+                            className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
+                          >
+                            <ShoppingCart className="h-4 w-4 mr-1" />
+                            Add to Cart
+                          </button>
+                        )
                       ) : (
                         <button
                           disabled

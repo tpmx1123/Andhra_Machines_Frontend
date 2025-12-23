@@ -115,12 +115,6 @@ const Products = () => {
   }, [cartItems]);
 
   const handleAddToCart = (product) => {
-    if (!user) {
-      showToast('Please login to add items to cart', 'error');
-      navigate('/login', { state: { from: '/products' } });
-      return;
-    }
-    
     // Check if product is already in cart
     const existingItem = cartItems.find(item => item.id === product.id);
     if (existingItem) {
@@ -523,16 +517,23 @@ const Products = () => {
                       </div>
                     )}
                     
+                    {/* Out of Stock Badge */}
+                    {!product.inStock && (
+                      <div className="absolute top-3 right-3 bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        Out of Stock
+                      </div>
+                    )}
+                    
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
                   </Link>
-                  <div className="flex-1 p-3 sm:p-4 flex flex-col">
+                  <div className="flex-1 p-2 sm:p-3 md:p-4 flex flex-col min-w-0">
                     <Link to={`/products/${product.brandSlug}`} className="group">
                       <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
                         {product.name}
                       </h3>
                     </Link>
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">{product.brand}</p>
-                    <div className="flex-1 flex flex-col justify-end">
+                    <div className="flex-1 flex flex-col justify-end min-w-0 mt-1">
                       <div className="flex items-center mt-2">
                         <div className="flex items-center">
                           {[0, 1, 2, 3, 4].map((rating) => (
@@ -552,28 +553,30 @@ const Products = () => {
                           {product.reviewCount} reviews
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        <p className="text-sm sm:text-base font-medium text-gray-900 flex-shrink-0">
-                          ₹{product.price.toLocaleString('en-IN')}
+                      <div className="mt-2 flex items-center justify-between gap-1 sm:gap-2 min-w-0">
+                        <div className="flex-shrink min-w-0 overflow-hidden">
+                          <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 truncate">
+                            ₹{product.price.toLocaleString('en-IN')}
+                          </p>
                           {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500 line-through">
+                            <p className="text-xs text-gray-500 line-through truncate">
                               ₹{product.originalPrice.toLocaleString('en-IN')}
-                            </span>
+                            </p>
                           )}
-                        </p>
-                        <div className="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
+                        </div>
+                        <div className="flex space-x-1 relative z-10 flex-shrink-0">
                           <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              toggleFavorite(product);
+                              toggleFavorite(product, showToast, navigate);
                             }}
-                            className={`p-1.5 sm:p-2 transition-colors rounded-full hover:bg-gray-100 flex-shrink-0 ${
+                            className={`p-1 sm:p-1.5 transition-colors rounded-full hover:bg-gray-100 flex-shrink-0 ${
                               isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
                             }`}
-                            title={isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                            title={isFavorite(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
                           >
-                            <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} aria-hidden="true" />
+                            <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} aria-hidden="true" />
                           </button>
                           {product.inStock ? (
                             cartQuantities[product.id] ? (
@@ -609,11 +612,11 @@ const Products = () => {
                                   e.stopPropagation();
                                   handleAddToCart(product);
                                 }}
-                                className="px-2 py-1.5 sm:px-3 sm:py-2 bg-[#c54513] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#a43a10] transition-colors flex items-center gap-1 flex-shrink-0"
+                                className="px-1.5 py-1.5 sm:px-3 sm:py-2 bg-[#c54513] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#a43a10] transition-colors flex items-center justify-center flex-shrink-0"
                                 title="Add to cart"
                               >
-                                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden sm:inline">Add</span>
+                                <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span className="hidden sm:inline ml-1">Add</span>
                               </button>
                             )
                           ) : (

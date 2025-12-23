@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Heart, Package, RefreshCw, CreditCard, User as UserIcon, LogOut, ChevronRight, ShoppingCart, X, Clock, CheckCircle, Truck, XCircle, Edit, Save, X as XIcon } from 'lucide-react';
+import { Heart, Package, RefreshCw, CreditCard, User as UserIcon, LogOut, ChevronRight, ShoppingCart, X, Clock, CheckCircle, Truck, XCircle, Edit, Save, X as XIcon, Star, Plus, Minus } from 'lucide-react';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,11 +16,12 @@ export default function Profile() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editFormData, setEditFormData] = useState({ name: '', phone: '' });
   const [isSaving, setIsSaving] = useState(false);
-  const { favorites, toggleFavorite } = useFavorites();
-  const { addToCart, cartItems, getCartTotal, getCartCount } = useCart();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { addToCart, cartItems, getCartTotal, getCartCount, updateQuantity } = useCart();
   const { user, logout, isAuthenticated, loading: authLoading, refreshUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const [cartQuantities, setCartQuantities] = useState({});
 
   useEffect(() => {
     // Wait for auth to finish loading before checking authentication status
@@ -35,6 +36,36 @@ export default function Profile() {
       fetchOrders();
     }
   }, [isAuthenticated, authLoading]);
+
+  // Update cart quantities when cartItems change
+  useEffect(() => {
+    const quantities = {};
+    cartItems.forEach(item => {
+      quantities[item.id] = item.quantity;
+    });
+    setCartQuantities(quantities);
+  }, [cartItems]);
+
+  const handleAddToCart = (product) => {
+    // Check if product is already in cart
+    const existingItem = cartItems.find(item => item.id === product.id);
+    if (existingItem) {
+      // Update quantity instead of adding again
+      updateQuantity(product.id, existingItem.quantity + 1);
+      showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
+    } else {
+      addToCart(product, 1);
+      showToast(`${product.name} added to cart!`, 'success');
+    }
+  };
+
+  const handleQuantityChange = (productId, newQuantity) => {
+    if (newQuantity < 1) {
+      return;
+    }
+    updateQuantity(productId, newQuantity);
+    showToast('Cart updated!', 'success');
+  };
 
   // Handle real-time order status updates via WebSocket
   const handleOrderStatusUpdate = (orderUpdate) => {
@@ -212,61 +243,157 @@ export default function Profile() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {favorites.map((item) => (
-                  <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                    <Link to={`/products/${item.id}`} className="block">
-                      <div className="aspect-w-1 aspect-h-1 bg-gray-100">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
+                {favorites.map((item) => {
+                  // Calculate discount percentage
+                  const discount = item.originalPrice && item.originalPrice > item.price
+                    ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
+                    : 0;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="group relative bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-200"
+                    >
+                      <Link to={`/products/${item.brandSlug || item.id}`} className="relative h-56 bg-gray-50 overflow-hidden block">
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="w-full h-48 object-cover"
+                          className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg';
+                            e.target.src = 'https://images.unsplash.com/photo-1584917860127-7ee3bf0d81d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
                           }}
                         />
-                      </div>
-                    </Link>
-                    <div className="p-4">
-                      <Link to={`/products/${item.id}`}>
-                        <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2 hover:text-[#c54513]">
-                          {item.name}
-                        </h3>
-                      </Link>
-                      <p className="text-xs text-gray-500 mb-2">{item.brand}</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-base font-bold text-gray-900">
-                          ₹{parseFloat(item.price || 0).toLocaleString('en-IN')}
-                          {item.originalPrice && parseFloat(item.originalPrice) > parseFloat(item.price || 0) && (
-                            <span className="ml-2 text-sm text-gray-500 line-through">
-                              ₹{parseFloat(item.originalPrice || 0).toLocaleString('en-IN')}
+                        
+                        {/* Discount and Brand Tags */}
+                        <div className="absolute top-3 left-3 flex flex-col space-y-2">
+                          {discount > 0 && (
+                            <span className="inline-block bg-[#c54513] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                              {discount}% OFF
                             </span>
                           )}
-                        </p>
-                      </div>
-                      <div className="mt-3 flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            addToCart(item, 1);
-                            showToast(`${item.name} added to cart!`, 'success');
-                          }}
-                          className="flex-1 flex items-center justify-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a43a10] transition-colors"
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-1" />
-                          Add to Cart
-                        </button>
-                        <button
-                          onClick={() => toggleFavorite(item)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                          title="Remove from wishlist"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+                          <span className="inline-block bg-white text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+                            {item.brand}
+                          </span>
+                        </div>
+                        
+                        {/* Out of Stock Badge */}
+                        {!item.inStock && (
+                          <div className="absolute top-3 right-3 bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Out of Stock
+                          </div>
+                        )}
+                        
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
+                      </Link>
+                      <div className="flex-1 p-3 sm:p-4 flex flex-col">
+                        <Link to={`/products/${item.brandSlug || item.id}`} className="group">
+                          <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
+                            {item.name}
+                          </h3>
+                        </Link>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-1">{item.brand}</p>
+                        <div className="flex-1 flex flex-col justify-end">
+                          <div className="flex items-center mt-2">
+                            <div className="flex items-center">
+                              {[0, 1, 2, 3, 4].map((rating) => (
+                                <Star
+                                  key={rating}
+                                  fill={rating < Math.floor(item.rating || 0) ? 'currentColor' : 'none'}
+                                  className={`h-3 w-3 sm:h-4 sm:w-4 ${
+                                    rating < Math.floor(item.rating || 0)
+                                      ? 'text-yellow-400'
+                                      : 'text-gray-300'
+                                  }`}
+                                  aria-hidden="true"
+                                />
+                              ))}
+                            </div>
+                            <p className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500">
+                              {item.reviewCount || 0} reviews
+                            </p>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between gap-2">
+                            <p className="text-sm sm:text-base font-medium text-gray-900 flex-shrink-0">
+                              ₹{parseFloat(item.price || 0).toLocaleString('en-IN')}
+                              {item.originalPrice && item.originalPrice > item.price && (
+                                <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500 line-through">
+                                  ₹{parseFloat(item.originalPrice || 0).toLocaleString('en-IN')}
+                                </span>
+                              )}
+                            </p>
+                            <div className="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  toggleFavorite(item, showToast, navigate);
+                                }}
+                                className={`p-1.5 sm:p-2 transition-colors rounded-full hover:bg-gray-100 flex-shrink-0 ${
+                                  isFavorite(item.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                                }`}
+                                title="Remove from wishlist"
+                              >
+                                <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${isFavorite(item.id) ? 'fill-current' : ''}`} aria-hidden="true" />
+                              </button>
+                              {item.inStock ? (
+                                cartQuantities[item.id] ? (
+                                <div className="flex items-center gap-1 border border-gray-300 rounded-lg">
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleQuantityChange(item.id, cartQuantities[item.id] - 1);
+                                    }}
+                                    className="p-1 hover:bg-gray-100 rounded-l-lg transition-colors"
+                                  >
+                                    <Minus size={12} />
+                                  </button>
+                                  <span className="px-2 py-1 text-xs font-medium">
+                                    {cartQuantities[item.id]}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleQuantityChange(item.id, cartQuantities[item.id] + 1);
+                                    }}
+                                    className="p-1 hover:bg-gray-100 rounded-r-lg transition-colors"
+                                  >
+                                    <Plus size={12} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAddToCart(item);
+                                  }}
+                                  className="px-2 py-1.5 sm:px-3 sm:py-2 bg-[#c54513] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#a43a10] transition-colors flex items-center gap-1 flex-shrink-0"
+                                  title="Add to cart"
+                                >
+                                  <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  <span className="hidden sm:inline">Add</span>
+                                </button>
+                              )
+                            ) : (
+                              <button
+                                disabled
+                                className="p-1.5 sm:p-2 text-gray-300 cursor-not-allowed rounded-full flex-shrink-0"
+                                title="Out of stock"
+                              >
+                                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+                              </button>
+                            )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -332,7 +459,7 @@ export default function Profile() {
                         <div>
                           <p className="text-gray-500">Payment Status:</p>
                           <p className={`font-medium ${order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'}`}>
-                            {order.paymentStatus.toUpperCase()}
+                            {order.paymentStatus === 'paid' ? 'PAID' : 'PENDING FOR PAYMENT'}
                           </p>
                         </div>
                       </div>

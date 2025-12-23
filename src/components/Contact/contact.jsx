@@ -297,7 +297,7 @@ export default function Contact() {
                     <span className="block">Andhra Pradesh, India</span>
                   </address>
                   <a 
-                    href="https://maps.app.goo.gl/HBKjcTHosNKR9nBJ8" 
+                    href="https://maps.google.com/?q=Andhra+Machines+Agencies,+Kandakam+Road,+Rajahmundry,+Andhra+Pradesh+533101" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center mt-2 text-[#1a365d] hover:text-[#c54513] font-medium text-sm"

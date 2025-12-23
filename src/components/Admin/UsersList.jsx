@@ -8,7 +8,7 @@ export default function UsersList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingUser, setEditingUser] = useState(null);
-  const [editFormData, setEditFormData] = useState({ name: '', email: '', phone: '' });
+  const [editFormData, setEditFormData] = useState({ name: '', phone: '' });
   const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
@@ -40,8 +40,6 @@ export default function UsersList() {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
       });
     } catch {
       return 'N/A';
@@ -52,14 +50,13 @@ export default function UsersList() {
     setEditingUser(user.id);
     setEditFormData({
       name: user.name || '',
-      email: user.email || '',
       phone: user.phone || ''
     });
   };
 
   const handleCancelEdit = () => {
     setEditingUser(null);
-    setEditFormData({ name: '', email: '', phone: '' });
+    setEditFormData({ name: '', phone: '' });
   };
 
   const showAlert = (title, message, type = 'info') => {
@@ -74,7 +71,7 @@ export default function UsersList() {
         // Refresh users list
         await fetchUsers();
         setEditingUser(null);
-        setEditFormData({ name: '', email: '', phone: '' });
+        setEditFormData({ name: '', phone: '' });
         showAlert('Success', 'User updated successfully', 'success');
       } else {
         showAlert('Error', response.message || 'Failed to update user', 'error');
@@ -170,16 +167,7 @@ export default function UsersList() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-gray-700">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  {editingUser === user.id ? (
-                    <input
-                      type="email"
-                      value={editFormData.email}
-                      onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
-                    />
-                  ) : (
-                    <span className="break-all">{user.email}</span>
-                  )}
+                  <span className="break-all">{user.email}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-700">
                   <Phone className="h-4 w-4 text-gray-400" />
@@ -258,19 +246,10 @@ export default function UsersList() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {editingUser === user.id ? (
-                      <input
-                        type="email"
-                        value={editFormData.email}
-                        onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                      />
-                    ) : (
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Mail className="h-4 w-4 mr-2" />
-                        {user.email}
-                      </div>
-                    )}
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Mail className="h-4 w-4 mr-2" />
+                      {user.email}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {editingUser === user.id ? (

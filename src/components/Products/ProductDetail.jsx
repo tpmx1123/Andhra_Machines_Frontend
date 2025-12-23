@@ -293,7 +293,7 @@ const ProductDetail = () => {
 
   const handleFavorite = () => {
     if (product) {
-      toggleFavorite(product);
+      toggleFavorite(product, showToast, navigate);
     }
   };
 

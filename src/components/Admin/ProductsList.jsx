@@ -136,7 +136,7 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
     try {
       setLoading(true);
       setError('');
-      const response = await api.getAllProducts();
+      const response = await api.getAllProductsForAdmin();
       // Ensure response is an array
       if (Array.isArray(response)) {
         setProducts(response);

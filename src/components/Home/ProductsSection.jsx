@@ -111,7 +111,7 @@ export default function ProductsSection() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1 text-sm font-semibold text-[#c54513] bg-[#fde8e1] rounded-full mb-4">
+          <span className="inline-block px-4 py-1 text-sm font-semibold text-[#f8f6f6] bg-[#eb5a2a]  rounded-full mb-4">
             OUR COLLECTION
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -172,12 +172,12 @@ export default function ProductsSection() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleFavorite(product);
+                    toggleFavorite(product, showToast, navigate);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.stopPropagation();
-                      toggleFavorite(product);
+                      toggleFavorite(product, showToast, navigate);
                     }
                   }}
                   className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
@@ -185,13 +185,20 @@ export default function ProductsSection() {
                       ? 'text-red-500 bg-white/90' 
                       : 'text-gray-400 bg-white/80 hover:bg-white'
                   }`}
-                  title={isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                  title={isFavorite(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
                   <Heart 
                     size={20} 
                     className={isFavorite(product.id) ? 'fill-current' : ''} 
                   />
                 </button>
+                
+                {/* Out of Stock Badge */}
+                {!product.inStock && (
+                  <div className="absolute top-3 left-3 bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                    Out of Stock
+                  </div>
+                )}
               </div>
 
               <div className="p-5">

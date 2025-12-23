@@ -186,6 +186,26 @@ export const api = {
   },
 
   // Product APIs
+  getAllProductsForAdmin: async () => {
+    const response = await fetch(`${API_BASE_URL}/products/admin`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      throw new Error(errorData.message || 'Failed to fetch products');
+    }
+    
+    return response.json();
+  },
+
   getAllProducts: async () => {
     const response = await fetch(`${API_BASE_URL}/products`, {
       method: 'GET',
@@ -785,6 +805,102 @@ export const api = {
         errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
       }
       throw new Error(errorData.message || 'Failed to sync cart prices');
+    }
+    
+    return response.json();
+  },
+
+  // Favorites API
+  getFavorites: async () => {
+    const response = await fetch(`${API_BASE_URL}/favorites`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      throw new Error(errorData.message || 'Failed to get favorites');
+    }
+    
+    return response.json();
+  },
+
+  addFavorite: async (productId) => {
+    const response = await fetch(`${API_BASE_URL}/favorites/add`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ productId }),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      throw new Error(errorData.message || 'Failed to add favorite');
+    }
+    
+    return response.json();
+  },
+
+  removeFavorite: async (productId) => {
+    const response = await fetch(`${API_BASE_URL}/favorites/remove/${productId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      throw new Error(errorData.message || 'Failed to remove favorite');
+    }
+    
+    return response.json();
+  },
+
+  checkFavorite: async (productId) => {
+    const response = await fetch(`${API_BASE_URL}/favorites/check/${productId}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      return { success: false, isFavorite: false };
+    }
+    
+    return response.json();
+  },
+
+  syncFavorites: async (productIds) => {
+    const response = await fetch(`${API_BASE_URL}/favorites/sync`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ productIds }),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      throw new Error(errorData.message || 'Failed to sync favorites');
     }
     
     return response.json();
