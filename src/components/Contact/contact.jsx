@@ -250,7 +250,7 @@ export default function Contact() {
                         window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
                         setTimeout(() => {
                           navigator.clipboard.writeText(email).then(() => {
-                            alert('Email address copied to clipboard!');
+                            showToast('Email address copied to clipboard!', 'success');
                           });
                         }, 200);
                       } else {

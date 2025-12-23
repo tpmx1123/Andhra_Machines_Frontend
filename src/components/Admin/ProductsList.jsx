@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { Edit, Trash2, Image as ImageIcon, Package, MessageSquare, Clock } from 'lucide-react';
+import ConfirmModal from '../ConfirmModal';
+import AlertModal from '../AlertModal';
+import { useWebSocket } from '../../hooks/useWebSocket';
 
 // Helper function to format date for display (using local timezone)
 const formatDate = (dateString) => {
@@ -29,33 +32,49 @@ const getScheduleStatus = (product) => {
   }
   
   try {
-    // Get current time in IST (Asia/Kolkata) timezone
+    // Get current time in IST
     const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-    const istNow = new Date(now.getTime() + (istOffset - now.getTimezoneOffset() * 60 * 1000));
+    // Convert to IST: Get UTC timestamp, add IST offset (UTC+5:30)
+    const utcTimestamp = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+    const istOffset = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+    const istNow = new Date(utcTimestamp + istOffset);
     
-    // Parse dates - backend sends LocalDateTime which should be interpreted as IST
-    // Convert to IST for comparison
+    // Parse dates - backend sends LocalDateTime (timezone-naive, treated as IST)
     const startDateStr = product.priceStartDate;
     const endDateStr = product.priceEndDate;
     
-    // If dates are in ISO format, parse them and treat as IST
-    let startDate = new Date(startDateStr);
-    let endDate = new Date(endDateStr);
+    // Helper to check if string has timezone
+    const hasTimezone = (str) => {
+      if (!str) return false;
+      return str.includes('Z') || str.includes('+') || (str.match(/[+-]\d{2}:\d{2}$/) !== null);
+    };
     
-    // If the date string doesn't have timezone info, assume it's IST
-    if (!startDateStr.includes('Z') && !startDateStr.includes('+') && !startDateStr.includes('-', 10)) {
-      // Date is timezone-naive, add IST offset
-      const startDateUTC = new Date(startDateStr + '+05:30');
-      startDate = startDateUTC;
+    // Parse dates - if no timezone, treat as IST
+    let startDate, endDate;
+    
+    if (hasTimezone(startDateStr)) {
+      startDate = new Date(startDateStr);
+    } else {
+      // No timezone - treat as IST
+      // Format: "2025-12-22T18:25:00" or "2025-12-22 18:25:00" -> add +05:30
+      const cleanStart = startDateStr.replace(' ', 'T').split('.')[0]; // Remove milliseconds if present
+      const formattedStart = cleanStart.includes('T') 
+        ? `${cleanStart}+05:30`
+        : `${cleanStart.replace(' ', 'T')}+05:30`;
+      startDate = new Date(formattedStart);
     }
     
-    if (!endDateStr.includes('Z') && !endDateStr.includes('+') && !endDateStr.includes('-', 10)) {
-      const endDateUTC = new Date(endDateStr + '+05:30');
-      endDate = endDateUTC;
+    if (hasTimezone(endDateStr)) {
+      endDate = new Date(endDateStr);
+    } else {
+      const cleanEnd = endDateStr.replace(' ', 'T').split('.')[0];
+      const formattedEnd = cleanEnd.includes('T')
+        ? `${cleanEnd}+05:30`
+        : `${cleanEnd.replace(' ', 'T')}+05:30`;
+      endDate = new Date(formattedEnd);
     }
     
-    // Compare current IST time with schedule dates
+    // Compare times (all in milliseconds since epoch)
     const nowTime = istNow.getTime();
     const startTime = startDate.getTime();
     const endTime = endDate.getTime();
@@ -77,10 +96,41 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState({ isOpen: false, productId: null, productTitle: '' });
+  const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
     fetchProducts();
   }, [refreshKey]);
+
+  // Refresh products every minute to update schedule status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Force re-render to update schedule status
+      setProducts(prevProducts => [...prevProducts]);
+    }, 60000); // Every 60 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    // Update the product in the list
+    setProducts(prevProducts =>
+      prevProducts.map(product =>
+        product.id === priceUpdate.productId
+          ? {
+              ...product,
+              price: priceUpdate.newPrice,
+              originalPrice: priceUpdate.originalPrice || product.originalPrice
+            }
+          : product
+      )
+    );
+  };
+
+  // Subscribe to WebSocket updates for real-time price changes
+  useWebSocket(handlePriceUpdate, null);
 
   const fetchProducts = async () => {
     try {
@@ -104,14 +154,21 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
-      return;
-    }
+  const showAlert = (title, message, type = 'info') => {
+    setAlertModal({ isOpen: true, title, message, type });
+  };
+
+  const handleDeleteClick = (id, title) => {
+    setDeleteConfirmModal({ isOpen: true, productId: id, productTitle: title });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const { productId } = deleteConfirmModal;
+    if (!productId) return;
 
     try {
       setLoading(true);
-      await api.deleteProduct(id);
+      await api.deleteProduct(productId);
       
       // Refresh the products list to reflect the deletion
       await fetchProducts();
@@ -122,10 +179,11 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
       }
       
       // Show success message
-      alert('Product deleted successfully from database');
+      showAlert('Success', 'Product deleted successfully from database', 'success');
+      setDeleteConfirmModal({ isOpen: false, productId: null, productTitle: '' });
     } catch (err) {
       console.error('Error deleting product:', err);
-      alert(err.message || 'Failed to delete product. Please try again.');
+      showAlert('Error', err.message || 'Failed to delete product. Please try again.', 'error');
       setLoading(false);
     }
   };
@@ -159,17 +217,22 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
             <div key={product.id} className="p-4 hover:bg-gray-50">
               <div className="flex gap-4">
                 <div className="flex-shrink-0">
-                  {product.imageUrl ? (
+                  {product.mainImageUrl || product.imageUrl ? (
                     <img
-                      src={product.imageUrl}
+                      src={product.mainImageUrl || product.imageUrl}
                       alt={product.title}
-                      className="h-20 w-20 object-cover rounded"
+                      className="h-20 w-20 object-contain rounded border border-gray-200 bg-gray-50"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '';
+                        e.target.style.display = 'none';
+                        e.target.nextElementSibling.style.display = 'flex';
+                      }}
                     />
-                  ) : (
-                    <div className="h-20 w-20 bg-gray-100 rounded flex items-center justify-center">
-                      <ImageIcon className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`h-20 w-20 bg-gray-100 rounded flex items-center justify-center ${product.mainImageUrl || product.imageUrl ? 'hidden' : ''}`}>
+                    <ImageIcon className="h-8 w-8 text-gray-400" />
+                  </div>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-gray-900 mb-1">{product.title}</div>
@@ -227,7 +290,7 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDeleteClick(product.id, product.title)}
                       className="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md transition-colors"
                       title="Delete product"
                     >
@@ -277,17 +340,22 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
               products.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {product.imageUrl ? (
+                    {product.mainImageUrl || product.imageUrl ? (
                       <img
-                        src={product.imageUrl}
+                        src={product.mainImageUrl || product.imageUrl}
                         alt={product.title}
-                        className="h-16 w-16 object-cover rounded"
+                        className="h-16 w-16 object-contain rounded border border-gray-200 bg-gray-50"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '';
+                          e.target.style.display = 'none';
+                          e.target.nextElementSibling.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="h-16 w-16 bg-gray-100 rounded flex items-center justify-center">
-                        <ImageIcon className="h-8 w-8 text-gray-400" />
-                      </div>
-                    )}
+                    ) : null}
+                    <div className={`h-16 w-16 bg-gray-100 rounded flex items-center justify-center ${product.mainImageUrl || product.imageUrl ? 'hidden' : ''}`}>
+                      <ImageIcon className="h-8 w-8 text-gray-400" />
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">{product.title}</div>
@@ -361,7 +429,7 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
                         </button>
                       )}
                       <button
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDeleteClick(product.id, product.title)}
                         className="text-red-600 hover:text-red-900"
                         title="Delete product"
                       >
@@ -375,6 +443,27 @@ export default function ProductsList({ onEdit, refreshKey, onDelete, onViewRevie
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirmModal.isOpen}
+        onClose={() => setDeleteConfirmModal({ isOpen: false, productId: null, productTitle: '' })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${deleteConfirmModal.productTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+      />
     </div>
   );
 }

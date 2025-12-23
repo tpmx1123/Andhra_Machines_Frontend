@@ -2,21 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useAuth } from '../contexts/AuthContext';
-import { api } from '../services/api';
 
 let stompClient = null;
 
-export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate) => {
-  const { user } = useAuth();
+export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) => {
+  const { user, refreshUser } = useAuth();
   const [connected, setConnected] = useState(false);
   const onPriceUpdateRef = useRef(onPriceUpdate);
   const onOrderStatusUpdateRef = useRef(onOrderStatusUpdate);
+  const onUserUpdateRef = useRef(onUserUpdate);
 
   // Keep refs updated
   useEffect(() => {
     onPriceUpdateRef.current = onPriceUpdate;
     onOrderStatusUpdateRef.current = onOrderStatusUpdate;
-  }, [onPriceUpdate, onOrderStatusUpdate]);
+    onUserUpdateRef.current = onUserUpdate;
+  }, [onPriceUpdate, onOrderStatusUpdate, onUserUpdate]);
 
   useEffect(() => {
     if (!user) {
@@ -72,6 +73,23 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate) => {
               }
             } catch (error) {
               console.error('Error parsing order update:', error);
+            }
+          });
+
+          // Subscribe to user-specific profile updates
+          const userUpdateDestination = `/user/${user.id}/queue/user-updates`;
+          client.subscribe(userUpdateDestination, (message) => {
+            try {
+              const userUpdate = JSON.parse(message.body);
+              // Refresh user data when admin updates profile
+              if (refreshUser) {
+                refreshUser();
+              }
+              if (onUserUpdateRef.current) {
+                onUserUpdateRef.current(userUpdate);
+              }
+            } catch (error) {
+              console.error('Error parsing user update:', error);
             }
           });
         }

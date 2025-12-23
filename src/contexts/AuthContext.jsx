@@ -44,10 +44,33 @@ export const AuthProvider = ({ children }) => {
     navigate('/');
   };
 
+  const refreshUser = async () => {
+    const token = localStorage.getItem('token');
+    if (token && user) {
+      try {
+        // Fetch updated user data from backend
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL }/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          localStorage.setItem('user', JSON.stringify(userData));
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
+    }
+  };
+
   const value = {
     user,
     login,
     logout,
+    refreshUser,
     loading,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'ADMIN',

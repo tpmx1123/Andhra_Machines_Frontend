@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Heart, Package, RefreshCw, CreditCard, User as UserIcon, LogOut, ChevronRight, ShoppingCart, X, Clock, CheckCircle, Truck, XCircle } from 'lucide-react';
+import { Heart, Package, RefreshCw, CreditCard, User as UserIcon, LogOut, ChevronRight, ShoppingCart, X, Clock, CheckCircle, Truck, XCircle, Edit, Save, X as XIcon } from 'lucide-react';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,9 +13,12 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editFormData, setEditFormData] = useState({ name: '', phone: '' });
+  const [isSaving, setIsSaving] = useState(false);
   const { favorites, toggleFavorite } = useFavorites();
   const { addToCart, cartItems, getCartTotal, getCartCount } = useCart();
-  const { user, logout, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, logout, isAuthenticated, loading: authLoading, refreshUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -47,8 +50,17 @@ export default function Profile() {
     showToast(`Order ${orderUpdate.orderNumber} status updated to ${orderUpdate.newStatus}`, 'info');
   };
 
+  // Handle user profile updates via WebSocket
+  const handleUserUpdate = (userUpdate) => {
+    // Refresh user data when admin updates profile
+    if (refreshUser) {
+      refreshUser();
+    }
+    showToast('Your profile has been updated', 'info');
+  };
+
   // Subscribe to WebSocket updates
-  useWebSocket(null, handleOrderStatusUpdate);
+  useWebSocket(null, handleOrderStatusUpdate, handleUserUpdate);
 
   const fetchOrders = async () => {
     try {
@@ -114,6 +126,50 @@ export default function Profile() {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleEditProfile = () => {
+    setEditFormData({
+      name: user?.name || '',
+      phone: user?.phone || ''
+    });
+    setIsEditingProfile(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingProfile(false);
+    setEditFormData({ name: '', phone: '' });
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editFormData.name.trim()) {
+      showToast('Name is required', 'error');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const response = await api.updateProfile({
+        name: editFormData.name.trim(),
+        phone: editFormData.phone.trim() || null
+      });
+
+      if (response.success) {
+        // Refresh user data
+        if (refreshUser) {
+          await refreshUser();
+        }
+        showToast('Profile updated successfully', 'success');
+        setIsEditingProfile(false);
+      } else {
+        showToast(response.message || 'Failed to update profile', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      showToast(error.message || 'Failed to update profile', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Show loading state while checking authentication
@@ -420,10 +476,24 @@ export default function Profile() {
               <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
                 <UserIcon className="h-8 w-8 text-gray-400" />
               </div>
-              <div>
-                <h2 className="text-xl font-semibold">{userData.name}</h2>
-                <p className="text-gray-500">{userData.email}</p>
-                <p className="text-sm text-gray-500">Member since {userData.joinedDate}</p>
+              <div className="flex-1">
+                {isEditingProfile ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] text-lg font-semibold"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h2 className="text-xl font-semibold">{userData.name}</h2>
+                    <p className="text-gray-500">{userData.email}</p>
+                    <p className="text-sm text-gray-500">Member since {userData.joinedDate}</p>
+                  </>
+                )}
               </div>
             </div>
             
@@ -485,20 +555,80 @@ export default function Profile() {
             )}
             
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Account Details</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Account Details</h3>
+                {!isEditingProfile && (
+                  <button
+                    onClick={handleEditProfile}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#c54513] hover:text-[#a43a10] hover:bg-[#fef0e8] rounded-md transition-colors"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </button>
+                )}
+              </div>
               <div className="space-y-2">
-                <div className="flex justify-between py-2 border-b">
+                <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-gray-500">Full Name</span>
-                  <span className="font-medium">{userData.name}</span>
+                  {isEditingProfile ? (
+                    <input
+                      type="text"
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      className="flex-1 max-w-xs px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] text-sm"
+                      placeholder="Enter your name"
+                    />
+                  ) : (
+                    <span className="font-medium">{userData.name}</span>
+                  )}
                 </div>
                 <div className="flex justify-between py-2 border-b">
                   <span className="text-gray-500">Email</span>
                   <span className="font-medium">{userData.email}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b">
+                <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-gray-500">Phone</span>
-                  <span className="font-medium">{userData.phone}</span>
+                  {isEditingProfile ? (
+                    <input
+                      type="tel"
+                      value={editFormData.phone}
+                      onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                      className="flex-1 max-w-xs px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] text-sm"
+                      placeholder="Enter your phone number"
+                    />
+                  ) : (
+                    <span className="font-medium">{userData.phone}</span>
+                  )}
                 </div>
+                {isEditingProfile && (
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      onClick={handleCancelEdit}
+                      disabled={isSaving}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <XIcon className="h-4 w-4 inline mr-1" />
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isSaving}
+                      className="px-4 py-2 text-sm font-medium text-white bg-[#c54513] rounded-md hover:bg-[#a43a10] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isSaving ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 inline mr-1 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 inline mr-1" />
+                          Save
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

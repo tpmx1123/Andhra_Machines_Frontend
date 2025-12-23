@@ -1,5 +1,5 @@
 // Share utility functions
-export const shareProduct = (product, platform = 'native') => {
+export const shareProduct = (product, platform = 'native', onMessage = null) => {
   const url = window.location.href;
   const text = `Check out ${product.name} - ${product.brand || ''} at ₹${product.price || 'N/A'}`;
   const title = product.name;
@@ -12,7 +12,7 @@ export const shareProduct = (product, platform = 'native') => {
     }).catch((error) => {
       console.error('Error sharing:', error);
       // Fallback to copying to clipboard
-      copyToClipboard(url);
+      copyToClipboard(url, onMessage);
     });
   } else if (platform === 'facebook') {
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
@@ -28,11 +28,11 @@ export const shareProduct = (product, platform = 'native') => {
     window.open(pinterestUrl, '_blank', 'width=600,height=400');
   } else {
     // Fallback to copying to clipboard
-    copyToClipboard(url);
+    copyToClipboard(url, onMessage);
   }
 };
 
-export const shareBlogPost = (post, platform = 'native') => {
+export const shareBlogPost = (post, platform = 'native', onMessage = null) => {
   const url = window.location.href;
   const text = post.excerpt || post.title;
   const title = post.title;
@@ -44,7 +44,7 @@ export const shareBlogPost = (post, platform = 'native') => {
       url: url,
     }).catch((error) => {
       console.error('Error sharing:', error);
-      copyToClipboard(url);
+      copyToClipboard(url, onMessage);
     });
   } else if (platform === 'facebook') {
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
@@ -56,17 +56,20 @@ export const shareBlogPost = (post, platform = 'native') => {
     const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
     window.open(linkedinUrl, '_blank', 'width=600,height=400');
   } else {
-    copyToClipboard(url);
+    copyToClipboard(url, onMessage);
   }
 };
 
-const copyToClipboard = (text) => {
+const copyToClipboard = (text, onMessage = null) => {
   navigator.clipboard.writeText(text).then(() => {
-    // Show a toast notification (you can customize this)
-    alert('Link copied to clipboard!');
+    if (onMessage) {
+      onMessage('Link copied to clipboard!', 'success');
+    }
   }).catch((error) => {
     console.error('Error copying to clipboard:', error);
-    alert('Failed to copy link. Please copy manually: ' + text);
+    if (onMessage) {
+      onMessage('Failed to copy link. Please copy manually: ' + text, 'error');
+    }
   });
 };
 

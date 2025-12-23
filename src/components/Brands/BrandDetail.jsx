@@ -371,7 +371,7 @@ const BrandDetail = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            shareProduct(product, 'native');
+                            shareProduct(product, 'native', showToast);
                           }}
                           className="p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100"
                           title="Share product"

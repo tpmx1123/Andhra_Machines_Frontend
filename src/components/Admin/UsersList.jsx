@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { Users, Mail, Phone, Calendar } from 'lucide-react';
+import { Users, Mail, Phone, Calendar, Edit, X, CheckCircle } from 'lucide-react';
+import AlertModal from '../AlertModal';
 
 export default function UsersList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [editingUser, setEditingUser] = useState(null);
+  const [editFormData, setEditFormData] = useState({ name: '', email: '', phone: '' });
+  const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
     fetchUsers();
@@ -44,6 +48,45 @@ export default function UsersList() {
     }
   };
 
+  const handleEdit = (user) => {
+    setEditingUser(user.id);
+    setEditFormData({
+      name: user.name || '',
+      email: user.email || '',
+      phone: user.phone || ''
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUser(null);
+    setEditFormData({ name: '', email: '', phone: '' });
+  };
+
+  const showAlert = (title, message, type = 'info') => {
+    setAlertModal({ isOpen: true, title, message, type });
+  };
+
+  const handleSaveEdit = async (userId) => {
+    try {
+      setLoading(true);
+      const response = await api.updateUser(userId, editFormData);
+      if (response.success) {
+        // Refresh users list
+        await fetchUsers();
+        setEditingUser(null);
+        setEditFormData({ name: '', email: '', phone: '' });
+        showAlert('Success', 'User updated successfully', 'success');
+      } else {
+        showAlert('Error', response.message || 'Failed to update user', 'error');
+      }
+    } catch (err) {
+      showAlert('Error', err.message || 'Failed to update user', 'error');
+      console.error('Error updating user:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -76,23 +119,80 @@ export default function UsersList() {
         ) : (
           users.map((user) => (
             <div key={user.id} className="p-4 hover:bg-gray-50">
-              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-gray-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                    <div className="text-xs text-gray-500">#{user.id}</div>
+                    {editingUser === user.id ? (
+                      <input
+                        type="text"
+                        value={editFormData.name}
+                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-1"
+                      />
+                    ) : (
+                      <>
+                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        <div className="text-xs text-gray-500">#{user.id}</div>
+                      </>
+                    )}
                   </div>
                 </div>
+                {editingUser === user.id ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSaveEdit(user.id)}
+                      className="text-green-600 hover:text-green-800"
+                      title="Save"
+                    >
+                      <CheckCircle className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="text-gray-600 hover:text-gray-800"
+                      title="Cancel"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Edit"
+                    >
+                      <Edit className="h-5 w-5" />
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-gray-700">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="break-all">{user.email}</span>
+                  {editingUser === user.id ? (
+                    <input
+                      type="email"
+                      value={editFormData.email}
+                      onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                    />
+                  ) : (
+                    <span className="break-all">{user.email}</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-gray-700">
                   <Phone className="h-4 w-4 text-gray-400" />
-                  <span>{user.phone || 'N/A'}</span>
+                  {editingUser === user.id ? (
+                    <input
+                      type="tel"
+                      value={editFormData.phone}
+                      onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                    />
+                  ) : (
+                    <span>{user.phone || 'N/A'}</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-gray-500 text-xs">
                   <Calendar className="h-4 w-4 text-gray-400" />
@@ -124,12 +224,15 @@ export default function UsersList() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created At
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {users.length === 0 ? (
               <tr>
-                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
                   No users found
                 </td>
               </tr>
@@ -140,22 +243,49 @@ export default function UsersList() {
                     #{user.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <Users className="h-5 w-5 text-gray-400 mr-2" />
-                      <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                    </div>
+                    {editingUser === user.id ? (
+                      <input
+                        type="text"
+                        value={editFormData.name}
+                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      />
+                    ) : (
+                      <div className="flex items-center">
+                        <Users className="h-5 w-5 text-gray-400 mr-2" />
+                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Mail className="h-4 w-4 mr-2" />
-                      {user.email}
-                    </div>
+                    {editingUser === user.id ? (
+                      <input
+                        type="email"
+                        value={editFormData.email}
+                        onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      />
+                    ) : (
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Mail className="h-4 w-4 mr-2" />
+                        {user.email}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {user.phone || 'N/A'}
-                    </div>
+                    {editingUser === user.id ? (
+                      <input
+                        type="tel"
+                        value={editFormData.phone}
+                        onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      />
+                    ) : (
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Phone className="h-4 w-4 mr-2" />
+                        {user.phone || 'N/A'}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-500">
@@ -163,12 +293,51 @@ export default function UsersList() {
                       {formatDate(user.createdAt)}
                     </div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {editingUser === user.id ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleSaveEdit(user.id)}
+                          className="text-green-600 hover:text-green-800"
+                          title="Save"
+                        >
+                          <CheckCircle className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="text-gray-600 hover:text-gray-800"
+                          title="Cancel"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Edit"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+      />
     </div>
   );
 }

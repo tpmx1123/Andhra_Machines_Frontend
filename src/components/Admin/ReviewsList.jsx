@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { Star, Trash2, Edit, Plus, X } from 'lucide-react';
+import ConfirmModal from '../ConfirmModal';
+import AlertModal from '../AlertModal';
 
 export default function ReviewsList({ productId, onClose }) {
   const [reviews, setReviews] = useState([]);
@@ -13,6 +15,8 @@ export default function ReviewsList({ productId, onClose }) {
     rating: 5,
     comment: '',
   });
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState({ isOpen: false, reviewId: null });
+  const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
     if (productId) {
@@ -35,17 +39,25 @@ export default function ReviewsList({ productId, onClose }) {
     }
   };
 
-  const handleDelete = async (reviewId) => {
-    if (!window.confirm('Are you sure you want to delete this review?')) {
-      return;
-    }
+  const showAlert = (title, message, type = 'info') => {
+    setAlertModal({ isOpen: true, title, message, type });
+  };
+
+  const handleDeleteClick = (reviewId) => {
+    setDeleteConfirmModal({ isOpen: true, reviewId });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const { reviewId } = deleteConfirmModal;
+    if (!reviewId) return;
 
     try {
       await api.deleteReview(productId, reviewId);
-      alert('Review deleted successfully');
+      showAlert('Success', 'Review deleted successfully', 'success');
+      setDeleteConfirmModal({ isOpen: false, reviewId: null });
       fetchReviews();
     } catch (err) {
-      alert(err.message || 'Failed to delete review');
+      showAlert('Error', err.message || 'Failed to delete review', 'error');
       console.error('Error deleting review:', err);
     }
   };
@@ -68,17 +80,17 @@ export default function ReviewsList({ productId, onClose }) {
         // For editing, we'll need to delete and recreate since backend doesn't have update endpoint
         await api.deleteReview(productId, editingReview.id);
         await api.addReview(productId, formData);
-        alert('Review updated successfully');
+        showAlert('Success', 'Review updated successfully', 'success');
       } else {
         await api.addReview(productId, formData);
-        alert('Review added successfully');
+        showAlert('Success', 'Review added successfully', 'success');
       }
       setShowAddForm(false);
       setEditingReview(null);
       setFormData({ userName: '', rating: 5, comment: '' });
       fetchReviews();
     } catch (err) {
-      alert(err.message || 'Failed to save review');
+      showAlert('Error', err.message || 'Failed to save review', 'error');
       console.error('Error saving review:', err);
     } finally {
       setLoading(false);
@@ -247,7 +259,7 @@ export default function ReviewsList({ productId, onClose }) {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(review.id)}
+                    onClick={() => handleDeleteClick(review.id)}
                     className="p-1.5 text-red-600 hover:bg-red-50 rounded"
                     title="Delete review"
                   >
@@ -259,6 +271,27 @@ export default function ReviewsList({ productId, onClose }) {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirmModal.isOpen}
+        onClose={() => setDeleteConfirmModal({ isOpen: false, reviewId: null })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Review"
+        message="Are you sure you want to delete this review?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+      />
     </div>
   );
 }

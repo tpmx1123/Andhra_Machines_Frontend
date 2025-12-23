@@ -299,7 +299,7 @@ const ProductDetail = () => {
 
   const handleShare = (platform = 'native') => {
     if (product) {
-      shareProduct(product, platform);
+      shareProduct(product, platform, showToast);
       setShowShareMenu(false);
     }
   };
