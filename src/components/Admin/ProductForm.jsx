@@ -434,21 +434,6 @@ export default function ProductForm({ product, onClose, onSuccess }) {
           </div>
         </div>
 
-        {/* Legacy Image URL (for backward compatibility) */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Legacy Image URL (Optional - for backward compatibility)
-          </label>
-          <input
-            type="text"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            placeholder="Or paste image URL directly"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
-          />
-        </div>
-
         {/* Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
