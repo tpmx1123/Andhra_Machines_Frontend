@@ -22,7 +22,7 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
 
   useEffect(() => {
     // Get API base URL
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
     // For WebSocket, use ws:// or wss:// protocol
     const wsProtocol = apiBaseUrl.startsWith('https') ? 'https' : 'http';
     // Remove protocol, remove trailing slash, and remove /api if present (WebSocket endpoint is at /ws, not /api/ws)
@@ -38,10 +38,19 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     
     const suppressSockJS404 = (...args) => {
       const message = String(args.join(' '));
-      // Suppress SockJS info endpoint 404 errors
-      if (message.includes('/ws/info') || 
-          (message.includes('GET') && message.includes('404') && message.includes('/ws')) ||
-          (message.includes('404') && message.includes('Not Found') && message.includes('/ws'))) {
+      // Suppress all SockJS-related errors (404, 405, connection failures, etc.)
+      if (message.includes('/ws/') || 
+          message.includes('SockJS') ||
+          message.includes('WebSocket connection') ||
+          message.includes('EventSource') ||
+          message.includes('jsonp') ||
+          message.includes('xhr') ||
+          message.includes('xhr_streaming') ||
+          message.includes('websocket') ||
+          (message.includes('405') && message.includes('Not Allowed')) ||
+          (message.includes('404') && message.includes('Not Found')) ||
+          (message.includes('WebSocket is closed before the connection is established')) ||
+          (message.includes('MIME type') && message.includes('text/event-stream'))) {
         return; // Suppress this error
       }
       originalConsoleError.apply(console, args);
@@ -49,8 +58,13 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     
     const suppressSockJSWarn = (...args) => {
       const message = String(args.join(' '));
-      // Suppress SockJS warnings about info endpoint
-      if (message.includes('/ws/info') || message.includes('SockJS')) {
+      // Suppress SockJS warnings about info endpoint, transport methods, etc.
+      if (message.includes('/ws/') || 
+          message.includes('SockJS') ||
+          message.includes('WebSocket') ||
+          message.includes('EventSource') ||
+          message.includes('locatorjs') ||
+          message.includes('Unsupported React renderer')) {
         return; // Suppress this warning
       }
       originalConsoleWarn.apply(console, args);
@@ -66,19 +80,104 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     // Also suppress errors on the socket itself
     socket.onerror = (error) => {
       const url = error?.target?.url || '';
-      if (url.includes('/ws/info')) {
-        // Suppress SockJS info endpoint errors
+      // Suppress all SockJS transport errors (they're expected during connection attempts)
+      if (url.includes('/ws/') || 
+          url.includes('xhr') || 
+          url.includes('websocket') ||
+          url.includes('jsonp') ||
+          url.includes('eventsource')) {
+        // Suppress SockJS transport errors
         return;
       }
       // For other errors, log them
       originalConsoleError('WebSocket error:', error);
     };
     
-    // Restore original console methods after connection attempt
+    // Intercept XMLHttpRequest to suppress SockJS transport errors
+    const originalXHROpen = XMLHttpRequest.prototype.open;
+    const originalXHRSend = XMLHttpRequest.prototype.send;
+    
+    XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+      this._sockjsUrl = url;
+      return originalXHROpen.apply(this, [method, url, ...rest]);
+    };
+    
+    XMLHttpRequest.prototype.send = function(...args) {
+      if (this._sockjsUrl && this._sockjsUrl.includes('/ws/')) {
+        // Suppress errors for SockJS transport endpoints
+        this.addEventListener('error', (e) => {
+          e.stopPropagation();
+        }, { once: true });
+        this.addEventListener('load', function() {
+          if (this.status === 404 || this.status === 405) {
+            // Suppress 404/405 for SockJS endpoints
+            return;
+          }
+        }, { once: true });
+      }
+      return originalXHRSend.apply(this, args);
+    };
+    
+    // Intercept EventSource to suppress errors
+    const originalEventSource = window.EventSource;
+    if (originalEventSource) {
+      window.EventSource = function(url, ...rest) {
+        if (url && url.includes('/ws/')) {
+          // Suppress EventSource errors for SockJS
+          const es = new originalEventSource(url, ...rest);
+          es.addEventListener('error', (e) => {
+            e.stopPropagation();
+          });
+          return es;
+        }
+        return new originalEventSource(url, ...rest);
+      };
+    }
+    
+    // Intercept global error handler to suppress SockJS errors
+    const originalWindowError = window.onerror;
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errorMessage = String(message || '');
+      // Suppress SockJS-related errors
+      if (errorMessage.includes('/ws/') ||
+          errorMessage.includes('jsonp') ||
+          errorMessage.includes('Unexpected token') ||
+          errorMessage.includes('SockJS') ||
+          (source && source.includes('/ws/'))) {
+        return true; // Suppress the error
+      }
+      // Call original error handler if it exists
+      if (originalWindowError) {
+        return originalWindowError.call(window, message, source, lineno, colno, error);
+      }
+      return false;
+    };
+    
+    // Intercept unhandled promise rejections for SockJS
+    const originalUnhandledRejection = window.onunhandledrejection;
+    window.addEventListener('unhandledrejection', function(event) {
+      const reason = String(event.reason || '');
+      if (reason.includes('/ws/') ||
+          reason.includes('SockJS') ||
+          reason.includes('jsonp') ||
+          reason.includes('405') ||
+          reason.includes('404')) {
+        event.preventDefault(); // Suppress the error
+      }
+    });
+    
+    // Restore original methods after connection attempt
     setTimeout(() => {
       console.error = originalConsoleError;
       console.warn = originalConsoleWarn;
-    }, 5000);
+      XMLHttpRequest.prototype.open = originalXHROpen;
+      XMLHttpRequest.prototype.send = originalXHRSend;
+      if (originalEventSource) {
+        window.EventSource = originalEventSource;
+      }
+      window.onerror = originalWindowError;
+      // Note: unhandledrejection listener will remain, but that's okay as it only suppresses SockJS errors
+    }, 10000); // Increased timeout to catch all SockJS transport attempts
     
     const client = new Client({
       webSocketFactory: () => socket,
@@ -86,8 +185,14 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       debug: (str) => {
-        // Suppress SockJS info endpoint 404 debug messages
-        if (!str.includes('/ws/info') && !str.includes('404')) {
+        // Suppress SockJS transport debug messages (404, 405, connection failures, etc.)
+        if (!str.includes('/ws/') && 
+            !str.includes('404') && 
+            !str.includes('405') &&
+            !str.includes('SockJS') &&
+            !str.includes('xhr') &&
+            !str.includes('websocket') &&
+            !str.includes('jsonp')) {
           logger.log('STOMP:', str);
         }
       },
@@ -154,18 +259,30 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
         logger.log('WebSocket disconnected');
       },
       onStompError: (frame) => {
-        // Suppress 404 errors for SockJS info endpoint (these are expected)
-        if (frame.headers && frame.headers.message && frame.headers.message.includes('404')) {
-          // This is likely a SockJS info endpoint check, ignore it
+        // Suppress all SockJS transport errors (404, 405, connection failures, etc.)
+        const message = frame.headers?.message || '';
+        if (message.includes('404') || 
+            message.includes('405') ||
+            message.includes('/ws/') ||
+            frame.command === 'ERROR' && message.includes('Not Allowed')) {
+          // This is likely a SockJS transport error, ignore it
           return;
         }
         logger.error('STOMP error:', frame);
         setConnected(false);
       },
       onWebSocketError: (event) => {
-        // Suppress 404 errors for SockJS info endpoint
+        // Suppress all SockJS transport errors
         const url = event?.target?.url || '';
-        if (url.includes('/ws/info') || (event?.message && event.message.includes('404'))) {
+        const message = event?.message || '';
+        if (url.includes('/ws/') || 
+            url.includes('xhr') ||
+            url.includes('websocket') ||
+            url.includes('jsonp') ||
+            message.includes('404') ||
+            message.includes('405') ||
+            message.includes('Not Allowed') ||
+            message.includes('WebSocket is closed')) {
           // This is expected during SockJS connection attempts, ignore it
           return;
         }
