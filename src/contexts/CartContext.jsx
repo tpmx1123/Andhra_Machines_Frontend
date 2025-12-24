@@ -158,87 +158,36 @@ export const CartProvider = ({ children }) => {
     }, [isAuthenticated, user]);
 
     const addToCart = async (product, quantity = 1, accessories = []) => {
+        // Require login to add to cart
+        if (!isAuthenticated || !user) {
+            throw new Error('Please login to add items to cart');
+        }
+
         const MAX_QUANTITY = 50;
         const finalQuantity = Math.min(quantity, MAX_QUANTITY);
 
-        if (isAuthenticated && user) {
-            try {
-                // Add to database
-                await api.addToCart(product.id, finalQuantity);
-                // Reload cart from database
-                const response = await api.getCart();
-                if (response.success && response.data) {
-                    const items = response.data.items.map(item => ({
-                        id: item.productId,
-                        name: item.name,
-                        brand: item.brand,
-                        brandSlug: item.brandSlug,
-                        price: parseFloat(item.price),
-                        originalPrice: item.originalPrice ? parseFloat(item.originalPrice) : parseFloat(item.price),
-                        image: item.image,
-                        quantity: item.quantity,
-                        inStock: item.inStock !== false
-                    }));
-                    setCartItems(items);
-                }
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                // Fallback to local state
-                setCartItems(prevItems => {
-                    const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
-                    if (existingItemIndex >= 0) {
-                        const updatedItems = [...prevItems];
-                        const newQuantity = Math.min(updatedItems[existingItemIndex].quantity + finalQuantity, MAX_QUANTITY);
-                        updatedItems[existingItemIndex] = {
-                            ...updatedItems[existingItemIndex],
-                            quantity: newQuantity
-                        };
-                        return updatedItems;
-                    } else {
-                        const newItem = {
-                            id: product.id,
-                            name: product.name || product.title,
-                            brand: product.brand || product.brandName || 'Unknown',
-                            price: typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0,
-                            originalPrice: product.originalPrice ? (typeof product.originalPrice === 'number' ? product.originalPrice : parseFloat(product.originalPrice)) : (typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0),
-                            image: product.image || product.mainImageUrl || product.imageUrl || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-                            quantity: finalQuantity,
-                            inStock: product.inStock !== false,
-                            brandSlug: product.brandSlug,
-                            accessories: accessories
-                        };
-                        return [...prevItems, newItem];
-                    }
-                });
+        try {
+            // Add to database
+            await api.addToCart(product.id, finalQuantity);
+            // Reload cart from database
+            const response = await api.getCart();
+            if (response.success && response.data) {
+                const items = response.data.items.map(item => ({
+                    id: item.productId,
+                    name: item.name,
+                    brand: item.brand,
+                    brandSlug: item.brandSlug,
+                    price: parseFloat(item.price),
+                    originalPrice: item.originalPrice ? parseFloat(item.originalPrice) : parseFloat(item.price),
+                    image: item.image,
+                    quantity: item.quantity,
+                    inStock: item.inStock !== false
+                }));
+                setCartItems(items);
             }
-        } else {
-            // Not authenticated - use local state only
-            setCartItems(prevItems => {
-                const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
-                if (existingItemIndex >= 0) {
-                    const updatedItems = [...prevItems];
-                    const newQuantity = Math.min(updatedItems[existingItemIndex].quantity + finalQuantity, MAX_QUANTITY);
-                    updatedItems[existingItemIndex] = {
-                        ...updatedItems[existingItemIndex],
-                        quantity: newQuantity
-                    };
-                    return updatedItems;
-                } else {
-                    const newItem = {
-                        id: product.id,
-                        name: product.name || product.title,
-                        brand: product.brand || product.brandName || 'Unknown',
-                        price: typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0,
-                        originalPrice: product.originalPrice ? (typeof product.originalPrice === 'number' ? product.originalPrice : parseFloat(product.originalPrice)) : (typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0),
-                        image: product.image || product.mainImageUrl || product.imageUrl || 'https://res.cloudinary.com/durbtkhbz/image/upload/v1765429607/usha_k7slud.jpg',
-                        quantity: finalQuantity,
-                        inStock: product.inStock !== false,
-                        brandSlug: product.brandSlug,
-                        accessories: accessories
-                    };
-                    return [...prevItems, newItem];
-                }
-            });
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            throw error; // Re-throw to let components handle the error
         }
     };
 

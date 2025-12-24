@@ -507,6 +507,11 @@ const BrandDetail = () => {
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
+                                      if (!user) {
+                                        showToast('Please login to add items to cart', 'error');
+                                        navigate('/login', { state: { from: location.pathname } });
+                                        return;
+                                      }
                                       const existingItem = cartItems.find(item => item.id === product.id);
                                       if (existingItem) {
                                         updateQuantity(product.id, existingItem.quantity + 1);
@@ -522,8 +527,15 @@ const BrandDetail = () => {
                                           brandSlug: product.brandSlug,
                                           inStock: product.inStock
                                         };
-                                        addToCart(cartProduct, 1);
-                                        showToast(`${product.name} added to cart!`, 'success');
+                                        try {
+                                          addToCart(cartProduct, 1);
+                                          showToast(`${product.name} added to cart!`, 'success');
+                                        } catch (error) {
+                                          if (error.message.includes('login')) {
+                                            showToast('Please login to add items to cart', 'error');
+                                            navigate('/login', { state: { from: location.pathname } });
+                                          }
+                                        }
                                       }
                                     }}
                                     className="p-1 hover:bg-gray-100 rounded-r-lg transition-colors"
@@ -536,6 +548,11 @@ const BrandDetail = () => {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    if (!user) {
+                                      showToast('Please login to add items to cart', 'error');
+                                      navigate('/login', { state: { from: location.pathname } });
+                                      return;
+                                    }
                                     const cartProduct = {
                                       id: product.id,
                                       name: product.name,
@@ -546,8 +563,15 @@ const BrandDetail = () => {
                                       brandSlug: product.brandSlug,
                                       inStock: product.inStock
                                     };
-                                    addToCart(cartProduct, 1);
-                                    showToast(`${product.name} added to cart!`, 'success');
+                                    try {
+                                      addToCart(cartProduct, 1);
+                                      showToast(`${product.name} added to cart!`, 'success');
+                                    } catch (error) {
+                                      if (error.message.includes('login')) {
+                                        showToast('Please login to add items to cart', 'error');
+                                        navigate('/login', { state: { from: location.pathname } });
+                                      }
+                                    }
                                   }}
                                   className="px-1.5 py-1.5 sm:px-3 sm:py-2 bg-[#c54513] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#a43a10] transition-colors flex items-center justify-center flex-shrink-0"
                                   title="Add to cart"

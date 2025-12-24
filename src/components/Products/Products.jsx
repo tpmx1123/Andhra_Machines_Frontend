@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Star, Heart, Filter, X, Plus, Minus } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
@@ -17,6 +17,7 @@ const Products = () => {
   const { showToast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState({
     category: 'all',
     priceRange: 'all',
@@ -233,6 +234,13 @@ const Products = () => {
   }, [searchQuery, allProducts]);
 
   const handleAddToCart = (product) => {
+    // Check if user is logged in
+    if (!user) {
+      showToast('Please login to add items to cart', 'error');
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+
     // Check if product is already in cart
     const existingItem = cartItems.find(item => item.id === product.id);
     if (existingItem) {
@@ -240,8 +248,16 @@ const Products = () => {
       updateQuantity(product.id, existingItem.quantity + 1);
       showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
     } else {
-      addToCart(product, 1);
-      showToast(`${product.name} added to cart!`, 'success');
+      try {
+        addToCart(product, 1);
+        showToast(`${product.name} added to cart!`, 'success');
+      } catch (error) {
+        // Error already handled in addToCart (login required)
+        if (error.message.includes('login')) {
+          showToast('Please login to add items to cart', 'error');
+          navigate('/login', { state: { from: location.pathname } });
+        }
+      }
     }
   };
 
