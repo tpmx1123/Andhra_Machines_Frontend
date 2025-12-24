@@ -15,13 +15,41 @@ export default function BlogForm({ blog, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [tinymceLoaded, setTinymceLoaded] = useState(false);
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
   const { showToast } = useToast();
 
+  // Lazy load TinyMCE script
   useEffect(() => {
-    // Initialize TinyMCE
     if (window.tinymce) {
+      setTinymceLoaded(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.tiny.cloud/1/bhvqdinw22m8eaypoig4hij7r3eqh3h4wrjcv8leedw0xnzq/tinymce/6/tinymce.min.js';
+    script.referrerPolicy = 'origin';
+    script.async = true;
+    script.onload = () => {
+      setTinymceLoaded(true);
+    };
+    script.onerror = () => {
+      setError('Failed to load editor. Please refresh the page.');
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script if component unmounts before load
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    // Initialize TinyMCE only after it's loaded
+    if (tinymceLoaded && window.tinymce) {
       window.tinymce.init({
         selector: '#blog-content-editor',
         height: 500,
@@ -50,7 +78,7 @@ export default function BlogForm({ blog, onClose, onSuccess }) {
         window.tinymce.remove('#blog-content-editor');
       }
     };
-  }, []);
+  }, [tinymceLoaded]);
 
   useEffect(() => {
     if (blog) {
@@ -271,13 +299,18 @@ export default function BlogForm({ blog, onClose, onSuccess }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Content (TinyMCE Editor)</label>
+          {!tinymceLoaded && (
+            <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 text-sm">
+              Loading editor...
+            </div>
+          )}
           <textarea
             id="blog-content-editor"
             name="content"
             value={formData.content}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#c54513]"
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#c54513] ${!tinymceLoaded ? 'hidden' : ''}`}
           />
         </div>
 

@@ -5,6 +5,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { logger } from '../utils/logger';
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart, updateProductPrice } = useCart();
@@ -14,17 +15,26 @@ export default function Cart() {
 
   // Handle real-time price updates via WebSocket
   const handlePriceUpdate = (priceUpdate) => {
+    logger.log('Cart: Price update received:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
     // Check if the updated product is in the cart
-    const cartItem = cartItems.find(item => item.id === priceUpdate.productId);
+    const cartItem = cartItems.find(item => Number(item.id) === productId);
     if (cartItem) {
+      logger.log(`Cart: Updating price for ${cartItem.name} from ₹${cartItem.price} to ₹${newPrice}`);
       // Update the price in cart
       updateProductPrice(
-        priceUpdate.productId,
-        priceUpdate.newPrice,
-        priceUpdate.originalPrice
+        productId,
+        newPrice,
+        originalPrice || newPrice // Use originalPrice if provided, otherwise use newPrice
       );
-      // Show notification
-      showToast(`Price updated for ${cartItem.name}`, 'info');
+      // Show notification only for actual price changes, not sync messages
+      if (priceUpdate.type !== 'PRICE_SYNC') {
+        const priceChange = newPrice > cartItem.price ? 'increased' : 'decreased';
+        showToast(`Price ${priceChange} for ${cartItem.name}`, 'info');
+      }
     }
   };
 

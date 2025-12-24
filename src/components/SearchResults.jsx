@@ -5,6 +5,8 @@ import { api } from '../services/api';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useToast } from '../contexts/ToastContext';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { logger } from '../utils/logger';
 
 export default function SearchResults() {
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -83,6 +85,49 @@ export default function SearchResults() {
     
     setFilteredProducts(results);
   }, [location.search, allProducts]);
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    logger.log('Price update received in SearchResults:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
+    setAllProducts(prevProducts => {
+      return prevProducts.map(product => {
+        // Compare IDs as numbers to handle type mismatches
+        if (Number(product.id) === productId) {
+          logger.log(`Updating product ${product.id} price from ${product.price} to ${newPrice}`);
+          return {
+            ...product,
+            price: newPrice,
+            originalPrice: originalPrice || product.originalPrice
+          };
+        }
+        return product;
+      });
+    });
+  };
+
+  // Subscribe to WebSocket updates for real-time price changes
+  const { connected } = useWebSocket(handlePriceUpdate, null, null);
+
+  // Refresh products when WebSocket connects to get latest prices
+  useEffect(() => {
+    if (connected) {
+      logger.log('WebSocket connected - refreshing search products to sync prices');
+      const fetchProducts = async () => {
+        try {
+          const products = await api.getAllProducts();
+          setAllProducts(products || []);
+          logger.log('Search products refreshed after WebSocket connection');
+        } catch (err) {
+          logger.error('Error refreshing search products:', err);
+        }
+      };
+      fetchProducts();
+    }
+  }, [connected]);
 
   // Update cart quantities when cartItems change
   useEffect(() => {
@@ -176,6 +221,10 @@ export default function SearchResults() {
                   <img
                     src={product.image}
                     alt={product.name}
+                    width="300"
+                    height="300"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
                       e.target.onerror = null;

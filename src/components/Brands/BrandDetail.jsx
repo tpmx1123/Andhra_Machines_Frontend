@@ -7,6 +7,8 @@ import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { shareProduct } from '../../utils/share';
 import { api } from '../../services/api';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { logger } from '../../utils/logger';
 import SEO from '../SEO';
 
 const BrandDetail = () => {
@@ -141,6 +143,80 @@ const BrandDetail = () => {
 
     fetchProducts();
   }, [brandId, navigate]);
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    logger.log('Price update received in BrandDetail:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
+    setProducts(prevProducts => {
+      return prevProducts.map(product => {
+        // Compare IDs as numbers to handle type mismatches
+        if (Number(product.id) === productId) {
+          logger.log(`Updating product ${product.id} price from ${product.price} to ${newPrice}`);
+          return {
+            ...product,
+            price: newPrice,
+            originalPrice: originalPrice || product.originalPrice,
+            // Recalculate discount
+            discount: originalPrice && originalPrice > newPrice
+              ? Math.round(((originalPrice - newPrice) / originalPrice) * 100)
+              : 0
+          };
+        }
+        return product;
+      });
+    });
+  };
+
+  // Subscribe to WebSocket updates for real-time price changes
+  const { connected } = useWebSocket(handlePriceUpdate, null, null);
+
+  // Refresh products when WebSocket connects to get latest prices
+  useEffect(() => {
+    if (connected && brandId) {
+      logger.log('WebSocket connected - refreshing brand products to sync prices');
+      const fetchProducts = async () => {
+        try {
+          const allProducts = await api.getAllProducts();
+          const brandProducts = allProducts
+            .filter(p => {
+              const productBrandSlug = (p.brandSlug || '').toLowerCase();
+              const targetBrandSlug = brandId.toLowerCase();
+              return productBrandSlug === targetBrandSlug || 
+                     (p.brandName && p.brandName.toLowerCase() === targetBrandSlug);
+            })
+            .map(product => {
+              const discount = product.originalPrice && product.originalPrice > product.price
+                ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+                : 0;
+              
+              return {
+                id: product.id,
+                name: product.title,
+                brandSlug: product.brandSlug || product.id.toString(),
+                price: parseFloat(product.price) || 0,
+                originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+                rating: product.rating ? parseFloat(product.rating) : 0,
+                reviewCount: product.reviewCount || 0,
+                image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+                discount: discount,
+                isNew: product.isNew || false,
+                isOnSale: product.isOnSale || false,
+                inStock: product.inStock !== false
+              };
+            });
+          setProducts(brandProducts);
+          logger.log('Brand products refreshed after WebSocket connection');
+        } catch (err) {
+          logger.error('Error refreshing brand products:', err);
+        }
+      };
+      fetchProducts();
+    }
+  }, [connected, brandId]);
   
   if (!brand) return null;
 
@@ -292,192 +368,206 @@ const BrandDetail = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
               {products.map((product) => {
+                const cartQuantities = {};
+                cartItems.forEach(item => {
+                  cartQuantities[item.id] = item.quantity;
+                });
+                
                 return (
-                  <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow relative group">
-                    <Link 
-                      to={`/products/${product.brandSlug || product.id}`}
-                      className="block"
-                    >
-                      <div className="relative h-56 bg-gray-50 overflow-hidden">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/300x300?text=Product+Image';
-                          }}
-                        />
-                        
-                        {/* Discount and Brand Tags */}
-                        <div className="absolute top-3 left-3 flex flex-col space-y-2">
-                          {product.discount > 0 && (
-                            <span className="inline-block bg-[#c54513] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                              {product.discount}% OFF
-                            </span>
-                          )}
-                          <span className="inline-block bg-white text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-                            {brand.name}
+                  <div
+                    key={product.id}
+                    className="group relative bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-200"
+                  >
+                    <Link to={`/products/${product.brandSlug || product.id}`} className="relative h-56 bg-gray-50 overflow-hidden block">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        width="300"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://images.unsplash.com/photo-1584917860127-7ee3bf0d81d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+                        }}
+                      />
+                      
+                      {/* Discount and Brand Tags */}
+                      <div className="absolute top-3 left-3 flex flex-col space-y-2">
+                        {product.discount > 0 && (
+                          <span className="inline-block bg-[#c54513] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                            {product.discount}% OFF
                           </span>
-                        </div>
-
-                        {/* New and Sale Badges */}
-                        {product.isNew && (
-                          <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            New
-                          </div>
                         )}
-                        {product.isOnSale && !product.isNew && (
-                          <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            Sale
-                          </div>
-                        )}
-                        
-                        {/* Out of Stock Badge */}
-                        {!product.inStock && (
-                          <div className="absolute top-3 right-3 bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            Out of Stock
-                          </div>
-                        )}
+                        <span className="inline-block bg-white text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+                          {brand.name}
+                        </span>
                       </div>
-                      <div className="p-4">
-                        <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-[#c54513] transition-colors">{product.name}</h3>
-                        <div className="flex items-center mb-2">
-                          <div className="flex text-amber-400">
-                            {[1, 2, 3, 4, 5].map((star) => (
+
+                      {/* New and Sale Badges */}
+                      {product.isNew && (
+                        <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          New
+                        </div>
+                      )}
+                      {product.isOnSale && !product.isNew && (
+                        <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          Sale
+                        </div>
+                      )}
+                      
+                      {/* Out of Stock Badge */}
+                      {!product.inStock && (
+                        <div className="absolute top-3 right-3 bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          Out of Stock
+                        </div>
+                      )}
+                      
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
+                    </Link>
+                    <div className="flex-1 p-2 sm:p-3 md:p-4 flex flex-col min-w-0">
+                      <Link to={`/products/${product.brandSlug || product.id}`} className="group">
+                        <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
+                          {product.name}
+                        </h3>
+                      </Link>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1">{brand.name}</p>
+                      <div className="flex-1 flex flex-col justify-end min-w-0 mt-1">
+                        <div className="flex items-center mt-2">
+                          <div className="flex items-center">
+                            {[0, 1, 2, 3, 4].map((rating) => (
                               <Star
-                                key={star}
-                                fill={star <= Math.floor(product.rating) ? 'currentColor' : 'none'}
-                                className="h-4 w-4"
+                                key={rating}
+                                fill={rating < Math.floor(product.rating || 0) ? 'currentColor' : 'none'}
+                                className={`h-3 w-3 sm:h-4 sm:w-4 ${
+                                  rating < Math.floor(product.rating || 0)
+                                    ? 'text-yellow-400'
+                                    : 'text-gray-300'
+                                }`}
+                                aria-hidden="true"
                               />
                             ))}
                           </div>
-                          <span className="ml-2 text-sm text-gray-500">{product.rating}</span>
+                          <p className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500">
+                            {product.reviewCount || 0} reviews
+                          </p>
                         </div>
-                        <div className="flex items-center justify-between mt-4">
-                          <div>
-                            <span className="text-lg font-bold text-gray-900">₹{product.price.toLocaleString('en-IN')}</span>
+                        <div className="mt-2 flex items-center justify-between gap-1 sm:gap-2 min-w-0">
+                          <div className="flex-shrink min-w-0 overflow-hidden">
+                            <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 truncate">
+                              ₹{product.price.toLocaleString('en-IN')}
+                            </p>
                             {product.originalPrice && product.originalPrice > product.price && (
-                              <span className="ml-2 text-sm text-gray-500 line-through">
+                              <p className="text-xs text-gray-500 line-through truncate">
                                 ₹{product.originalPrice.toLocaleString('en-IN')}
-                              </span>
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex space-x-1 relative z-10 flex-shrink-0">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(product, showToast, navigate);
+                              }}
+                              className={`p-1 sm:p-1.5 transition-colors rounded-full hover:bg-gray-100 flex-shrink-0 ${
+                                isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                              }`}
+                              title={isFavorite(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                            >
+                              <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} aria-hidden="true" />
+                            </button>
+                            {product.inStock ? (
+                              cartQuantities[product.id] ? (
+                                <div className="flex items-center gap-1 border border-gray-300 rounded-lg">
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      const existingItem = cartItems.find(item => item.id === product.id);
+                                      if (existingItem && existingItem.quantity > 1) {
+                                        updateQuantity(product.id, existingItem.quantity - 1);
+                                        showToast('Cart updated!', 'success');
+                                      } else if (existingItem) {
+                                        updateQuantity(product.id, 0);
+                                        showToast('Item removed from cart', 'success');
+                                      }
+                                    }}
+                                    className="p-1 hover:bg-gray-100 rounded-l-lg transition-colors"
+                                  >
+                                    <Minus size={12} />
+                                  </button>
+                                  <span className="px-2 py-1 text-xs font-medium">
+                                    {cartQuantities[product.id]}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      const existingItem = cartItems.find(item => item.id === product.id);
+                                      if (existingItem) {
+                                        updateQuantity(product.id, existingItem.quantity + 1);
+                                        showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
+                                      } else {
+                                        const cartProduct = {
+                                          id: product.id,
+                                          name: product.name,
+                                          brand: brand?.name || 'Unknown',
+                                          price: product.price,
+                                          originalPrice: product.originalPrice || product.price,
+                                          image: product.image,
+                                          brandSlug: product.brandSlug,
+                                          inStock: product.inStock
+                                        };
+                                        addToCart(cartProduct, 1);
+                                        showToast(`${product.name} added to cart!`, 'success');
+                                      }
+                                    }}
+                                    className="p-1 hover:bg-gray-100 rounded-r-lg transition-colors"
+                                  >
+                                    <Plus size={12} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const cartProduct = {
+                                      id: product.id,
+                                      name: product.name,
+                                      brand: brand?.name || 'Unknown',
+                                      price: product.price,
+                                      originalPrice: product.originalPrice || product.price,
+                                      image: product.image,
+                                      brandSlug: product.brandSlug,
+                                      inStock: product.inStock
+                                    };
+                                    addToCart(cartProduct, 1);
+                                    showToast(`${product.name} added to cart!`, 'success');
+                                  }}
+                                  className="px-1.5 py-1.5 sm:px-3 sm:py-2 bg-[#c54513] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#a43a10] transition-colors flex items-center justify-center flex-shrink-0"
+                                  title="Add to cart"
+                                >
+                                  <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                                  <span className="hidden sm:inline ml-1">Add</span>
+                                </button>
+                              )
+                            ) : (
+                              <button
+                                disabled
+                                className="p-1.5 sm:p-2 text-gray-300 cursor-not-allowed rounded-full flex-shrink-0"
+                                title="Out of stock"
+                              >
+                                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+                              </button>
                             )}
                           </div>
                         </div>
                       </div>
-                    </Link>
-                    <div className="px-4 pb-4 flex items-center justify-between gap-2">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(product, showToast, navigate);
-                          }}
-                          className={`p-2 transition-colors rounded-full hover:bg-gray-100 ${
-                            isFavorite(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                          }`}
-                          title={isFavorite(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-                        >
-                          <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            shareProduct(product, 'native', showToast);
-                          }}
-                          className="p-2 text-gray-400 hover:text-[#c54513] transition-colors rounded-full hover:bg-gray-100"
-                          title="Share product"
-                        >
-                          <Share2 className="h-5 w-5" />
-                        </button>
-                      </div>
-                      {product.inStock ? (
-                        cartItems.find(item => item.id === product.id) ? (
-                          <div className="flex items-center gap-1 border border-gray-300 rounded-lg">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const existingItem = cartItems.find(item => item.id === product.id);
-                                if (existingItem && existingItem.quantity > 1) {
-                                  updateQuantity(product.id, existingItem.quantity - 1);
-                                  showToast('Cart updated!', 'success');
-                                } else if (existingItem) {
-                                  updateQuantity(product.id, 0);
-                                  showToast('Item removed from cart', 'success');
-                                }
-                              }}
-                              className="p-1.5 hover:bg-gray-100 rounded-l-lg transition-colors"
-                            >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                            <span className="px-3 py-1.5 text-sm font-medium">
-                              {cartItems.find(item => item.id === product.id)?.quantity || 0}
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const existingItem = cartItems.find(item => item.id === product.id);
-                                if (existingItem) {
-                                  updateQuantity(product.id, existingItem.quantity + 1);
-                                  showToast(`Cart updated! Quantity: ${existingItem.quantity + 1}`, 'success');
-                                } else {
-                                  const cartProduct = {
-                                    id: product.id,
-                                    name: product.name,
-                                    brand: brand?.name || 'Unknown',
-                                    price: product.price,
-                                    originalPrice: product.originalPrice || product.price,
-                                    image: product.image,
-                                    brandSlug: product.brandSlug,
-                                    inStock: product.inStock
-                                  };
-                                  addToCart(cartProduct, 1);
-                                  showToast(`${product.name} added to cart!`, 'success');
-                                }
-                              }}
-                              className="p-1.5 hover:bg-gray-100 rounded-r-lg transition-colors"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              const cartProduct = {
-                                id: product.id,
-                                name: product.name,
-                                brand: brand?.name || 'Unknown',
-                                price: product.price,
-                                originalPrice: product.originalPrice || product.price,
-                                image: product.image,
-                                brandSlug: product.brandSlug,
-                                inStock: product.inStock
-                              };
-                              addToCart(cartProduct, 1);
-                              showToast(`${product.name} added to cart!`, 'success');
-                            }}
-                            className="flex items-center px-3 py-2 bg-[#c54513] text-white text-sm font-medium rounded-md hover:bg-[#a4370f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c54513] transition-colors"
-                          >
-                            <ShoppingCart className="h-4 w-4 mr-1" />
-                            Add to Cart
-                          </button>
-                        )
-                      ) : (
-                        <button
-                          disabled
-                          className="flex items-center px-3 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-md cursor-not-allowed"
-                        >
-                          Out of Stock
-                        </button>
-                      )}
                     </div>
                   </div>
                 );

@@ -6,6 +6,8 @@ import { useFavorites } from '../../contexts/FavoritesContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { logger } from '../../utils/logger';
 import SEO from '../SEO';
 import StructuredData, { generateBreadcrumbSchema } from '../StructuredData';
 
@@ -26,6 +28,8 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cartQuantities, setCartQuantities] = useState({});
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
   // Function to determine category based on title and description
   const determineCategory = (title, description) => {
@@ -113,6 +117,120 @@ const Products = () => {
     });
     setCartQuantities(quantities);
   }, [cartItems]);
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    logger.log('Price update received in Products:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
+    if (!productId || isNaN(newPrice)) {
+      logger.error('Invalid price update data:', priceUpdate);
+      return;
+    }
+    
+    setAllProducts(prevProducts => {
+      let found = false;
+      const updated = prevProducts.map(product => {
+        // Compare IDs as numbers to handle type mismatches
+        if (Number(product.id) === productId) {
+          found = true;
+          logger.log(`Updating product ${product.id} (${product.name}) price from ₹${product.price} to ₹${newPrice}`);
+          return {
+            ...product,
+            price: newPrice,
+            originalPrice: originalPrice || product.originalPrice,
+            // Recalculate discount
+            discount: originalPrice && originalPrice > newPrice
+              ? Math.round(((originalPrice - newPrice) / originalPrice) * 100)
+              : 0
+          };
+        }
+        return product;
+      });
+      
+      if (found) {
+        // Only show toast for actual price changes, not sync messages
+        if (priceUpdate.type !== 'PRICE_SYNC') {
+          showToast(`Price updated for product!`, 'info');
+        }
+      } else {
+        logger.warn(`Product with ID ${productId} not found in current product list`);
+      }
+      
+      return updated;
+    });
+  };
+
+  // Subscribe to WebSocket updates for real-time price changes
+  const { connected } = useWebSocket(handlePriceUpdate, null, null);
+
+  // Refresh products when WebSocket connects to get latest prices
+  useEffect(() => {
+    if (connected) {
+      logger.log('WebSocket connected - refreshing products to sync prices');
+      const fetchProducts = async () => {
+        try {
+          const products = await api.getAllProducts();
+          const mappedProducts = products.map(product => {
+            const detectedCategory = determineCategory(product.title, product.description);
+            const discount = product.originalPrice && product.originalPrice > product.price
+              ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+              : 0;
+            
+            return {
+              id: product.id,
+              name: product.title,
+              brand: product.brandName || 'Unknown',
+              brandSlug: product.brandSlug || product.id.toString(),
+              price: parseFloat(product.price) || 0,
+              originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+              rating: product.rating ? parseFloat(product.rating) : 0,
+              reviewCount: product.reviewCount || 0,
+              image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+              category: detectedCategory,
+              description: product.description || '',
+              discount: discount,
+              inStock: product.inStock !== undefined ? product.inStock : true,
+              isNew: product.isNew || false,
+              isOnSale: product.isOnSale || false,
+            };
+          });
+          setAllProducts(mappedProducts);
+          logger.log('Products refreshed after WebSocket connection');
+        } catch (err) {
+          logger.error('Error refreshing products:', err);
+        }
+      };
+      fetchProducts();
+    }
+  }, [connected]);
+
+  // Generate search suggestions
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      const query = searchQuery.toLowerCase();
+      const matched = allProducts
+        .filter(product => {
+          const name = (product.name || '').toLowerCase();
+          const brand = (product.brand || '').toLowerCase();
+          return name.includes(query) || brand.includes(query);
+        })
+        .slice(0, 5)
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          brand: product.brand,
+          brandSlug: product.brandSlug
+        }));
+      setSuggestions(matched);
+      setShowSuggestions(matched.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, allProducts]);
 
   const handleAddToCart = (product) => {
     // Check if product is already in cart
@@ -300,23 +418,50 @@ const Products = () => {
           
           {/* Search Bar - Mobile and Desktop */}
           <div className="mb-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:w-80 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-[#c54513] text-sm"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
+            <div className="relative flex items-center">
+              <div className="relative flex-1 sm:w-80">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchQuery.trim().length > 0 && suggestions.length > 0 && setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  className="w-full px-4 py-2.5 pr-10 border-2 border-[#d1cbc8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-[#c54513] text-sm"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setShowSuggestions(false);
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                
+                {/* Search Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {suggestions.map((suggestion) => (
+                      <Link
+                        key={suggestion.id}
+                        to={`/products/${suggestion.brandSlug}`}
+                        onClick={() => {
+                          setSearchQuery('');
+                          setShowSuggestions(false);
+                        }}
+                        className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="font-medium text-gray-900">{suggestion.name}</div>
+                        <div className="text-sm text-gray-500">{suggestion.brand}</div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -486,6 +631,10 @@ const Products = () => {
                     <img
                       src={product.image}
                       alt={product.name}
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                       onError={(e) => {
                         e.target.onerror = null;

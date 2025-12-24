@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Menu, X, ChevronDown, LogOut } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { api } from '../services/api';
 
 export default function Header() {
   const { getCartCount } = useCart();
@@ -11,9 +12,13 @@ export default function Header() {
   const [showBrandsDropdown, setShowBrandsDropdown] = useState(false);
   const [mobileBrandsOpen, setMobileBrandsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [allProducts, setAllProducts] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
   const brandsRef = useRef(null);
+  const searchRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -37,11 +42,52 @@ export default function Header() {
     }
   };
 
+  // Fetch products for search suggestions
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const products = await api.getAllProducts();
+        setAllProducts(products || []);
+      } catch (err) {
+        console.error('Error fetching products for search:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Generate search suggestions
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      const query = searchQuery.toLowerCase();
+      const matched = allProducts
+        .filter(product => {
+          const name = (product.title || '').toLowerCase();
+          const brand = (product.brandName || '').toLowerCase();
+          return name.includes(query) || brand.includes(query);
+        })
+        .slice(0, 5)
+        .map(product => ({
+          id: product.id,
+          name: product.title,
+          brand: product.brandName || 'Unknown',
+          brandSlug: product.brandSlug || product.id.toString()
+        }));
+      setSuggestions(matched);
+      setShowSuggestions(matched.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, allProducts]);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (brandsRef.current && !brandsRef.current.contains(event.target)) {
         setShowBrandsDropdown(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -158,7 +204,7 @@ export default function Header() {
 
           {/* Desktop Search Bar */}
           <div className="hidden lg:flex items-center space-x-2">
-            <div className="relative">
+            <div className="relative" ref={searchRef}>
               <form onSubmit={handleSearch} className="flex items-center relative" onClick={(e) => e.stopPropagation()}>
                 <input
                   type="text"
@@ -166,6 +212,8 @@ export default function Header() {
                   className="w-40 sm:w-48 pl-3 pr-8 py-1.5 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-[#c54513] focus:border-[#c54513]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchQuery.trim().length > 0 && suggestions.length > 0 && setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 />
                 {searchQuery && (
                   <button
@@ -184,12 +232,32 @@ export default function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
+                
+                {/* Search Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto top-full">
+                    {suggestions.map((suggestion) => (
+                      <Link
+                        key={suggestion.id}
+                        to={`/products/${suggestion.brandSlug}`}
+                        onClick={() => {
+                          setSearchQuery('');
+                          setShowSuggestions(false);
+                        }}
+                        className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="font-medium text-gray-900">{suggestion.name}</div>
+                        <div className="text-sm text-gray-500">{suggestion.brand}</div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </form>
             </div>
           </div>
 
           {/* Mobile Search Bar - Always Visible */}
-          <div className="lg:hidden flex-1 min-w-0 mx-2">
+          <div className="lg:hidden flex-1 min-w-0 mx-2 relative" ref={searchRef}>
             <form onSubmit={handleSearch} className="flex items-center relative">
               <input
                 type="text"
@@ -197,6 +265,8 @@ export default function Header() {
                 className="w-full pl-3 pr-20 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#c54513] focus:border-[#c54513]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.trim().length > 0 && suggestions.length > 0 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               />
               {searchQuery && (
                 <button
@@ -215,6 +285,26 @@ export default function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
+              
+              {/* Search Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto top-full">
+                  {suggestions.map((suggestion) => (
+                    <Link
+                      key={suggestion.id}
+                      to={`/products/${suggestion.brandSlug}`}
+                      onClick={() => {
+                        setSearchQuery('');
+                        setShowSuggestions(false);
+                      }}
+                      className="block px-4 py-2 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="font-medium text-gray-900 text-sm">{suggestion.name}</div>
+                      <div className="text-xs text-gray-500">{suggestion.brand}</div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </form>
           </div>
 

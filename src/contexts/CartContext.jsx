@@ -362,18 +362,52 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const updateProductPrice = (productId, newPrice, newOriginalPrice) => {
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.id === productId
-                    ? {
+    const updateProductPrice = async (productId, newPrice, newOriginalPrice) => {
+        const productIdNum = typeof productId === 'number' ? productId : Number(productId);
+        const priceNum = typeof newPrice === 'number' ? newPrice : parseFloat(newPrice);
+        const originalPriceNum = newOriginalPrice ? (typeof newOriginalPrice === 'number' ? newOriginalPrice : parseFloat(newOriginalPrice)) : priceNum;
+        
+        // Update local state immediately
+        setCartItems(prevItems => {
+            const updated = prevItems.map(item => {
+                if (Number(item.id) === productIdNum) {
+                    console.log(`CartContext: Updating price for product ${item.id} (${item.name}) from ₹${item.price} to ₹${priceNum}`);
+                    return {
                         ...item,
-                        price: typeof newPrice === 'number' ? newPrice : parseFloat(newPrice) || item.price,
-                        originalPrice: newOriginalPrice ? (typeof newOriginalPrice === 'number' ? newOriginalPrice : parseFloat(newOriginalPrice)) : item.originalPrice
-                    }
-                    : item
-            )
-        );
+                        price: priceNum,
+                        originalPrice: originalPriceNum
+                    };
+                }
+                return item;
+            });
+            return updated;
+        });
+        
+        // If authenticated, also update prices in database cart
+        if (isAuthenticated && user) {
+            try {
+                // For authenticated users, we need to sync cart prices with database
+                // The backend should handle this, but we can trigger a refresh
+                const response = await api.getCart();
+                if (response.success && response.data) {
+                    const items = response.data.items.map(item => ({
+                        id: item.productId,
+                        name: item.name,
+                        brand: item.brand,
+                        brandSlug: item.brandSlug,
+                        price: parseFloat(item.price),
+                        originalPrice: item.originalPrice ? parseFloat(item.originalPrice) : parseFloat(item.price),
+                        image: item.image,
+                        quantity: item.quantity,
+                        inStock: item.inStock !== false
+                    }));
+                    setCartItems(items);
+                }
+            } catch (error) {
+                console.error('Error syncing cart prices with database:', error);
+                // Continue with local update if database sync fails
+            }
+        }
     };
 
     const clearCart = async () => {

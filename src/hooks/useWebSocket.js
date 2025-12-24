@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useAuth } from '../contexts/AuthContext';
+import { logger } from '../utils/logger';
 
 let stompClient = null;
 
@@ -20,15 +21,6 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
   }, [onPriceUpdate, onOrderStatusUpdate, onUserUpdate]);
 
   useEffect(() => {
-    if (!user) {
-      // Disconnect if user logs out
-      if (stompClient && stompClient.connected) {
-        stompClient.deactivate();
-        setConnected(false);
-      }
-      return;
-    }
-
     // Get API base URL
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     // For WebSocket, use ws:// or wss:// protocol
@@ -46,21 +38,29 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
       heartbeatOutgoing: 4000,
       onConnect: () => {
         setConnected(true);
-        console.log('WebSocket connected');
+        logger.log('✅ WebSocket connected successfully');
+        logger.log('WebSocket endpoint:', wsEndpoint);
 
-        // Subscribe to price updates (broadcast to all)
-        client.subscribe('/topic/price-updates', (message) => {
+        // Subscribe to price updates (broadcast to all - works for authenticated and non-authenticated users)
+        const subscription = client.subscribe('/topic/price-updates', (message) => {
           try {
             const priceUpdate = JSON.parse(message.body);
+            logger.log('📨 WebSocket: Price update message received:', priceUpdate);
+            
             if (onPriceUpdateRef.current) {
               onPriceUpdateRef.current(priceUpdate);
+            } else {
+              logger.warn('⚠️ WebSocket: No price update handler registered');
             }
           } catch (error) {
-            console.error('Error parsing price update:', error);
+            logger.error('❌ Error parsing price update:', error);
+            logger.error('❌ Raw message body:', message.body);
           }
         });
+        
+        logger.log('✅ Subscribed to /topic/price-updates');
 
-        // Subscribe to user-specific order updates
+        // Subscribe to user-specific order updates (only if user is authenticated)
         // Note: Spring STOMP uses /user/{username}/queue/{destination} pattern
         // We need to use the user ID as the username
         if (user && user.id) {
@@ -72,7 +72,7 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
                 onOrderStatusUpdateRef.current(orderUpdate);
               }
             } catch (error) {
-              console.error('Error parsing order update:', error);
+              logger.error('Error parsing order update:', error);
             }
           });
 
@@ -89,17 +89,17 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
                 onUserUpdateRef.current(userUpdate);
               }
             } catch (error) {
-              console.error('Error parsing user update:', error);
+              logger.error('Error parsing user update:', error);
             }
           });
         }
       },
       onDisconnect: () => {
         setConnected(false);
-        console.log('WebSocket disconnected');
+        logger.log('WebSocket disconnected');
       },
       onStompError: (frame) => {
-        console.error('STOMP error:', frame);
+        logger.error('STOMP error:', frame);
         setConnected(false);
       },
     });
@@ -113,7 +113,7 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
       }
       setConnected(false);
     };
-  }, [user]);
+  }, [user, refreshUser]);
 
   return { connected };
 };

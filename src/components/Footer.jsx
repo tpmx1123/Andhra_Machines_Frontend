@@ -70,7 +70,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm sm:text-base text-gray-600 hover:text-[#c54513] transition-colors flex items-start"
                 >
-                  <MapPin size={14} className="mr-2 mt-0.5 flex-shrink-0" />
+                  <MapPin size={14} className="mr-1 mt-0.5 flex-shrink-0" />
                   <span className="leading-tight">Andhra Machines Agencies, Kandakam Road, Rajahmundry - 533101</span>
                 </a>
               </li>

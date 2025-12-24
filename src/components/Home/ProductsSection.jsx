@@ -6,6 +6,8 @@ import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { logger } from '../../utils/logger';
 
 export default function ProductsSection() {
   const { addToCart, cartItems, updateQuantity } = useCart();
@@ -62,6 +64,79 @@ export default function ProductsSection() {
 
     fetchProducts();
   }, []);
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    logger.log('Price update received in ProductsSection:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
+    setProducts(prevProducts => {
+      return prevProducts.map(product => {
+        // Compare IDs as numbers to handle type mismatches
+        if (Number(product.id) === productId) {
+          logger.log(`Updating product ${product.id} price from ${product.price} to ${newPrice}`);
+          return {
+            ...product,
+            price: newPrice,
+            originalPrice: originalPrice || product.originalPrice,
+            // Recalculate discount
+            discount: originalPrice && originalPrice > newPrice
+              ? Math.round(((originalPrice - newPrice) / originalPrice) * 100)
+              : 0
+          };
+        }
+        return product;
+      });
+    });
+  };
+
+  // Subscribe to WebSocket updates for real-time price changes
+  const { connected } = useWebSocket(handlePriceUpdate, null, null);
+
+  // Refresh products when WebSocket connects to get latest prices
+  useEffect(() => {
+    if (connected) {
+      logger.log('WebSocket connected - refreshing featured products to sync prices');
+      const fetchProducts = async () => {
+        try {
+          const allProducts = await api.getAllProducts();
+          const featuredProducts = allProducts
+            .filter(p => p.isActive !== false)
+            .slice(0, 4)
+            .map(product => {
+              const discount = product.originalPrice && product.originalPrice > product.price
+                ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+                : 0;
+
+              const features = product.highlights && product.highlights.length > 0
+                ? product.highlights.slice(0, 3)
+                : ['High Quality', 'Reliable', 'Easy to Use'];
+
+              return {
+                id: product.id,
+                name: product.title,
+                brandSlug: product.brandSlug || product.id.toString(),
+                price: parseFloat(product.price) || 0,
+                originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : null,
+                rating: product.rating ? parseFloat(product.rating) : 0,
+                image: product.mainImageUrl || product.imageUrl || 'https://via.placeholder.com/300',
+                discount: discount,
+                category: product.brandName || 'Featured',
+                features: features,
+                inStock: product.inStock !== false
+              };
+            });
+          setProducts(featuredProducts);
+          logger.log('Featured products refreshed after WebSocket connection');
+        } catch (err) {
+          logger.error('Error refreshing featured products:', err);
+        }
+      };
+      fetchProducts();
+    }
+  }, [connected]);
 
   // Update cart quantities when cartItems change
   useEffect(() => {
@@ -150,6 +225,10 @@ export default function ProductsSection() {
                 <img
                   src={product.image}
                   alt={product.name}
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -223,16 +302,6 @@ export default function ProductsSection() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 h-14">
                   {product.name}
                 </h3>
-
-                <ul className="mb-4 space-y-1">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm text-gray-600">
-                      <span className="w-1.5 h-1.5 bg-[#c54513] rounded-full mr-2"></span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
                 <div className="mt-4 pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between">
                     <div>

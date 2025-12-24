@@ -12,14 +12,20 @@
       }
     </script>
     
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CVGEFEKTD0"></script>
+    <!-- Google tag (gtag.js) - Deferred for better performance -->
+    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-CVGEFEKTD0"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-CVGEFEKTD0');
     </script>
+    
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
     
     <!-- Primary Meta Tags -->
     <title>Andhra Machines Agencies - Premium Sewing Machines Since 1982 | Usha, Singer, JUKI, Brother</title>
@@ -59,6 +65,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Andhra Machines" />
+    
+    <!-- Security Headers (Note: X-Frame-Options, X-Content-Type-Options, and X-XSS-Protection must be set via HTTP headers on the server, not meta tags) -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    
+    <!-- Performance Hints -->
+    <link rel="preload" href="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/circle-cropped_wdduey_a0ileu.png" as="image" />
     
     <!-- Business Information -->
     <meta name="contact" content="andhramachinesagencies@gmail.com" />
@@ -117,7 +129,7 @@
     }
     </script>
     
-    <script src="https://cdn.tiny.cloud/1/bhvqdinw22m8eaypoig4hij7r3eqh3h4wrjcv8leedw0xnzq/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <!-- TinyMCE will be loaded lazily when needed (in BlogForm component) -->
 </head>
   <body>
     <div id="root"></div>
