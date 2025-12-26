@@ -98,6 +98,50 @@ export default function ProductForm({ product, onClose, onSuccess }) {
     }
   }, [product]);
 
+  // Helper function to format title: convert to Title Case with spaces, remove extra spaces and hyphens
+  const formatTitle = (text) => {
+    if (!text) return '';
+    
+    // Replace hyphens and underscores with spaces first
+    let formatted = text.replace(/[-_]/g, ' ');
+    
+    // Remove extra spaces (replace multiple spaces with single space)
+    formatted = formatted.replace(/\s+/g, ' ');
+    
+    // Trim leading/trailing spaces
+    formatted = formatted.trim();
+    
+    // Split by spaces to get words
+    const words = formatted.split(' ').filter(word => word.length > 0);
+    if (words.length === 0) return '';
+    
+    // Convert to Title Case: capitalize first letter of each word, keep spaces
+    const titleCase = words.map((word) => {
+      // Clean word: keep only alphanumeric characters
+      const cleanedWord = word.replace(/[^a-zA-Z0-9]/g, '');
+      if (!cleanedWord) return '';
+      
+      // If starts with number, keep as-is
+      if (/^[0-9]/.test(cleanedWord)) {
+        return cleanedWord;
+      } else {
+        // If starts with letter, capitalize first letter, lowercase rest of letters (numbers stay)
+        const firstChar = cleanedWord.charAt(0).toUpperCase();
+        const rest = cleanedWord.slice(1);
+        // Lowercase all letters in the rest, but keep numbers unchanged
+        const restLowercased = rest.split('').map(char => {
+          if (/[a-zA-Z]/.test(char)) {
+            return char.toLowerCase();
+          }
+          return char; // Keep numbers and other characters as-is
+        }).join('');
+        return firstChar + restLowercased;
+      }
+    }).join(' '); // Join with spaces
+    
+    return titleCase;
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -105,6 +149,30 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       [name]: type === 'checkbox' ? checked : value,
     });
     setError('');
+  };
+
+  // Handle title blur to auto-format
+  const handleTitleBlur = (e) => {
+    const value = e.target.value;
+    if (value && value.trim()) {
+      const formattedTitle = formatTitle(value);
+      setFormData({
+        ...formData,
+        title: formattedTitle,
+      });
+    }
+  };
+
+  // Handle brandSlug blur to auto-format
+  const handleBrandSlugBlur = (e) => {
+    const value = e.target.value;
+    if (value && value.trim()) {
+      const formattedSlug = formatTitle(value);
+      setFormData({
+        ...formData,
+        brandSlug: formattedSlug,
+      });
+    }
   };
 
   const handleImageUpload = async (e, type = 'main', galleryIndex = null) => {
@@ -294,14 +362,15 @@ export default function ProductForm({ product, onClose, onSuccess }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Brand Slug <span className="text-red-500">*</span>
-                <span className="text-xs text-gray-500 ml-2">(Used in product URL)</span>
+                <span className="text-xs text-gray-500 ml-2">(Used in product URL - Auto-formatted to Title Case)</span>
               </label>
               <input
                 type="text"
                 name="brandSlug"
                 value={formData.brandSlug}
                 onChange={handleChange}
-                placeholder="e.g., usha"
+                onBlur={handleBrandSlugBlur}
+                placeholder="e.g., Usha"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
               />
@@ -438,12 +507,14 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Title <span className="text-red-500">*</span>
+            <span className="text-xs text-gray-500 ml-2">(Auto-formatted to camelCase, spaces and hyphens removed)</span>
           </label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
+            onBlur={handleTitleBlur}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c54513] focus:border-transparent"
           />

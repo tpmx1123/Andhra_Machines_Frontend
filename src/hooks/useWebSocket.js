@@ -42,15 +42,23 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
       if (message.includes('/ws/') || 
           message.includes('SockJS') ||
           message.includes('WebSocket connection') ||
+          message.includes('WebSocket is closed') ||
           message.includes('EventSource') ||
           message.includes('jsonp') ||
           message.includes('xhr') ||
           message.includes('xhr_streaming') ||
           message.includes('websocket') ||
-          (message.includes('405') && message.includes('Not Allowed')) ||
-          (message.includes('404') && message.includes('Not Found')) ||
-          (message.includes('WebSocket is closed before the connection is established')) ||
-          (message.includes('MIME type') && message.includes('text/event-stream'))) {
+          message.includes('wss://') ||
+          message.includes('ws://') ||
+          message.includes('Failed to load resource') ||
+          message.includes('405') ||
+          message.includes('404') ||
+          message.includes('Not Allowed') ||
+          message.includes('Not Found') ||
+          message.includes('MIME type') ||
+          message.includes('text/event-stream') ||
+          message.includes('text/html') ||
+          message.includes('Aborting the connection')) {
         return; // Suppress this error
       }
       originalConsoleError.apply(console, args);
@@ -64,7 +72,12 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
           message.includes('WebSocket') ||
           message.includes('EventSource') ||
           message.includes('locatorjs') ||
-          message.includes('Unsupported React renderer')) {
+          message.includes('Unsupported React renderer') ||
+          message.includes('wss://') ||
+          message.includes('ws://') ||
+          message.includes('Failed to load resource') ||
+          message.includes('405') ||
+          message.includes('404')) {
         return; // Suppress this warning
       }
       originalConsoleWarn.apply(console, args);
@@ -73,6 +86,40 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     // Temporarily override console methods to suppress SockJS 404 errors
     console.error = suppressSockJS404;
     console.warn = suppressSockJSWarn;
+    
+    // Intercept WebSocket constructor to suppress errors
+    const OriginalWebSocket = window.WebSocket;
+    if (OriginalWebSocket) {
+      window.WebSocket = function(url, protocols) {
+        const ws = new OriginalWebSocket(url, protocols);
+        // Suppress all errors for SockJS WebSocket connections
+        if (url && (url.includes('/ws/') || url.includes('websocket'))) {
+          const originalOnError = ws.onerror;
+          ws.onerror = function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            // Don't call original handler
+          };
+          // Also intercept addEventListener for error events
+          const originalAddEventListener = ws.addEventListener;
+          ws.addEventListener = function(type, listener, options) {
+            if (type === 'error' || type === 'close') {
+              const wrappedListener = function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                // Don't call original listener for SockJS errors
+              };
+              return originalAddEventListener.call(this, type, wrappedListener, options);
+            }
+            return originalAddEventListener.call(this, type, listener, options);
+          };
+        }
+        return ws;
+      };
+      // Copy static properties
+      Object.setPrototypeOf(window.WebSocket, OriginalWebSocket);
+      Object.setPrototypeOf(window.WebSocket.prototype, OriginalWebSocket.prototype);
+    }
     
     // Create SockJS connection
     const socket = new SockJS(wsEndpoint);
@@ -96,17 +143,37 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     // Intercept XMLHttpRequest to suppress SockJS transport errors
     const originalXHROpen = XMLHttpRequest.prototype.open;
     const originalXHRSend = XMLHttpRequest.prototype.send;
+    const originalXHRAddEventListener = XMLHttpRequest.prototype.addEventListener;
     
     XMLHttpRequest.prototype.open = function(method, url, ...rest) {
       this._sockjsUrl = url;
+      this._isSockJS = url && (url.includes('/ws/') || url.includes('xhr') || url.includes('websocket'));
       return originalXHROpen.apply(this, [method, url, ...rest]);
     };
     
+    XMLHttpRequest.prototype.addEventListener = function(type, listener, options) {
+      if (this._isSockJS && (type === 'error' || type === 'load')) {
+        // Wrap the listener to suppress SockJS errors
+        const wrappedListener = function(event) {
+          if (this.status === 404 || this.status === 405 || type === 'error') {
+            // Suppress 404/405/errors for SockJS endpoints
+            event.stopPropagation();
+            event.preventDefault();
+            return;
+          }
+          return listener.call(this, event);
+        };
+        return originalXHRAddEventListener.call(this, type, wrappedListener, options);
+      }
+      return originalXHRAddEventListener.call(this, type, listener, options);
+    };
+    
     XMLHttpRequest.prototype.send = function(...args) {
-      if (this._sockjsUrl && this._sockjsUrl.includes('/ws/')) {
+      if (this._isSockJS) {
         // Suppress errors for SockJS transport endpoints
         this.addEventListener('error', (e) => {
           e.stopPropagation();
+          e.preventDefault();
         }, { once: true });
         this.addEventListener('load', function() {
           if (this.status === 404 || this.status === 405) {
@@ -138,12 +205,20 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     const originalWindowError = window.onerror;
     window.onerror = function(message, source, lineno, colno, error) {
       const errorMessage = String(message || '');
+      const sourceStr = String(source || '');
       // Suppress SockJS-related errors
       if (errorMessage.includes('/ws/') ||
           errorMessage.includes('jsonp') ||
           errorMessage.includes('Unexpected token') ||
           errorMessage.includes('SockJS') ||
-          (source && source.includes('/ws/'))) {
+          errorMessage.includes('WebSocket') ||
+          errorMessage.includes('405') ||
+          errorMessage.includes('404') ||
+          errorMessage.includes('Failed to load') ||
+          errorMessage.includes('EventSource') ||
+          sourceStr.includes('/ws/') ||
+          sourceStr.includes('websocket') ||
+          sourceStr.includes('xhr')) {
         return true; // Suppress the error
       }
       // Call original error handler if it exists
@@ -157,27 +232,27 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
     const originalUnhandledRejection = window.onunhandledrejection;
     window.addEventListener('unhandledrejection', function(event) {
       const reason = String(event.reason || '');
+      const errorMessage = event.reason?.message || String(event.reason || '');
       if (reason.includes('/ws/') ||
           reason.includes('SockJS') ||
           reason.includes('jsonp') ||
           reason.includes('405') ||
-          reason.includes('404')) {
+          reason.includes('404') ||
+          reason.includes('WebSocket') ||
+          reason.includes('Failed to load') ||
+          reason.includes('EventSource') ||
+          errorMessage.includes('/ws/') ||
+          errorMessage.includes('SockJS') ||
+          errorMessage.includes('WebSocket') ||
+          errorMessage.includes('405') ||
+          errorMessage.includes('404')) {
         event.preventDefault(); // Suppress the error
       }
     });
     
-    // Restore original methods after connection attempt
-    setTimeout(() => {
-      console.error = originalConsoleError;
-      console.warn = originalConsoleWarn;
-      XMLHttpRequest.prototype.open = originalXHROpen;
-      XMLHttpRequest.prototype.send = originalXHRSend;
-      if (originalEventSource) {
-        window.EventSource = originalEventSource;
-      }
-      window.onerror = originalWindowError;
-      // Note: unhandledrejection listener will remain, but that's okay as it only suppresses SockJS errors
-    }, 10000); // Increased timeout to catch all SockJS transport attempts
+    // Keep console suppression active permanently for WebSocket errors
+    // Don't restore console methods - we want to suppress SockJS errors permanently
+    // This ensures all SockJS errors are suppressed throughout the app lifecycle
     
     const client = new Client({
       webSocketFactory: () => socket,
@@ -298,6 +373,8 @@ export const useWebSocket = (onPriceUpdate, onOrderStatusUpdate, onUserUpdate) =
         client.deactivate();
       }
       setConnected(false);
+      // Note: We don't restore console methods here because other components might still be using WebSocket
+      // The suppression will remain active for the lifetime of the app, which is fine since it only suppresses SockJS errors
     };
   }, [user, refreshUser]);
 

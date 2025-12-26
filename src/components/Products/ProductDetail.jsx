@@ -149,6 +149,7 @@ const ProductDetail = () => {
           .map(p => ({
             id: p.id,
             name: p.title,
+            brandSlug: p.brandSlug || p.id.toString(),
             price: parseFloat(p.price) || 0,
             image: p.mainImageUrl || p.imageUrl || 'https://via.placeholder.com/300',
             rating: p.rating ? parseFloat(p.rating) : 0
