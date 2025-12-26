@@ -436,9 +436,7 @@ export default function Profile() {
                           Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { 
                             year: 'numeric', 
                             month: 'long', 
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
+                            day: 'numeric'
                           })}
                         </p>
                       </div>

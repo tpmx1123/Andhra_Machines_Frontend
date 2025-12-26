@@ -162,7 +162,7 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="hidden xl:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-2 md:space-x-3 xl:space-x-4">
 
             {navItems.map((item) => {
               if (item.name === 'Brands') {
