@@ -282,14 +282,14 @@ export default function SearchResults() {
                   
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200" />
                 </Link>
-                <div className="flex-1 p-3 sm:p-4 flex flex-col">
+                <div className="flex-1 p-2 sm:p-3 md:p-4 flex flex-col min-w-0">
                   <Link to={`/products/${product.brandSlug}`} className="group">
                     <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-[#c54513] transition-colors line-clamp-2">
                       {product.name}
                     </h3>
                   </Link>
                   <p className="text-xs sm:text-sm text-gray-500 mt-1">{product.brand}</p>
-                  <div className="flex-1 flex flex-col justify-end">
+                  <div className="flex-1 flex flex-col justify-end min-w-0 mt-1">
                     <div className="flex items-center mt-2">
                       <div className="flex items-center">
                         {[0, 1, 2, 3, 4].map((rating) => (
@@ -309,16 +309,18 @@ export default function SearchResults() {
                         {product.reviewCount} reviews
                       </p>
                     </div>
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <p className="text-sm sm:text-base font-medium text-gray-900 flex-shrink-0">
-                        ₹{product.price.toLocaleString('en-IN')}
+                    <div className="mt-2 flex items-center justify-between gap-2 min-w-0">
+                      <div className="flex-shrink-0 min-w-0">
+                        <p className="text-sm sm:text-base font-medium text-gray-900">
+                          ₹{product.price.toLocaleString('en-IN')}
+                        </p>
                         {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-500 line-through">
+                          <p className="text-xs sm:text-sm text-gray-500 line-through">
                             ₹{product.originalPrice.toLocaleString('en-IN')}
-                          </span>
+                          </p>
                         )}
-                      </p>
-                      <div className="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
+                      </div>
+                      <div className="flex items-center space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
                         <button
                           onClick={(e) => {
                             e.preventDefault();

@@ -125,22 +125,22 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
-      <div className="bg-[#047DAA] text-white py-1.5 sm:py-2">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 text-center text-xs sm:text-sm">
+      <div className="bg-[#047DAA] text-white py-1 sm:py-1.5">
+        <div className="w-full px-2 sm:px-3 md:px-4 text-center text-xs sm:text-sm">
           Delivery Available Across India
         </div>
       </div>
 
-      <nav className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+      <nav className="w-full px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3">
         <div className="flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-10">
             <img
               src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc_bemxiy.png"
               alt="Andhra Machines Agencies"
-              className="h-14 sm:h-16 lg:h-18 w-auto object-contain"
+              className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain"
               style={{ display: 'block' }}
             />
-            <div className="hidden sm:block">
+            <div className="hidden xl:block">
               <span className="block text-base sm:text-lg lg:text-xl font-bold text-[#c54513]">
                 Andhra Machines Agencies
               </span>
@@ -149,8 +149,20 @@ export default function Header() {
               </span>
             </div>
           </Link>
+          
+          {/* Mobile/Tablet Brand Name - Shows in place of search bar */}
+          <div className="xl:hidden flex-1 min-w-0 mx-2">
+            <div className="text-center ">
+              <span className="block text-[11px] sm:text-[20px] font-bold text-[#c54513]">
+                Andhra Machines Agencies
+              </span>
+              <span className="block text-[11px] sm:text-[15px] text-gray-600">
+                Stitching Trust Since 1982
+              </span>
+            </div>
+          </div>
 
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden xl:flex items-center space-x-4">
 
             {navItems.map((item) => {
               if (item.name === 'Brands') {
@@ -202,8 +214,8 @@ export default function Header() {
             })}
           </div>
 
-          {/* Desktop Search Bar */}
-          <div className="hidden lg:flex items-center space-x-2">
+          {/* Desktop Search Bar - Only on XL screens and above */}
+          <div className="hidden xl:flex items-center space-x-2">
             <div className="relative" ref={searchRef}>
               <form onSubmit={handleSearch} className="flex items-center relative" onClick={(e) => e.stopPropagation()}>
                 <input
@@ -256,57 +268,6 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Search Bar - Always Visible */}
-          <div className="lg:hidden flex-1 min-w-0 mx-2 relative" ref={searchRef}>
-            <form onSubmit={handleSearch} className="flex items-center relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-3 pr-20 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#c54513] focus:border-[#c54513]"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchQuery.trim().length > 0 && suggestions.length > 0 && setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="absolute right-10 text-gray-400 hover:text-gray-600 focus:outline-none"
-                >
-                  <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </button>
-              )}
-              <button
-                type="submit"
-                className="absolute right-1 bg-[#c54513] text-white p-1.5 rounded hover:bg-[#a43a10] transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-              
-              {/* Search Suggestions Dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto top-full">
-                  {suggestions.map((suggestion) => (
-                    <Link
-                      key={suggestion.id}
-                      to={`/products/${suggestion.brandSlug}`}
-                      onClick={() => {
-                        setSearchQuery('');
-                        setShowSuggestions(false);
-                      }}
-                      className="block px-4 py-2 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="font-medium text-gray-900 text-sm">{suggestion.name}</div>
-                      <div className="text-xs text-gray-500">{suggestion.brand}</div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </form>
-          </div>
 
           <div className="flex items-center space-x-4 sm:space-x-6">
             {isAuthenticated ? (

@@ -91,8 +91,8 @@ export default function Cart() {
                 <div className="hidden md:grid grid-cols-12 bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
                   <div className="col-span-5">Product</div>
                   <div className="col-span-2 text-center">Price</div>
-                  <div className="col-span-3 text-center">Quantity</div>
-                  <div className="col-span-2 text-right">Total</div>
+                  <div className="col-span-2 text-center">Quantity</div>
+                  <div className="col-span-3 text-right">Total</div>
                 </div>
                 
                 <ul className="divide-y divide-gray-200">
@@ -149,7 +149,7 @@ export default function Cart() {
                               )}
                             </div>
                             
-                            <div className="flex items-center justify-between sm:justify-end mt-4 sm:mt-6">
+                            <div className="flex items-center justify-between sm:justify-end mt-4 sm:mt-6 gap-4 sm:gap-8">
                               <div className="flex items-center border border-gray-300 rounded-md">
                                 <button
                                   type="button"
@@ -179,7 +179,7 @@ export default function Cart() {
                                 </p>
                               )}
                               
-                              <div className="hidden sm:block text-right">
+                              <div className="hidden sm:block text-right ml-auto">
                                 <p className="text-sm font-medium text-gray-900">
                                   ₹{((typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0) * item.quantity).toLocaleString('en-IN')}
                                 </p>
