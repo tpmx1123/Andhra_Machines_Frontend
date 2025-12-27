@@ -9,6 +9,8 @@ import { api } from '../../services/api';
 import { shareProduct } from '../../utils/share';
 import SEO from '../SEO';
 import StructuredData, { generateProductSchema, generateBreadcrumbSchema } from '../StructuredData';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { logger } from '../../utils/logger';
 
 
 const ProductDetail = () => {
@@ -55,6 +57,40 @@ const ProductDetail = () => {
   const carouselRef = useRef(null);
   const [productsPerView, setProductsPerView] = useState(4);
 
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    logger.log('ProductDetail: Price update received:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
+    // Only update if this is the current product
+    if (product && Number(product.id) === productId) {
+      logger.log(`ProductDetail: Updating price for ${product.title} from ₹${product.price} to ₹${newPrice}`);
+      
+      setProduct(prevProduct => ({
+        ...prevProduct,
+        price: newPrice,
+        originalPrice: originalPrice || prevProduct.originalPrice,
+        // Recalculate discount
+        isOnSale: originalPrice && originalPrice > newPrice,
+      }));
+      
+      // Show toast only for actual price changes, not sync messages
+      if (priceUpdate.type !== 'PRICE_SYNC') {
+        const hasDiscount = originalPrice && originalPrice > newPrice;
+        if (hasDiscount) {
+          showToast(`${product.title} has discount, check it once`, 'info');
+        } else {
+          showToast(`Price updated for ${product.title}`, 'info');
+        }
+      }
+    }
+  };
+
+  // Subscribe to WebSocket updates
+  const { connected } = useWebSocket(handlePriceUpdate, null, null);
+
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
@@ -85,6 +121,21 @@ const ProductDetail = () => {
       fetchProduct();
     }
   }, [productId]);
+
+  // Refresh product when WebSocket connects
+  useEffect(() => {
+    if (connected && productId) {
+      const fetchProduct = async () => {
+        try {
+          const productData = await api.getProductById(productId);
+          setProduct(productData);
+        } catch (err) {
+          logger.error('Error refreshing product:', err);
+        }
+      };
+      fetchProduct();
+    }
+  }, [connected, productId]);
 
   // Parse specifications JSON
   const getSpecifications = () => {

@@ -154,7 +154,15 @@ const Products = () => {
       if (found) {
         // Only show toast for actual price changes, not sync messages
         if (priceUpdate.type !== 'PRICE_SYNC') {
-          showToast(`Price updated for product!`, 'info');
+          const updatedProduct = prevProducts.find(p => Number(p.id) === productId);
+          if (updatedProduct) {
+            const hasDiscount = originalPrice && originalPrice > newPrice;
+            if (hasDiscount) {
+              showToast(`${updatedProduct.name} has discount, check it once`, 'info');
+            } else {
+              showToast(`Price updated for ${updatedProduct.name}`, 'info');
+            }
+          }
         }
       } else {
         logger.warn(`Product with ID ${productId} not found in current product list`);

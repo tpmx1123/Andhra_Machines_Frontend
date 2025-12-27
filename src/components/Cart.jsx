@@ -32,8 +32,12 @@ export default function Cart() {
       );
       // Show notification only for actual price changes, not sync messages
       if (priceUpdate.type !== 'PRICE_SYNC') {
-        const priceChange = newPrice > cartItem.price ? 'increased' : 'decreased';
-        showToast(`Price ${priceChange} for ${cartItem.name}`, 'info');
+        const hasDiscount = originalPrice && originalPrice > newPrice;
+        if (hasDiscount) {
+          showToast(`${cartItem.name} has discount, check it once`, 'info');
+        } else {
+          showToast(`Price updated for ${cartItem.name}`, 'info');
+        }
       }
     }
   };

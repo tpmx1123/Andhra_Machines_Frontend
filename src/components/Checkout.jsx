@@ -5,14 +5,48 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { api } from '../services/api';
 import { ArrowLeft, MapPin, Phone, Mail } from 'lucide-react';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { logger } from '../utils/logger';
 
 export default function Checkout() {
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, updateProductPrice } = useCart();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle real-time price updates via WebSocket
+  const handlePriceUpdate = (priceUpdate) => {
+    logger.log('Checkout: Price update received:', priceUpdate);
+    const productId = Number(priceUpdate.productId);
+    const newPrice = parseFloat(priceUpdate.newPrice);
+    const originalPrice = priceUpdate.originalPrice ? parseFloat(priceUpdate.originalPrice) : null;
+    
+    // Check if the updated product is in the cart
+    const cartItem = cartItems.find(item => Number(item.id) === productId);
+    if (cartItem) {
+      logger.log(`Checkout: Updating price for ${cartItem.name} from ₹${cartItem.price} to ₹${newPrice}`);
+      // Update the price in cart
+      updateProductPrice(
+        productId,
+        newPrice,
+        originalPrice || newPrice
+      );
+      // Show toast only for actual price changes, not sync messages
+      if (priceUpdate.type !== 'PRICE_SYNC') {
+        const hasDiscount = originalPrice && originalPrice > newPrice;
+        if (hasDiscount) {
+          showToast(`${cartItem.name} has discount, check it once`, 'info');
+        } else {
+          showToast(`Price updated for ${cartItem.name}`, 'info');
+        }
+      }
+    }
+  };
+
+  // Subscribe to WebSocket updates
+  useWebSocket(handlePriceUpdate, null, null);
   
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
