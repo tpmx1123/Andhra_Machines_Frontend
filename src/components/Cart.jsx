@@ -30,15 +30,7 @@ export default function Cart() {
         newPrice,
         originalPrice || newPrice // Use originalPrice if provided, otherwise use newPrice
       );
-      // Show notification only for actual price changes, not sync messages
-      if (priceUpdate.type !== 'PRICE_SYNC') {
-        const hasDiscount = originalPrice && originalPrice > newPrice;
-        if (hasDiscount) {
-          showToast(`${cartItem.name} has discount, check it once`, 'info');
-        } else {
-          showToast(`Price updated for ${cartItem.name}`, 'info');
-        }
-      }
+      // Price updates happen silently - no toast notifications for scheduled prices
     }
   };
 

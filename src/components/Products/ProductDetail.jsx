@@ -95,15 +95,7 @@ const ProductDetail = () => {
       // Update last price update reference
       lastPriceUpdateRef.current = { productId, price: newPrice, timestamp: now };
       
-      // Show toast only for actual price changes, not sync messages
-      if (priceUpdate.type !== 'PRICE_SYNC') {
-        const hasDiscount = originalPrice && originalPrice > newPrice;
-        if (hasDiscount) {
-          showToast(`${product.title} has discount, check it once`, 'success');
-        } else {
-          showToast(`Price updated for ${product.title}`, 'success');
-        }
-      }
+      // Price updates happen silently - no toast notifications for scheduled prices
     }
   };
 
