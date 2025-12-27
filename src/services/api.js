@@ -8,11 +8,44 @@ const getAuthHeaders = () => {
   };
 };
 
+// Helper to add credentials to fetch options
+const withCredentials = (options) => {
+  return {
+    ...options,
+    credentials: 'include', // Include cookies in all requests
+  };
+};
+
+// Helper to get fetch options with credentials for cookie support
+const getFetchOptions = (method = 'GET', body = null, useAuth = false) => {
+  const options = {
+    method,
+    credentials: 'include', // Include cookies in all requests
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+  
+  if (useAuth) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      options.headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+  
+  return options;
+};
+
 export const api = {
   // Auth APIs
   registerUser: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/register/user`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -36,6 +69,7 @@ export const api = {
   registerAdmin: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/register/admin`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -47,6 +81,7 @@ export const api = {
   login: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -70,6 +105,7 @@ export const api = {
   loginUser: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/login/user`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -93,6 +129,7 @@ export const api = {
   loginAdmin: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/login/admin`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -104,6 +141,7 @@ export const api = {
   forgotPassword: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -127,6 +165,7 @@ export const api = {
   resetPassword: async (data) => {
     const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
       },
@@ -149,10 +188,10 @@ export const api = {
 
   // Admin APIs
   getAllUsers: async () => {
-    const response = await fetch(`${API_BASE_URL}/admin/users`, {
+    const response = await fetch(`${API_BASE_URL}/admin/users`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -170,11 +209,11 @@ export const api = {
   },
 
   updateUser: async (userId, userData) => {
-    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, withCredentials({
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(userData),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -191,11 +230,11 @@ export const api = {
   },
 
   updateProfile: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+    const response = await fetch(`${API_BASE_URL}/user/profile`, withCredentials({
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(userData),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -212,10 +251,10 @@ export const api = {
   },
 
   deleteUser: async (userId) => {
-    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -233,10 +272,10 @@ export const api = {
 
   // Product APIs
   getAllProductsForAdmin: async () => {
-    const response = await fetch(`${API_BASE_URL}/products/admin`, {
+    const response = await fetch(`${API_BASE_URL}/products/admin`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -298,28 +337,28 @@ export const api = {
   },
 
   createProduct: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/products`, {
+    const response = await fetch(`${API_BASE_URL}/products`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
-    });
+    }));
     return response.json();
   },
 
   updateProduct: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/products/${id}`, withCredentials({
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
-    });
+    }));
     return response.json();
   },
 
   deleteProduct: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/products/${id}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
 
     if (!response.ok) {
       let errorData;
@@ -356,6 +395,7 @@ export const api = {
     
     const response = await fetch(`${API_BASE_URL}/products/upload`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers,
       body: formData,
     });
@@ -408,11 +448,11 @@ export const api = {
   },
 
   createBlog: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/blogs`, {
+    const response = await fetch(`${API_BASE_URL}/blogs`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -429,11 +469,11 @@ export const api = {
   },
 
   updateBlog: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/blogs/${id}`, withCredentials({
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -450,10 +490,10 @@ export const api = {
   },
 
   deleteBlog: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/blogs/${id}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -494,24 +534,19 @@ export const api = {
   },
 
   getAllSubscribers: async () => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/newsletter/subscribers`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(`${API_BASE_URL}/newsletter/subscribers`, withCredentials({
+      method: 'GET',
+      headers: getAuthHeaders(),
+    }));
     if (!response.ok) throw new Error('Failed to fetch subscribers');
     return response.json();
   },
 
   deleteSubscriber: async (id) => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/newsletter/subscribers/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/newsletter/subscribers/${id}`, withCredentials({
       method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+      headers: getAuthHeaders(),
+    }));
     if (!response.ok) throw new Error('Failed to delete subscriber');
     return response.json();
   },
@@ -541,13 +576,11 @@ export const api = {
   },
 
   addReview: async (productId, reviewData) => {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews`, {
+    const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews`, withCredentials({
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(reviewData),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -564,10 +597,10 @@ export const api = {
   },
 
   deleteReview: async (productId, reviewId) => {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews/${reviewId}`, {
+    const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews/${reviewId}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -583,11 +616,11 @@ export const api = {
 
   // Order APIs
   createOrder: async (orderData) => {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
+    const response = await fetch(`${API_BASE_URL}/orders`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(orderData),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -604,10 +637,10 @@ export const api = {
   },
 
   getUserOrders: async () => {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
+    const response = await fetch(`${API_BASE_URL}/orders`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -625,10 +658,10 @@ export const api = {
   },
 
   getOrderById: async (orderId) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -647,10 +680,10 @@ export const api = {
 
   // Admin Order APIs
   getAllOrders: async () => {
-    const response = await fetch(`${API_BASE_URL}/orders/admin/all`, {
+    const response = await fetch(`${API_BASE_URL}/orders/admin/all`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -668,11 +701,11 @@ export const api = {
   },
 
   updateOrderStatus: async (orderId, status) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
+    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, withCredentials({
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify({ status }),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -689,10 +722,10 @@ export const api = {
   },
 
   deleteOrder: async (orderId) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -734,10 +767,10 @@ export const api = {
 
   // Cart APIs
   getCart: async () => {
-    const response = await fetch(`${API_BASE_URL}/cart`, {
+    const response = await fetch(`${API_BASE_URL}/cart`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -755,11 +788,11 @@ export const api = {
   },
 
   addToCart: async (productId, quantity = 1) => {
-    const response = await fetch(`${API_BASE_URL}/cart/add`, {
+    const response = await fetch(`${API_BASE_URL}/cart/add`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ productId, quantity }),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -776,11 +809,11 @@ export const api = {
   },
 
   updateCartItem: async (productId, quantity) => {
-    const response = await fetch(`${API_BASE_URL}/cart/update`, {
+    const response = await fetch(`${API_BASE_URL}/cart/update`, withCredentials({
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify({ productId, quantity }),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -797,10 +830,10 @@ export const api = {
   },
 
   removeFromCart: async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
+    const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -817,10 +850,10 @@ export const api = {
   },
 
   clearCart: async () => {
-    const response = await fetch(`${API_BASE_URL}/cart/clear`, {
+    const response = await fetch(`${API_BASE_URL}/cart/clear`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -837,10 +870,10 @@ export const api = {
   },
 
   syncCartPrices: async () => {
-    const response = await fetch(`${API_BASE_URL}/cart/sync-prices`, {
+    const response = await fetch(`${API_BASE_URL}/cart/sync-prices`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -858,10 +891,10 @@ export const api = {
 
   // Favorites API
   getFavorites: async () => {
-    const response = await fetch(`${API_BASE_URL}/favorites`, {
+    const response = await fetch(`${API_BASE_URL}/favorites`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -878,11 +911,11 @@ export const api = {
   },
 
   addFavorite: async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/favorites/add`, {
+    const response = await fetch(`${API_BASE_URL}/favorites/add`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ productId }),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -899,10 +932,10 @@ export const api = {
   },
 
   removeFavorite: async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/favorites/remove/${productId}`, {
+    const response = await fetch(`${API_BASE_URL}/favorites/remove/${productId}`, withCredentials({
       method: 'DELETE',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -919,10 +952,10 @@ export const api = {
   },
 
   checkFavorite: async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/favorites/check/${productId}`, {
+    const response = await fetch(`${API_BASE_URL}/favorites/check/${productId}`, withCredentials({
       method: 'GET',
       headers: getAuthHeaders(),
-    });
+    }));
     
     if (!response.ok) {
       return { success: false, isFavorite: false };
@@ -932,11 +965,11 @@ export const api = {
   },
 
   syncFavorites: async (productIds) => {
-    const response = await fetch(`${API_BASE_URL}/favorites/sync`, {
+    const response = await fetch(`${API_BASE_URL}/favorites/sync`, withCredentials({
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ productIds }),
-    });
+    }));
     
     if (!response.ok) {
       const errorText = await response.text();

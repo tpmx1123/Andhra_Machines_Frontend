@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -37,11 +38,19 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    navigate('/');
+  const logout = async () => {
+    try {
+      // Call logout endpoint to clear server-side cookie
+      await api.logout();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      // Clear local storage regardless of API call result
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      navigate('/');
+    }
   };
 
   const refreshUser = async () => {
@@ -50,6 +59,7 @@ export const AuthProvider = ({ children }) => {
       try {
         // Fetch updated user data from backend
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL }/auth/me`, {
+          credentials: 'include', // Include cookies
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
