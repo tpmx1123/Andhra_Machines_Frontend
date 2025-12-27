@@ -23,6 +23,8 @@ const Cart = lazy(() => import('./components/Cart'));
 const Checkout = lazy(() => import('./components/Checkout'));
 const Login = lazy(() => import('./components/Auth/Login'));
 const Signup = lazy(() => import('./components/Auth/Signup'));
+const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 const AdminPanel = lazy(() => import('./components/Admin/AdminPanel'));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
@@ -70,6 +72,8 @@ function App() {
                   <Route path="checkout" element={<Checkout />} />
                   <Route path="login" element={<Login />} />
                   <Route path="signup" element={<Signup />} />
+                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route path="reset-password" element={<ResetPassword />} />
                     <Route path="privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="terms-of-service" element={<TermsOfService />} />
                     <Route path="cancellation-returns" element={<CancellationReturns />} />

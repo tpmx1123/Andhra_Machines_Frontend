@@ -101,6 +101,52 @@ export const api = {
     return response.json();
   },
 
+  forgotPassword: async (data) => {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      return errorData;
+    }
+    
+    return response.json();
+  },
+
+  resetPassword: async (data) => {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `Server error: ${response.status} ${response.statusText}` };
+      }
+      return errorData;
+    }
+    
+    return response.json();
+  },
+
   // Admin APIs
   getAllUsers: async () => {
     const response = await fetch(`${API_BASE_URL}/admin/users`, {
