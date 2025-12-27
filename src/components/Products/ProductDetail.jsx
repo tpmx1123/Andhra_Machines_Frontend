@@ -57,6 +57,9 @@ const ProductDetail = () => {
   const carouselRef = useRef(null);
   const [productsPerView, setProductsPerView] = useState(4);
 
+  // Track last price update to prevent duplicate toasts
+  const lastPriceUpdateRef = useRef({ productId: null, price: null, timestamp: 0 });
+
   // Handle real-time price updates via WebSocket
   const handlePriceUpdate = (priceUpdate) => {
     logger.log('ProductDetail: Price update received:', priceUpdate);
@@ -66,6 +69,19 @@ const ProductDetail = () => {
     
     // Only update if this is the current product
     if (product && Number(product.id) === productId) {
+      const now = Date.now();
+      const lastUpdate = lastPriceUpdateRef.current;
+      
+      // Check if this is a duplicate update (same product, same price, within 2 seconds)
+      const isDuplicate = lastUpdate.productId === productId && 
+                          lastUpdate.price === newPrice && 
+                          (now - lastUpdate.timestamp) < 2000;
+      
+      if (isDuplicate && priceUpdate.type !== 'PRICE_SYNC') {
+        logger.log('ProductDetail: Skipping duplicate price update toast');
+        return;
+      }
+      
       logger.log(`ProductDetail: Updating price for ${product.title} from ₹${product.price} to ₹${newPrice}`);
       
       setProduct(prevProduct => ({
@@ -76,13 +92,16 @@ const ProductDetail = () => {
         isOnSale: originalPrice && originalPrice > newPrice,
       }));
       
+      // Update last price update reference
+      lastPriceUpdateRef.current = { productId, price: newPrice, timestamp: now };
+      
       // Show toast only for actual price changes, not sync messages
       if (priceUpdate.type !== 'PRICE_SYNC') {
         const hasDiscount = originalPrice && originalPrice > newPrice;
         if (hasDiscount) {
-          showToast(`${product.title} has discount, check it once`, 'info');
+          showToast(`${product.title} has discount, check it once`, 'success');
         } else {
-          showToast(`Price updated for ${product.title}`, 'info');
+          showToast(`Price updated for ${product.title}`, 'success');
         }
       }
     }

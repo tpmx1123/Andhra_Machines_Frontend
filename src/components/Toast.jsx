@@ -13,7 +13,9 @@ export const Toast = ({ message, onClose, type = 'success' }) => {
   return (
     <div className="animate-slide-in-right">
       <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
-        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'info' ? 'bg-blue-500 text-white' : 
+        'bg-red-500 text-white'
       } min-w-[300px] max-w-md`}>
         <CheckCircle className="h-5 w-5 flex-shrink-0" />
         <p className="flex-1 text-sm font-medium">{message}</p>
