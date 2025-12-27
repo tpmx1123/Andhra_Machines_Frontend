@@ -110,7 +110,7 @@ export default function TermsOfService() {
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">4.3 Availability</h3>
               <p className="text-gray-700 leading-relaxed">
-                Product availability is subject to change. We reserve the right to limit quantities, discontinue products, or refuse orders at our discretion. If a product becomes unavailable after you place an order, we will notify you and provide a full refund.
+                Product availability is subject to change. We reserve the right to limit quantities, discontinue products, or refuse orders at our discretion. If a product becomes unavailable after you place an order, we will notify you and arrange for an exchange or replacement.
               </p>
             </section>
 
@@ -183,11 +183,11 @@ export default function TermsOfService() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Returns, Refunds, and Exchanges</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Replacements and Exchanges</h2>
               
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.1 Return Policy</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.1 Replacement Policy</h3>
               <p className="text-gray-700 leading-relaxed mb-4">
-                We want you to be satisfied with your purchase. You may return products within the specified return period (typically 7-15 days from delivery) if:
+                We want you to be satisfied with your purchase. You may request replacement for products within the specified replacement period (typically 7-15 days from delivery) if:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2 text-gray-700">
                 <li>The product is defective or damaged</li>
@@ -196,7 +196,7 @@ export default function TermsOfService() {
                 <li>The product is unused, unopened, and in original packaging</li>
               </ul>
               <p className="text-gray-700 leading-relaxed mb-4">
-                Items that cannot be returned include:
+                Items that cannot be replaced include:
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2 text-gray-700">
                 <li>Products damaged by misuse or normal wear</li>
@@ -205,30 +205,19 @@ export default function TermsOfService() {
                 <li>Products purchased during special sales (unless specified)</li>
               </ul>
 
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.2 Return Process</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.2 Replacement Process</h3>
               <p className="text-gray-700 leading-relaxed mb-4">
-                To initiate a return:
+                To initiate a replacement:
               </p>
               <ol className="list-decimal pl-6 mb-4 space-y-2 text-gray-700">
                 <li>Contact our customer service at andhramachinesagencies@gmail.com or call +91 97013 32707</li>
-                <li>Provide your order number and reason for return</li>
-                <li>Follow the return instructions provided</li>
+                <li>Provide your order number and reason for replacement</li>
+                <li>Follow the replacement instructions provided</li>
                 <li>Package the product securely in original packaging</li>
-                <li>Ship the product back to us (return shipping charges may apply)</li>
+                <li>Ship the product back to us (replacement shipping charges may apply)</li>
               </ol>
 
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.3 Refunds</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Refunds will be processed:
-              </p>
-              <ul className="list-disc pl-6 mb-4 space-y-2 text-gray-700">
-                <li>After we receive and inspect the returned product</li>
-                <li>Within 7-14 business days of approval</li>
-                <li>To the original payment method used for purchase</li>
-                <li>Minus any applicable restocking fees or shipping charges</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.4 Exchanges</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">7.3 Exchanges</h3>
               <p className="text-gray-700 leading-relaxed">
                 Exchanges may be available for defective or incorrect products. Contact our customer service to request an exchange. Exchanges are subject to product availability.
               </p>

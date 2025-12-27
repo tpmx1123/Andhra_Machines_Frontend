@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc pl-6 mb-4 space-y-2 text-gray-700">
                 <li><strong>Order Processing:</strong> To process and fulfill your orders, including payment processing, shipping, and delivery</li>
-                <li><strong>Customer Service:</strong> To respond to your inquiries, provide support, and handle returns or refunds</li>
+                <li><strong>Customer Service:</strong> To respond to your inquiries, provide support, and handle replacements or exchanges</li>
                 <li><strong>Account Management:</strong> To create and manage your account, maintain your order history, and preferences</li>
                 <li><strong>Communication:</strong> To send order confirmations, shipping updates, and important service-related messages</li>
                 <li><strong>Marketing:</strong> To send promotional emails, newsletters, and special offers (with your consent)</li>

@@ -48,8 +48,8 @@ export default function FAQSection() {
       category: 'warranty'
     },
     {
-      question: 'What is your return policy?',
-      answer: 'We offer a 7-day return policy for damaged products with original packaging. Please contact our customer support within 7 days of delivery to Initiate Replacement. Some exclusions may apply.',
+      question: 'What is your replacement policy?',
+      answer: 'We offer a 7-day replacement policy for damaged products with original packaging. Please contact our customer support within 7 days of delivery to initiate replacement. Some exclusions may apply.',
       category: 'services'
     }
   ];

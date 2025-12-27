@@ -521,7 +521,7 @@ export default function Profile() {
       case 'refunds':
         return (
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-6">Refunds & Returns</h2>
+            <h2 className="text-xl font-semibold mb-6">Replacements & Exchanges</h2>
             <div className="space-y-6">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                 <div className="flex items-start gap-4">
@@ -529,26 +529,26 @@ export default function Profile() {
                     <RefreshCw className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Our Refund & Return Policy</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Our Replacement & Exchange Policy</h3>
                     
                     <div className="space-y-4">
                       <div className="bg-white rounded-lg p-4 border border-blue-100">
-                        <h4 className="font-semibold text-gray-900 mb-2">Return Policy</h4>
+                        <h4 className="font-semibold text-gray-900 mb-2">Replacement Policy</h4>
                         <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                          <li>7-day return policy for damaged or defective products</li>
+                          <li>7-day replacement policy for damaged or defective products</li>
                           <li>Products must be in original packaging with all accessories</li>
-                          <li>Return requests must be initiated within 7 days of delivery</li>
-                          <li>Contact our support team via WhatsApp to initiate returns</li>
+                          <li>Replacement requests must be initiated within 7 days of delivery</li>
+                          <li>Contact our support team via WhatsApp to initiate replacements</li>
                         </ul>
                       </div>
                       
                       <div className="bg-white rounded-lg p-4 border border-blue-100">
-                        <h4 className="font-semibold text-gray-900 mb-2">Refund Process</h4>
+                        <h4 className="font-semibold text-gray-900 mb-2">Exchange Process</h4>
                         <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                          <li>Refunds are processed within 5-7 business days</li>
-                          <li>Refund amount will be credited to the original payment method</li>
-                          <li>For WhatsApp payments, refunds will be processed via the same channel</li>
-                          <li>You will receive confirmation once the refund is processed</li>
+                          <li>Exchanges are processed within 5-7 business days</li>
+                          <li>You can exchange for a different product of equal or higher value</li>
+                          <li>For exchanges, price difference will be adjusted accordingly</li>
+                          <li>You will receive confirmation once the exchange is processed</li>
                         </ul>
                       </div>
                       
@@ -576,7 +576,7 @@ export default function Profile() {
               
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600">
-                  <strong>Need Help?</strong> Contact our support team via WhatsApp for assistance with returns or refunds.
+                  <strong>Need Help?</strong> Contact our support team via WhatsApp for assistance with replacements or exchanges.
                 </p>
               </div>
             </div>
@@ -865,7 +865,7 @@ export default function Profile() {
                 >
                   <span className="flex items-center">
                     <RefreshCw className="mr-3 h-5 w-5" />
-                    Refunds & Returns
+                    Replacements & Exchanges
                   </span>
                   <ChevronRight className="h-4 w-4" />
                 </button>

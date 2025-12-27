@@ -169,7 +169,7 @@ export default function Footer() {
               <span>•</span>
               <Link to="/terms-of-service" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Terms</Link>
               <span>•</span>
-              <Link to="/cancellation-returns" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Refunds</Link>
+              <Link to="/cancellation-returns" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Replacements</Link>
             </div>
           </div>
         </div>

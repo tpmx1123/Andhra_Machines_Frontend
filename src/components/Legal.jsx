@@ -84,7 +84,7 @@ export default function Legal() {
                   to="/cancellation-returns"
                   className="block text-[#c54513] hover:text-[#a43a10] hover:underline transition-colors"
                 >
-                  Cancellation & Returns
+                  Cancellation & Replacements
                 </Link>
               </div>
             </section>

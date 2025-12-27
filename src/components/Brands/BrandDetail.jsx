@@ -246,11 +246,11 @@ const BrandDetail = () => {
       </div>
 
       {/* Brand Banner */}
-      <div className="relative bg-gray-300  lg:h-full ">
+      <div className="relative bg-white  lg:h-[500px] w-full">
         <img
           src={brand.banner}
           alt={`${brand.name} banner`}
-          className="w-full h-full object-cover opacity-80"
+          className="w-full h-full object-contain opacity-80"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = 'https://via.placeholder.com/1920x300?text=' + brand.name;
