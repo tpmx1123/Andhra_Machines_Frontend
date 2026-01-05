@@ -80,12 +80,6 @@ export default function Legal() {
                 >
                   Terms of Service
                 </Link>
-                <Link
-                  to="/cancellation-returns"
-                  className="block text-[#c54513] hover:text-[#a43a10] hover:underline transition-colors"
-                >
-                  Cancellation & Replacements
-                </Link>
               </div>
             </section>
           </div>

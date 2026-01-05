@@ -28,7 +28,6 @@ const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 const AdminPanel = lazy(() => import('./components/Admin/AdminPanel'));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
-const CancellationReturns = lazy(() => import('./components/CancellationReturns'));
 const Legal = lazy(() => import('./components/Legal'));
 
 // Loading fallback component
@@ -76,7 +75,6 @@ function App() {
                   <Route path="reset-password" element={<ResetPassword />} />
                     <Route path="privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="terms-of-service" element={<TermsOfService />} />
-                    <Route path="cancellation-returns" element={<CancellationReturns />} />
                     <Route path="legal" element={<Legal />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>

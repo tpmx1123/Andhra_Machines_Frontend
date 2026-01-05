@@ -1,4 +1,4 @@
-import { Shield, Clock, Headphones, BadgeCheck, Zap, TrendingUp } from 'lucide-react';
+import { Clock, Headphones, BadgeCheck, Zap, TrendingUp, Users } from 'lucide-react';
 
 function Feature({ Icon, title, description }) {
   return (
@@ -25,9 +25,9 @@ export default function WhyChooseUs() {
       description: 'Trusted service provider with decades of industry expertise',
     },
     {
-      Icon: Shield,
-      title: 'Extended Warranty',
-      description: 'Extended Warranty is not available right now for any sewing machine. In experts repair section...',
+      Icon: Users,
+      title: 'Expert Technicians',
+      description: 'Skilled and experienced technicians providing reliable repair and maintenance services',
     },
     {
       Icon: Headphones,

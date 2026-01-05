@@ -862,7 +862,7 @@ const ProductDetail = () => {
                       </div>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-sm font-semibold text-gray-900 mb-2">Delivery</h4>
-                  <p className="text-sm text-gray-700">Fast and secure delivery with tracking. Free delivery on orders above ₹10,000.</p>
+                  <p className="text-sm text-gray-700">Fast and secure delivery with tracking.</p>
                       </div>
                         </div>
                       </div>

@@ -54,7 +54,7 @@ export default function About() {
             <p className="text-gray-200 leading-relaxed">
             Built on dedication, honesty, and expertise, our brand has earned deep-rooted customer trust that spans generations. We believe in delivering not just products, but long-lasting solutions, backed by expert service and personal guidance. This trust has positioned us among the leading sewing machine dealers in the region.
             </p>
-          </div>
+          </div>  
 
           {/* What We Offer */}
           <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl p-8 transition-all duration-300 transform hover:scale-[1.02]">
