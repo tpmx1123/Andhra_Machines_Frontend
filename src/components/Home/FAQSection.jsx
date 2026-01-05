@@ -48,8 +48,8 @@ export default function FAQSection() {
       category: 'warranty'
     },
     {
-      question: 'What is your replacement policy?',
-      answer: 'For details about replacements and exchanges, please contact us.',
+      question: 'What are your supporting timings?',
+      answer: 'Support is available during business hours. Monday to Saturday from 10:30 AM to 8:30 PM. Sunday is closed.',
       category: 'services'
     }
   ];
