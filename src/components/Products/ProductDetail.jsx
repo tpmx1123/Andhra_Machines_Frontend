@@ -850,7 +850,7 @@ const ProductDetail = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-sm font-semibold text-gray-900 mb-2">Warranty</h4>
-                  <p className="text-sm text-gray-700">1 to 3 years only manufacturer warranty covering defects and parts. Extended Warranty is not available right now for any sewing machine. In experts repair section...</p>
+                  <p className="text-sm text-gray-700">1 to 3 years only manufacturer warranty covering defects and parts.</p>
                     </div>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-sm font-semibold text-gray-900 mb-2">Installation</h4>
