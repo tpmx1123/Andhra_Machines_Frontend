@@ -268,7 +268,7 @@ export default function Cart() {
               <div className="mt-6 bg-white shadow-sm rounded-lg p-6">
                 <h3 className="text-sm font-medium text-gray-900 mb-2">Need Help?</h3>
                 <p className="text-sm text-gray-500 mb-4">
-                  Our customer service team is available 24/7 to assist you with any questions.
+                  Support is available but during Business Hours only.
                 </p>
                 <div className="flex items-center text-sm text-gray-500">
                   <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

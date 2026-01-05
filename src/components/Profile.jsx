@@ -529,27 +529,13 @@ export default function Profile() {
                     <RefreshCw className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Our Replacement & Exchange Policy</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Replacements & Exchanges</h3>
                     
                     <div className="space-y-4">
                       <div className="bg-white rounded-lg p-4 border border-blue-100">
-                        <h4 className="font-semibold text-gray-900 mb-2">Replacement Policy</h4>
-                        <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                          <li>7-day replacement policy for damaged or defective products</li>
-                          <li>Products must be in original packaging with all accessories</li>
-                          <li>Replacement requests must be initiated within 7 days of delivery</li>
-                          <li>Contact our support team via WhatsApp to initiate replacements</li>
-                        </ul>
-                      </div>
-                      
-                      <div className="bg-white rounded-lg p-4 border border-blue-100">
-                        <h4 className="font-semibold text-gray-900 mb-2">Exchange Process</h4>
-                        <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                          <li>Exchanges are processed within 5-7 business days</li>
-                          <li>You can exchange for a different product of equal or higher value</li>
-                          <li>For exchanges, price difference will be adjusted accordingly</li>
-                          <li>You will receive confirmation once the exchange is processed</li>
-                        </ul>
+                        <p className="text-sm text-gray-600">
+                          For details about replacements and exchanges, please contact us.
+                        </p>
                       </div>
                       
                       <div className="bg-white rounded-lg p-4 border border-blue-100">

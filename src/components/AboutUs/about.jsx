@@ -29,15 +29,18 @@ export default function About() {
         <div className="bg-white/90 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-5 sm:p-7 md:p-10 lg:p-12 mb-10 sm:mb-12 transition-all duration-300 transform hover:scale-[1.01]">
           <h2 className="text-2xl sm:text-3xl font-bold text-[#1a365d] mb-4 sm:mb-6">Our Journey Since 1982</h2>
           <div className="space-y-4 sm:space-y-5 text-gray-700 leading-relaxed text-sm sm:text-base">
-            <p>
-              Our journey began in 1982 in Rajahmundry, with a simple but powerful vision: to bring reliable sewing machines and genuine service to every customer who values craftsmanship. Over the past 43 years, that vision has grown into a legacy.
-            </p>
-            <p>
-              From a humble family-run business, we have become one of the most trusted names in sewing machines, accessories, and servicing in Andhra Pradesh.
-            </p>
-            <p>
-              With a strong presence in Rajahmundry and an expanding footprint through our branch in Visakhapatnam, we have served thousands of households, boutiques, professional tailors, and industries—each one becoming a part of our story.
-            </p>
+          <p>
+          Our journey began in 1982 in Rajahmundry, with a simple but powerful vision: to bring reliable sewing machines and genuine service to every customer who values craftsmanship. Over the past 43 years, that vision has grown into a legacy.
+          </p>
+
+          <p>
+          From a humble, family-run business, we have become one of the most trusted names in sewing machines, accessories, and servicing in Andhra Pradesh.
+          </p>
+
+          <p>
+          With a strong presence in Rajahmundry and an expanding footprint through our branch in Visakhapatnam, we have served thousands of households, boutiques, professional tailors, and industries—each one becoming a part of our story.
+          </p>
+
           </div>
         </div>
 
@@ -49,7 +52,7 @@ export default function About() {
               <h3 className="text-xl sm:text-2xl font-bold">A Heritage of Trust and Quality</h3>
             </div>
             <p className="text-gray-200 leading-relaxed">
-              Built on dedication, honesty, and expertise, our brand has earned deep-rooted customer faith that spans generations. We believe in delivering not just products, but long-lasting solutions backed by expert service and personal guidance. This trust has positioned us among the leading sewing machine dealers in the region.
+            Built on dedication, honesty, and expertise, our brand has earned deep-rooted customer trust that spans generations. We believe in delivering not just products, but long-lasting solutions, backed by expert service and personal guidance. This trust has positioned us among the leading sewing machine dealers in the region.
             </p>
           </div>
 

@@ -145,7 +145,7 @@ export default function Header() {
                 Andhra Machines Agencies
               </span>
               <span className="block text-xs sm:text-sm text-gray-600">
-                Stitching Trust Since 1982
+                Since 1982
               </span>
             </div>
           </Link>
@@ -157,7 +157,7 @@ export default function Header() {
                 Andhra Machines Agencies
               </span>
               <span className="block text-[11px] sm:text-[15px] text-gray-600">
-                Stitching Trust Since 1982
+                Since 1982
               </span>
             </div>
           </div>

@@ -26,7 +26,7 @@ export default function HeroSlider() {
       id: 3,
       title: 'Expert Service & Support',
       subtitle: 'Free Installation',
-      image: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1766379865/ChatGPT_Image_Dec_19_2025_06_28_19_PM_grlgrs_ewbrvt.png',
+      image: 'https://res.cloudinary.com/do8cpljrz/image/upload/v1767594609/WhatsApp_Image_2026-01-05_at_11.59.54_AM_acr2ut.jpg',
       description: 'Comprehensive warranty coverage & dedicated customer support',
       bg: 'from-[#c54513]/20 to-[#a43a10]/20',
     },

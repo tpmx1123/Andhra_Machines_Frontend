@@ -71,7 +71,7 @@ export default function AboutSection() {
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Expert Repairs</h3>
             <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-              Our certified technicians provide reliable repair and maintenance services for all types of machines with genuine parts.
+              Our expert technicians provide reliable repair and maintenance services for all types of machines with genuine parts.
             </p>
           </div>
 

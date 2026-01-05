@@ -450,7 +450,7 @@ export default function Contact() {
                 <div className="flex-1">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Get in Touch</h3>
                   <div className="text-gray-600 space-y-1 text-sm">
-                    <p>Monday - Saturday: <span className="text-gray-800 font-medium">10:30 AM – 9:00 PM</span></p>
+                    <p>Monday - Saturday: <span className="text-gray-800 font-medium">10:30 AM to 8:30 PM</span></p>
                     <p className="text-red-600 font-medium">Sunday: Closed</p>
                   </div>
                 </div>

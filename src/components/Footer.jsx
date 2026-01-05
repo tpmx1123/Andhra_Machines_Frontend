@@ -150,7 +150,7 @@ export default function Footer() {
             </div>
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <p className="text-xs font-semibold text-gray-700 uppercase mb-2">Business Hours</p>
-              <p className="text-sm text-gray-700 font-medium">Mon - Sat: 9AM - 7PM</p>
+              <p className="text-sm text-gray-700 font-medium">Mon - Sat: 10:30 AM to 8:30 PM</p>
               <p className="text-sm text-gray-700 font-medium">Sunday: Closed</p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function Footer() {
         <div className="pt-3 sm:pt-4 border-t border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-1.5 sm:space-y-0">
             <p className="text-[10px] sm:text-xs text-gray-500 text-center sm:text-left">
-              &copy; {new Date().getFullYear()} <a href="https://www.yeslorvens.com/" target="_blank" rel="noopener noreferrer" className="text-[#c54513] font-semibold hover:underline">Yes Lorvens PVT LTD</a>. All rights reserved.
+              &copy; {new Date().getFullYear()} <span className="text-[#c54513] font-semibold">Andhra Machines Agencies</span>. All rights reserved.
             </p>
             <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs text-gray-500">
               <Link to="/legal" className="hover:text-[#c54513] transition-colors" onClick={() => window.scrollTo(0, 0)}>Legal</Link>

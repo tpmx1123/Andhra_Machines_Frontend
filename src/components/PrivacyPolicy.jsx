@@ -223,7 +223,7 @@ export default function PrivacyPolicy() {
                   <strong>Phone:</strong> <a href="tel:+919701332707" className="text-[#c54513] hover:underline">+91 97013 32707</a> | <a href="tel:917416421770" className="text-[#c54513] hover:underline">+91 74164 21770</a>
                 </p>
                 <p className="text-gray-700">
-                  <strong>Business Hours:</strong> Monday - Saturday: 9:00 AM - 7:00 PM
+                  <strong>Business Hours:</strong> Monday - Saturday: 10:30 AM to 8:30 PM
                 </p>
               </div>
             </section>

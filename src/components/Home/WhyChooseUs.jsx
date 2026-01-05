@@ -27,12 +27,12 @@ export default function WhyChooseUs() {
     {
       Icon: Shield,
       title: 'Extended Warranty',
-      description: 'Comprehensive warranty coverage on all machines',
+      description: 'Extended Warranty is not available right now for any sewing machine. In experts repair section...',
     },
     {
       Icon: Headphones,
-      title: '24/7 Support',
-      description: 'Round-the-clock customer support for all your queries',
+      title: 'Customer Support',
+      description: 'Support is available but during Business Hours only.',
     },
     {
       Icon: Zap,

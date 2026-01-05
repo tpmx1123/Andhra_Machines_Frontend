@@ -19,7 +19,7 @@ export default function FAQSection() {
   const faqs = [
     {
       question: 'Do you provide warranty on sewing machines?',
-      answer: 'Yes, all our sewing machines come with manufacturer warranty. The warranty period varies by brand and model, typically ranging from 1 to 5 years. We also offer extended warranty options for additional peace of mind.',
+      answer: 'Yes, all our sewing machines come with manufacturer warranty. The warranty period varies by brand and model, typically ranging from 1 to 3 years only.',
       category: 'warranty'
     },
     {
@@ -49,7 +49,7 @@ export default function FAQSection() {
     },
     {
       question: 'What is your replacement policy?',
-      answer: 'We offer a 7-day replacement policy for damaged products with original packaging. Please contact our customer support within 7 days of delivery to initiate replacement. Some exclusions may apply.',
+      answer: 'For details about replacements and exchanges, please contact us.',
       category: 'services'
     }
   ];
