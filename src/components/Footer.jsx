@@ -16,7 +16,7 @@ export default function Footer() {
           >
             <div className="flex flex-col items-center">
               <img 
-                src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc_bemxiy.png"
+                src="https://res.cloudinary.com/do8cpljrz/image/upload/v1767846480/ChatGPT_Image_Jan_8_2026_09_56_51_AM_zsb56r.png"
                 alt="Andhra Machines Agencies Logo"
                 className="h-16 sm:h-20 lg:h-24 w-auto mb-3 object-contain"
               />

@@ -14,8 +14,7 @@ export default function AboutSection() {
                 <Link to="/" className="inline-block group w-full">
                   <div className="text-center lg:text-left">
                     <img
-                      src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/WhatsApp_Image_2025-12-20_at_2.29.17_PM-removebg-preview_lhqolz_ohtts7.png"
-                      alt="Andhra Machines Agencies Logo"
+                      src="https://res.cloudinary.com/do8cpljrz/image/upload/v1767847111/ChatGPT_Image_Jan_8__2026__10_05_09_AM-removebg-preview_xrutpg.png"
                       className="h-32 sm:h-40 lg:h-44 w-auto mx-auto lg:mx-12 transition-transform group-hover:scale-105 cursor-default"
                     />
                     <div className="mt-4">

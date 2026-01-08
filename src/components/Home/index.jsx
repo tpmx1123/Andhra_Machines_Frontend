@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SEO from '../SEO';
 import StructuredData, { generateOrganizationSchema } from '../StructuredData';
+import AnniversaryPopup from './AnniversaryPopup';
+import AnniversaryBanner from './AnniversaryBanner';
 import HeroSlider from './HeroSlider';
 import AboutSection from './AboutSection';
 import BrandsSection from './BrandsSection';
@@ -10,6 +12,15 @@ import FAQSection from './FAQSection';
 
 export default function Home() {
   const organizationSchema = generateOrganizationSchema();
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  
+  const handlePopupOpen = () => {
+    setIsPopupVisible(true);
+  };
+  
+  const handlePopupClose = () => {
+    setIsPopupVisible(false);
+  };
   
   return (
     <>
@@ -20,7 +31,9 @@ export default function Home() {
         image="https://res.cloudinary.com/durbtkhbz/image/upload/v1766121553/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc.png"
       />
       <StructuredData data={organizationSchema} />
+      <AnniversaryPopup onOpen={handlePopupOpen} onClose={handlePopupClose} />
       <div className="min-h-screen bg-white">
+        {!isPopupVisible && <AnniversaryBanner />}
         <HeroSlider />
         <AboutSection />
         <BrandsSection />

@@ -135,7 +135,7 @@ export default function Header() {
         <div className="flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-10">
             <img
-              src="https://res.cloudinary.com/do8cpljrz/image/upload/v1766379206/5ce7960d-fb0f-4693-8c80-800e26fcac92-removebg-preview_cilmdc_bemxiy.png"
+              src="https://res.cloudinary.com/do8cpljrz/image/upload/v1767846480/ChatGPT_Image_Jan_8_2026_09_56_51_AM_zsb56r.png"
               alt="Andhra Machines Agencies"
               className="h-12 sm:h-14 md:h-16 lg:h-18 w-auto object-contain"
               style={{ display: 'block' }}

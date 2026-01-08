@@ -507,7 +507,7 @@ export default function Contact() {
               href="https://www.instagram.com/andhramachinesagencies"
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-gradient-to-br from-blue-300 to-blue-900 rounded-2xl p-6 sm:p-8 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+              className="group bg-gradient-to-br from-red-300 to-red-900 rounded-2xl p-6 sm:p-8 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
             >
               <div className="flex flex-col items-center text-center">
                 <div className="bg-white/20 p-4 rounded-full mb-4 group-hover:bg-white/30 transition-colors">
