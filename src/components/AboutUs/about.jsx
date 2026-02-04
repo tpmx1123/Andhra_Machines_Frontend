@@ -8,8 +8,8 @@ export default function About() {
     <>
       <SEO
         title="About Us - Andhra Machines Agencies | Trusted Sewing Machine Dealer Since 1982"
-        description="Learn about Andhra Machines Agencies - your trusted partner for premium sewing machines since 1982. Four decades of excellence in Rajahmundry, Andhra Pradesh. Expert service, genuine products, and customer satisfaction."
-        keywords="Andhra Machines Agencies about, sewing machine dealer Rajahmundry, trusted sewing machine store, sewing machine service since 1982, Andhra Pradesh sewing machines"
+        description="Learn about Andhra Machines Agencies - your trusted partner for premium sewing machines since 1982. Four decades of excellence in Rajahmahendravaram, Andhra Pradesh. Expert service, genuine products, and customer satisfaction."
+        keywords="Andhra Machines Agencies about, sewing machine dealer Rajahmahendravaram, trusted sewing machine store, sewing machine service since 1982, Andhra Pradesh sewing machines"
       />
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#eef2f7] py-10 sm:py-14 px-3 sm:px-4 md:px-6 lg:px-8">
       {/* Hero Section */}
@@ -30,7 +30,7 @@ export default function About() {
           <h2 className="text-2xl sm:text-3xl font-bold text-[#1a365d] mb-4 sm:mb-6">Our Journey Since 1982</h2>
           <div className="space-y-4 sm:space-y-5 text-gray-700 leading-relaxed text-sm sm:text-base">
           <p>
-          Our journey began in 1982 in Rajahmundry, with a simple but powerful vision: to bring reliable sewing machines and genuine service to every customer who values craftsmanship. Over the past 43 years, that vision has grown into a legacy.
+          Our journey began in 1982 in Rajahmahendravaram, with a simple but powerful vision: to bring reliable sewing machines and genuine service to every customer who values craftsmanship. Over the past 44 years, that vision has grown into a legacy.
           </p>
 
           <p>
@@ -38,7 +38,7 @@ export default function About() {
           </p>
 
           <p>
-          With a strong presence in Rajahmundry and an expanding footprint through our branch in Visakhapatnam, we have served thousands of households, boutiques, professional tailors, and industries—each one becoming a part of our story.
+          With a strong presence in Rajahmahendravaram and an expanding footprint through our branch in Visakhapatnam, we have served thousands of households, boutiques, professional tailors, and industries—each one becoming a part of our story.
           </p>
 
           </div>
@@ -136,7 +136,7 @@ export default function About() {
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 mb-14 sm:mb-20">
           <div className="p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#c54513] mb-1 sm:mb-2">43+</div>
+          <div className="text-3xl sm:text-4xl font-bold text-[#c54513] mb-1 sm:mb-2">44+</div>
             <div className="text-gray-700 text-sm sm:text-base">Years of Excellence</div>
           </div>
           <div className="p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl text-center">

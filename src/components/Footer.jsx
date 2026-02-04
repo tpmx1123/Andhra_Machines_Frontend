@@ -65,13 +65,13 @@ export default function Footer() {
             <ul className="space-y-2.5">
               <li>
                 <a
-                  href="https://maps.google.com/?q=Andhra+Machines+Agencies,+Kandakam+Road,+Rajahmundry,+Andhra+Pradesh+533101"
+                  href="https://maps.google.com/?q=Andhra+Machines+Agencies,+Kandakam+Road,+Rajahmahendravaram,+Andhra+Pradesh+533101"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm sm:text-base text-gray-600 hover:text-[#c54513] transition-colors flex items-start"
                 >
                   <MapPin size={14} className="mr-1 mt-0.5 flex-shrink-0" />
-                  <span className="leading-tight">Andhra Machines Agencies, Kandakam Road, Rajahmundry - 533101</span>
+                  <span className="leading-tight">Andhra Machines Agencies, Kandakam Road, Rajahmahendravaram - 533101</span>
                 </a>
               </li>
               <li>

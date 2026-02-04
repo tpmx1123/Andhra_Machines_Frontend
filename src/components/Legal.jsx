@@ -43,7 +43,7 @@ export default function Legal() {
                 <div>
                   <p className="text-gray-700">
                     <strong className="text-gray-900">Registered Address:</strong><br />
-                    Kandakam Road, Rajahmundry - 533101<br />
+                    Kandakam Road, Rajahmahendravaram - 533101<br />
                     Andhra Pradesh, India
                   </p>
                 </div>

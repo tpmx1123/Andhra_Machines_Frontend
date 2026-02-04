@@ -41,7 +41,7 @@ export const generateOrganizationSchema = () => ({
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "JN Road",
-    "addressLocality": "Rajahmundry",
+    "addressLocality": "Rajahmahendravaram",
     "addressRegion": "Andhra Pradesh",
     "postalCode": "533101",
     "addressCountry": "IN"

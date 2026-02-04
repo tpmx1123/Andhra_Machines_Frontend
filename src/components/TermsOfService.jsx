@@ -41,7 +41,7 @@ export default function TermsOfService() {
                 <p className="text-gray-700">
                   <strong>Business Information:</strong><br />
                   Andhra Machines Agencies<br />
-                  Kandakam Road, Rajahmundry - 533101<br />
+                  Kandakam Road, Rajahmahendravaram - 533101<br />
                   Andhra Pradesh, India<br />
                   Email: andhramachinesagencies@gmail.com<br />
                   Phone: +91 97013 32707 | +91 74164 21770
@@ -285,7 +285,7 @@ export default function TermsOfService() {
               </p>
               <ol className="list-decimal pl-6 mb-4 space-y-2 text-gray-700">
                 <li>Contact our customer service first to resolve the issue amicably</li>
-                <li>If unresolved, disputes will be subject to the exclusive jurisdiction of courts in Rajahmundry, Andhra Pradesh, India</li>
+                <li>If unresolved, disputes will be subject to the exclusive jurisdiction of courts in Rajahmahendravaram, Andhra Pradesh, India</li>
                 <li>These Terms are governed by the laws of India</li>
               </ol>
               <p className="text-gray-700 leading-relaxed">
@@ -322,7 +322,7 @@ export default function TermsOfService() {
               <div className="bg-gray-50 rounded-lg p-6 space-y-3">
                 <p className="text-gray-700">
                   <strong>Andhra Machines Agencies</strong><br />
-                  Kandakam Road, Rajahmundry - 533101<br />
+                  Kandakam Road, Rajahmahendravaram - 533101<br />
                   Andhra Pradesh, India
                 </p>
                 <p className="text-gray-700">

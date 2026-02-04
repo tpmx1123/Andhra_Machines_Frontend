@@ -189,9 +189,9 @@ export default function Contact() {
   return (
     <>
       <SEO
-        title="Contact Us - Andhra Machines Agencies | Get in Touch | Rajahmundry"
-        description="Contact Andhra Machines Agencies for all your sewing machine needs. Call +91 97013 32707 or email andhramachinesagencies@gmail.com. Visit us at Kandakam Road, Rajahmundry. We're here to help!"
-        keywords="contact Andhra Machines Agencies, sewing machine dealer contact, Rajahmundry sewing machine store, sewing machine service contact"
+        title="Contact Us - Andhra Machines Agencies | Get in Touch | Rajahmahendravaram"
+        description="Contact Andhra Machines Agencies for all your sewing machine needs. Call +91 97013 32707 or email andhramachinesagencies@gmail.com. Visit us at Kandakam Road, Rajahmahendravaram. We're here to help!"
+        keywords="contact Andhra Machines Agencies, sewing machine dealer contact, Rajahmahendravaram sewing machine store, sewing machine service contact"
       />
       <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#eef2f7] py-6 sm:py-10 px-3 sm:px-4 md:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -293,11 +293,11 @@ export default function Contact() {
                   <address className="not-italic text-xs sm:text-sm text-gray-600 font-medium leading-tight sm:leading-normal">
                     <span className="block">Andhra Machines Agencies,</span>
                     <span className="block">Kandakam Road,</span>
-                    <span className="block">Rajahmundry - 533101,</span>
+                    <span className="block">Rajahmahendravaram - 533101,</span>
                     <span className="block">Andhra Pradesh, India</span>
                   </address>
                   <a 
-                    href="https://maps.google.com/?q=Andhra+Machines+Agencies,+Kandakam+Road,+Rajahmundry,+Andhra+Pradesh+533101" 
+                    href="https://maps.google.com/?q=Andhra+Machines+Agencies,+Kandakam+Road,+Rajahmahendravaram,+Andhra+Pradesh+533101" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center mt-2 text-[#1a365d] hover:text-[#c54513] font-medium text-sm"
@@ -480,7 +480,7 @@ export default function Contact() {
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900">Our Location</h3>
-                <p className="text-sm sm:text-base text-gray-600">Kandakam Road, Rajahmundry - 533101</p>
+                <p className="text-sm sm:text-base text-gray-600">Kandakam Road, Rajahmahendravaram - 533101</p>
               </div>
               <a
                 href="https://maps.app.goo.gl/HBKjcTHosNKR9nBJ8"

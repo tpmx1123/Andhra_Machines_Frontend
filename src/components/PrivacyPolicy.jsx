@@ -213,7 +213,7 @@ export default function PrivacyPolicy() {
               <div className="bg-gray-50 rounded-lg p-6 space-y-3">
                 <p className="text-gray-700">
                   <strong>Andhra Machines Agencies</strong><br />
-                  Kandakam Road, Rajahmundry - 533101<br />
+                  Kandakam Road, Rajahmahendravaram - 533101<br />
                   Andhra Pradesh, India
                 </p>
                 <p className="text-gray-700">
@@ -231,7 +231,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">13. Governing Law</h2>
               <p className="text-gray-700 leading-relaxed">
-                This Privacy Policy is governed by and construed in accordance with the laws of India. Any disputes arising from this policy shall be subject to the exclusive jurisdiction of the courts in Rajahmundry, Andhra Pradesh, India.
+                This Privacy Policy is governed by and construed in accordance with the laws of India. Any disputes arising from this policy shall be subject to the exclusive jurisdiction of the courts in Rajahmahendravaram, Andhra Pradesh, India.
               </p>
             </section>
           </div>
