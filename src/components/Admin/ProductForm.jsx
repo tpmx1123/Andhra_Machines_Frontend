@@ -98,48 +98,31 @@ export default function ProductForm({ product, onClose, onSuccess }) {
     }
   }, [product]);
 
-  // Helper function to format title: convert to Title Case with spaces, remove extra spaces and hyphens
+  // Helper function to format title:
+  // - Normal words -> Title Case (spaces preserved)
+  // - All-caps codes like "JA20" stay as-is
   const formatTitle = (text) => {
     if (!text) return '';
-    
-    // Replace hyphens and underscores with spaces first
-    let formatted = text.replace(/[-_]/g, ' ');
-    
-    // Remove extra spaces (replace multiple spaces with single space)
-    formatted = formatted.replace(/\s+/g, ' ');
-    
-    // Trim leading/trailing spaces
-    formatted = formatted.trim();
-    
-    // Split by spaces to get words
-    const words = formatted.split(' ').filter(word => word.length > 0);
-    if (words.length === 0) return '';
-    
-    // Convert to Title Case: capitalize first letter of each word, keep spaces
-    const titleCase = words.map((word) => {
-      // Clean word: keep only alphanumeric characters
-      const cleanedWord = word.replace(/[^a-zA-Z0-9]/g, '');
-      if (!cleanedWord) return '';
-      
-      // If starts with number, keep as-is
-      if (/^[0-9]/.test(cleanedWord)) {
-        return cleanedWord;
-      } else {
-        // If starts with letter, capitalize first letter, lowercase rest of letters (numbers stay)
-        const firstChar = cleanedWord.charAt(0).toUpperCase();
-        const rest = cleanedWord.slice(1);
-        // Lowercase all letters in the rest, but keep numbers unchanged
-        const restLowercased = rest.split('').map(char => {
-          if (/[a-zA-Z]/.test(char)) {
-            return char.toLowerCase();
-          }
-          return char; // Keep numbers and other characters as-is
-        }).join('');
-        return firstChar + restLowercased;
+
+    // Trim and collapse multiple spaces into a single space
+    const trimmed = text.trim().replace(/\s+/g, ' ');
+    if (!trimmed) return '';
+
+    const words = trimmed.split(' ');
+
+    const formattedWords = words.map((word) => {
+      // Keep all‑caps letter+digit codes as-is: e.g. "JA20"
+      if (/^[A-Z0-9]+$/.test(word)) {
+        return word;
       }
-    }).join(' '); // Join with spaces
-    
-    return titleCase;
+
+      // Normal word: Title Case (first letter upper, rest lower)
+      const lower = word.toLowerCase();
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    });
+
+    // Join back with single spaces
+    return formattedWords.join(' ');
   };
 
   const handleChange = (e) => {

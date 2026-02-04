@@ -21,7 +21,7 @@ export default function WhyChooseUs() {
     },
     {
       Icon: Clock,
-      title: '43+ Years Experience',
+      title: '44+ Years Experience',
       description: 'Trusted service provider with decades of industry expertise',
     },
     {

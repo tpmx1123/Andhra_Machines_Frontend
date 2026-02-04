@@ -39,10 +39,10 @@ export default function AboutSection() {
 
               <div className="space-y-5 text-gray-700 text-center lg:text-left">
                 <p className="text-base sm:text-lg leading-relaxed">
-                  We are one of <span className="font-semibold text-[#c54513]">Andhra Pradesh's most trusted sewing machine specialists</span>, serving customers since 1982. With over 43 years of experience, we provide a complete range of domestic, professional, and industrial sewing machines, along with genuine accessories and expert servicing.
+                  We are one of <span className="font-semibold text-[#c54513]">Andhra Pradesh's most trusted sewing machine specialists</span>, serving customers since 1982. With over 44 years of experience, we provide a complete range of domestic, professional, and industrial sewing machines, along with genuine accessories and expert servicing.
                 </p>
                 <p className="text-base sm:text-lg leading-relaxed">
-                  From our roots in <span className="font-semibold">Rajahmundry</span> to our expanding presence across the state, we have built a reputation for quality, reliability, and customer-first service. Today, we are proud to extend our reach—delivering sewing machines and accessories across India and supporting customers nationwide.
+                  From our roots in <span className="font-semibold">Rajahmahendravaram</span> to our expanding presence across the state, we have built a reputation for quality, reliability, and customer-first service. Today, we are proud to extend our reach—delivering sewing machines and accessories across India and supporting customers nationwide.
                 </p>
               </div>
 

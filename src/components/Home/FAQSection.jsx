@@ -24,7 +24,7 @@ export default function FAQSection() {
     },
     {
       question: 'What areas do you deliver to?',
-      answer: 'We provide free delivery services across India. For outstation deliveries, please contact our customer support team for details.',
+      answer: 'No Free delivery within or across India.',
       category: 'delivery'
     },
     {
