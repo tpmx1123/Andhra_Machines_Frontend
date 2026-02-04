@@ -24,7 +24,7 @@ export default function FAQSection() {
     },
     {
       question: 'What areas do you deliver to?',
-      answer: 'No Free delivery within or across India.',
+      answer: 'Delivery available across India.',
       category: 'delivery'
     },
     {
